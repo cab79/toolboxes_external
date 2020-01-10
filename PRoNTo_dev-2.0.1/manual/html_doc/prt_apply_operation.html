@@ -1,0 +1,401 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_apply_operation</title>
+  <meta name="keywords" content="prt_apply_operation">
+  <meta name="description" content="function to apply a data operation to the training, test and">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_apply_operation.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_apply_operation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function to apply a data operation to the training, test and</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_apply_operation(PRT, in, opid) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> function to apply a data operation to the training, test and 
+ in.train:      training data
+ in.tr_id:      id matrix for training data
+ in.use_kernel: are the data in kernelised form
+ in.tr_targets: training targets (optional field)
+ in.pred_type:  'classification' or 'regression' (required for tr_targets)
+
+ A test set may also be specified, which require the following fields:
+ in.test:       test data
+ in.testcov:    test covariance (only if use_kernel = true)
+ in.te_targets: test targets
+ in.te_id:      id matrix for test data
+
+ opid specifies the operation to apply, where:
+    1 = Temporal Compression
+    2 = Sample averaging (average samples for each subject/condition)
+    3 = Mean centre features over subjects
+    4 = Divide data vectors by their norm
+    5 = Perform a GLM (fMRI only)
+
+ N.B: - all operations are applied independently to training and test
+        partitions
+      - see Chu et. al (2011) for mathematical descriptions of operations
+        1 and 2 and Shawe-Taylor and Cristianini (2004) for a description
+        of operation 3.
+
+ References:
+ Chu, C et al. (2011) Utilizing temporal information in fMRI decoding: 
+ classifier using kernel regression methods. Neuroimage. 58(2):560-71.
+ Shawe-Taylor, J. and Cristianini, N. (2004). Kernel methods for Pattern
+ analysis. Cambridge University Press.
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_remove_confounds.html" class="code" title="function [Kr, R] = prt_remove_confounds(K,C)">prt_remove_confounds</a>	[Kr, R] = prt_remove_confounds(K,C)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>	FORMAT prt_compute_weights_class(PRT,in,model_idx)</li><li><a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>	FORMAT prt_compute_weights_regre(PRT,in,model_idx)</li><li><a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>	Function to run a single cross-validation fold</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function P = compute_tc_mat(ID)</a></li><li><a href="#_sub2" class="code">function P = compute_sa_mat(ID)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_apply_operation(PRT, in, opid)</a>
+0002 <span class="comment">% function to apply a data operation to the training, test and</span>
+0003 <span class="comment">% in.train:      training data</span>
+0004 <span class="comment">% in.tr_id:      id matrix for training data</span>
+0005 <span class="comment">% in.use_kernel: are the data in kernelised form</span>
+0006 <span class="comment">% in.tr_targets: training targets (optional field)</span>
+0007 <span class="comment">% in.pred_type:  'classification' or 'regression' (required for tr_targets)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% A test set may also be specified, which require the following fields:</span>
+0010 <span class="comment">% in.test:       test data</span>
+0011 <span class="comment">% in.testcov:    test covariance (only if use_kernel = true)</span>
+0012 <span class="comment">% in.te_targets: test targets</span>
+0013 <span class="comment">% in.te_id:      id matrix for test data</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% opid specifies the operation to apply, where:</span>
+0016 <span class="comment">%    1 = Temporal Compression</span>
+0017 <span class="comment">%    2 = Sample averaging (average samples for each subject/condition)</span>
+0018 <span class="comment">%    3 = Mean centre features over subjects</span>
+0019 <span class="comment">%    4 = Divide data vectors by their norm</span>
+0020 <span class="comment">%    5 = Perform a GLM (fMRI only)</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% N.B: - all operations are applied independently to training and test</span>
+0023 <span class="comment">%        partitions</span>
+0024 <span class="comment">%      - see Chu et. al (2011) for mathematical descriptions of operations</span>
+0025 <span class="comment">%        1 and 2 and Shawe-Taylor and Cristianini (2004) for a description</span>
+0026 <span class="comment">%        of operation 3.</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% References:</span>
+0029 <span class="comment">% Chu, C et al. (2011) Utilizing temporal information in fMRI decoding:</span>
+0030 <span class="comment">% classifier using kernel regression methods. Neuroimage. 58(2):560-71.</span>
+0031 <span class="comment">% Shawe-Taylor, J. and Cristianini, N. (2004). Kernel methods for Pattern</span>
+0032 <span class="comment">% analysis. Cambridge University Press.</span>
+0033 <span class="comment">%__________________________________________________________________________</span>
+0034 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0035 
+0036 <span class="comment">% Written by A Marquand</span>
+0037 <span class="comment">% $Id$</span>
+0038 
+0039 <span class="comment">% copy input fields to output</span>
+0040 out = in;
+0041 
+0042 <span class="keyword">for</span> d = 1:length(in.train)
+0043     <span class="keyword">switch</span> opid
+0044         <span class="keyword">case</span> 1 
+0045             <span class="comment">% temporal compression</span>
+0046             <span class="comment">% --------------------</span>
+0047             <span class="comment">% Training data</span>
+0048             Ptr = <a href="#_sub1" class="code" title="subfunction P = compute_tc_mat(ID)">compute_tc_mat</a>(in.tr_id);
+0049             <span class="keyword">if</span> in.use_kernel
+0050                 out.train{d} = Ptr*in.train{d}*Ptr';
+0051             <span class="keyword">else</span>
+0052                 out.train{d} = Ptr*in.train{d};
+0053             <span class="keyword">end</span>
+0054             out.tr_id = round(Ptr*in.tr_id);
+0055             <span class="keyword">if</span> isfield(in,<span class="string">'tr_targets'</span>)
+0056                 out.tr_targets = Ptr*in.tr_targets;
+0057                 <span class="keyword">if</span> strcmpi(in.pred_type,<span class="string">'classification'</span>);
+0058                     out.tr_targets = round(out.tr_targets);
+0059                 <span class="keyword">end</span>
+0060             <span class="keyword">end</span>
+0061             
+0062             <span class="comment">% Test data</span>
+0063             <span class="keyword">if</span> isfield(in,<span class="string">'test'</span>)
+0064                 Pte = <a href="#_sub1" class="code" title="subfunction P = compute_tc_mat(ID)">compute_tc_mat</a>(in.te_id);
+0065                 <span class="keyword">if</span> in.use_kernel
+0066                     out.test{d}     = Pte*in.test{d}*Ptr';
+0067                     out.testcov{d}  = Pte*in.testcov{d}*Pte';
+0068                 <span class="keyword">else</span>
+0069                     out.test{d}  = Pte*in.test{d};
+0070                 <span class="keyword">end</span>
+0071                 out.te_id = round(Pte*in.te_id);
+0072                 <span class="keyword">if</span> isfield(in,<span class="string">'te_targets'</span>)
+0073                     out.te_targets = Pte*in.te_targets;
+0074                     <span class="keyword">if</span> strcmpi(in.pred_type,<span class="string">'classification'</span>);
+0075                         out.te_targets = round(out.te_targets);
+0076                     <span class="keyword">end</span>
+0077                 <span class="keyword">end</span>
+0078             <span class="keyword">end</span>
+0079             
+0080         <span class="keyword">case</span> 2  
+0081             <span class="comment">% sample averaging</span>
+0082             <span class="comment">% ----------------</span>
+0083             <span class="comment">% Training data</span>
+0084             Ptr = <a href="#_sub2" class="code" title="subfunction P = compute_sa_mat(ID)">compute_sa_mat</a>(in.tr_id);
+0085             <span class="keyword">if</span> in.use_kernel
+0086                 out.train{d} = Ptr*in.train{d}*Ptr';
+0087             <span class="keyword">else</span>
+0088                 out.train{d} = Ptr*in.train{d};
+0089             <span class="keyword">end</span>
+0090             out.tr_id = round(Ptr*in.tr_id);
+0091             <span class="keyword">if</span> isfield(in,<span class="string">'tr_targets'</span>)
+0092                 out.tr_targets = Ptr*in.tr_targets;
+0093                 <span class="keyword">if</span> strcmpi(in.pred_type,<span class="string">'classification'</span>);
+0094                     out.tr_targets = round(out.tr_targets);
+0095                 <span class="keyword">end</span>
+0096             <span class="keyword">end</span>
+0097             
+0098             <span class="comment">% Test data</span>
+0099             <span class="keyword">if</span> isfield(in,<span class="string">'test'</span>)
+0100                 Pte = <a href="#_sub2" class="code" title="subfunction P = compute_sa_mat(ID)">compute_sa_mat</a>(in.te_id);
+0101                 <span class="keyword">if</span> in.use_kernel
+0102                     out.test{d}     = Pte*in.test{d}*Ptr';
+0103                     out.testcov{d}  = Pte*in.testcov{d}*Pte';
+0104                 <span class="keyword">else</span>
+0105                     out.test{d}  = Pte*in.test{d};
+0106                 <span class="keyword">end</span>
+0107                 out.te_id = round(Pte*in.te_id);
+0108                 <span class="keyword">if</span> isfield(in,<span class="string">'te_targets'</span>)
+0109                     out.te_targets = Pte*in.te_targets;
+0110                     <span class="keyword">if</span> strcmpi(in.pred_type,<span class="string">'classification'</span>);
+0111                         out.te_targets = round(out.te_targets);
+0112                     <span class="keyword">end</span>
+0113                 <span class="keyword">end</span>
+0114             <span class="keyword">end</span>
+0115             
+0116         <span class="keyword">case</span> 3 
+0117             <span class="comment">% mean centre features over subjects</span>
+0118             <span class="comment">% ----------------------------------</span>
+0119             <span class="keyword">if</span> ~isfield(in,<span class="string">'test'</span>) 
+0120                 <span class="comment">% No test data</span>
+0121                 <span class="keyword">if</span> in.use_kernel
+0122                     out.train{d} = prt_centre_kernel(in.train{d});
+0123                 <span class="keyword">else</span>
+0124                     m = mean(in.train{d});
+0125                     <span class="comment">%out.train{d} = in.train{d} - repmat(m,size(in.train{d},2),1);</span>
+0126                     out.train{d} = zeros(size(in.train{d}));
+0127                     <span class="keyword">for</span> r = 1:size(in.train{d},1)
+0128                         out.train{d}(r,:) = in.train{d}(r,:) - m;
+0129                     <span class="keyword">end</span>
+0130                 <span class="keyword">end</span>
+0131             <span class="keyword">else</span> <span class="comment">% Test data supplied</span>
+0132                  <span class="keyword">if</span> in.use_kernel
+0133                     [out.train{d}, out.test{d}, out.testcov{d}] = <span class="keyword">...</span>
+0134                         prt_centre_kernel(in.train{d},in.test{d},in.testcov{d});
+0135                 <span class="keyword">else</span>
+0136                     m = mean(in.train{d});
+0137                     <span class="comment">%out.train{d} = in.train{d} - repmat(m,size(in.train{d},2),1);</span>
+0138                     <span class="comment">%out.test{d}  = in.test{d} - repmat(m,size(in.test{d},2),1);</span>
+0139                     out.train{d} = zeros(size(in.train{d}));
+0140                     <span class="keyword">for</span> r = 1:size(in.train{d},1)
+0141                         out.train{d}(r,:) = in.train{d}(r,:) - m;
+0142                     <span class="keyword">end</span>
+0143                     out.test{d} = zeros(size(in.test{d}));
+0144                     <span class="keyword">for</span> r = 1:size(in.test{d},1)
+0145                         out.test{d}(r,:)  = in.test{d}(r,:) - m;
+0146                     <span class="keyword">end</span>
+0147                 <span class="keyword">end</span>
+0148                 out.te_id = in.te_id;
+0149             <span class="keyword">end</span>
+0150             out.tr_id = in.tr_id;
+0151             <span class="keyword">if</span> isfield(in,<span class="string">'tr_targets'</span>)
+0152                 out.tr_targets = in.tr_targets;
+0153             <span class="keyword">end</span>
+0154             <span class="keyword">if</span> isfield(in,<span class="string">'te_targets'</span>)
+0155                 out.te_targets = in.te_targets;
+0156             <span class="keyword">end</span>
+0157             
+0158         <span class="keyword">case</span> 4 
+0159             <span class="comment">% divide each feature vector by its norm</span>
+0160             <span class="comment">% --------------------------------------</span>
+0161             <span class="comment">% in this case, the operation is applied independently to</span>
+0162             <span class="comment">% each data vector, so it is safe (and convenient) to apply</span>
+0163             <span class="comment">% the operation to the whole kernel at once</span>
+0164             <span class="keyword">if</span> ~isfield(in,<span class="string">'test'</span>)
+0165                 <span class="comment">% No test data</span>
+0166                 <span class="keyword">if</span> in.use_kernel
+0167                     Phi = prt_normalise_kernel(in.train{d});
+0168                     tr = 1:size(in.train{d},1);
+0169                     out.train{d} = Phi(tr,tr);
+0170                 <span class="keyword">else</span>
+0171                     out.train{d} = zeros(size(in.train{d}));
+0172                     <span class="keyword">for</span> r = 1:size(in.train{d})
+0173                         out.train{d}(r,:) = in.train{d}(r,:) / norm(in.train{d}(r,:));
+0174                     <span class="keyword">end</span>
+0175                 <span class="keyword">end</span>
+0176             <span class="keyword">else</span> <span class="comment">% Test data</span>
+0177                 
+0178                 <span class="keyword">if</span> in.use_kernel
+0179                     Phi = [in.train{d}, in.test{d}'; in.test{d}, in.testcov{d}];
+0180                     Phi = prt_normalise_kernel(Phi);
+0181                     
+0182                     tr = 1:size(in.train{d},1);
+0183                     te = (1:size(in.test{d},1))+max(tr);
+0184                     out.train{d}    = Phi(tr,tr);
+0185                     out.test{d}     = Phi(te,tr);
+0186                     out.testcov{d}  = Phi(te,te);
+0187                 <span class="keyword">else</span>
+0188                     out.train{d} = zeros(size(in.train{d}));
+0189                     <span class="keyword">for</span> r = 1:size(in.train{d})
+0190                         out.train{d}(r,:) = in.train{d}(r,:) / norm(in.train{d}(r,:));
+0191                     <span class="keyword">end</span>
+0192                     out.train{d} = zeros(size(in.test{d}));
+0193                     <span class="keyword">for</span> r = 1:size(in.test{d})
+0194                         out.test{d}(r,:) = in.test{d}(r,:) / norm(in.test{d}(r,:));
+0195                     <span class="keyword">end</span>
+0196                 <span class="keyword">end</span>
+0197                 out.te_id = in.te_id;
+0198             <span class="keyword">end</span>
+0199             out.tr_id = in.tr_id;
+0200             <span class="keyword">if</span> isfield(in,<span class="string">'tr_targets'</span>)
+0201                 out.tr_targets = in.tr_targets;
+0202             <span class="keyword">end</span>
+0203             <span class="keyword">if</span> isfield(in,<span class="string">'te_targets'</span>)
+0204                 out.te_targets = in.te_targets;
+0205             <span class="keyword">end</span>
+0206             
+0207         <span class="keyword">case</span> 5 
+0208             <span class="comment">% perform a GLM</span>
+0209             <span class="comment">% -------------</span>
+0210             <span class="keyword">if</span> ~isfield(in,<span class="string">'tr_cov'</span>)
+0211                 error(<span class="string">'prt_apply_operation:NoCovariates'</span>,<span class="keyword">...</span>
+0212                 <span class="string">'No covariates found to perform requested GLM'</span>);
+0213             <span class="keyword">end</span>
+0214             <span class="keyword">if</span> ~isfield(in,<span class="string">'test'</span>) 
+0215                 <span class="comment">% No test data</span>
+0216                 <span class="keyword">if</span> in.use_kernel
+0217                     out.train{d} = <a href="prt_remove_confounds.html" class="code" title="function [Kr, R] = prt_remove_confounds(K,C)">prt_remove_confounds</a>(in.train{d},in.tr_cov);
+0218                 <span class="keyword">else</span>
+0219                     error(<span class="string">'prt_apply_operation:GLMnonKernel'</span>,<span class="keyword">...</span>
+0220                 <span class="string">'GLM not implemented for non-kernel methods'</span>);
+0221                 <span class="keyword">end</span>
+0222             <span class="keyword">else</span> <span class="comment">% Test data: for now does NOT take train/test division</span>
+0223                 Phi = [in.train{d}, in.test{d}'; in.test{d}, in.testcov{d}];
+0224                  <span class="keyword">if</span> in.use_kernel
+0225                     [Phi] = <a href="prt_remove_confounds.html" class="code" title="function [Kr, R] = prt_remove_confounds(K,C)">prt_remove_confounds</a>(Phi,[in.tr_cov;in.te_cov]);
+0226                     tr = 1:size(in.train{d},1);
+0227                     te = (1:size(in.test{d},1))+max(tr);
+0228                     out.train{d}    = Phi(tr,tr);
+0229                     out.test{d}     = Phi(te,tr);
+0230                     out.testcov{d}  = Phi(te,te);
+0231                 <span class="keyword">else</span>
+0232                     error(<span class="string">'prt_apply_operation:GLMnonKernel'</span>,<span class="keyword">...</span>
+0233                      <span class="string">'GLM not implemented for non-kernel methods'</span>);
+0234                 <span class="keyword">end</span>
+0235                 out.te_id = in.te_id;
+0236             <span class="keyword">end</span>
+0237             out.tr_id = in.tr_id;
+0238             <span class="keyword">if</span> isfield(in,<span class="string">'tr_targets'</span>)
+0239                 out.tr_targets = in.tr_targets;
+0240             <span class="keyword">end</span>
+0241             <span class="keyword">if</span> isfield(in,<span class="string">'te_targets'</span>)
+0242                 out.te_targets = in.te_targets;
+0243             <span class="keyword">end</span>
+0244             
+0245                         
+0246         <span class="keyword">otherwise</span>
+0247             error(<span class="string">'prt_apply_operation:UnknownOperationSpecified'</span>,<span class="keyword">...</span>
+0248                 <span class="string">'Unknown operation requested'</span>);
+0249     <span class="keyword">end</span>
+0250 <span class="keyword">end</span>
+0251 
+0252 <span class="comment">%out.use_kernel = in.use_kernel;</span>
+0253 <span class="comment">%if isfield(in,'pred_type');</span>
+0254 <span class="comment">%    out.pred_type  = in.pred_type;</span>
+0255 <span class="comment">%end</span>
+0256 <span class="keyword">end</span>
+0257 
+0258 <span class="comment">% -------------------------------------------------------------------------</span>
+0259 <span class="comment">% Private Functions</span>
+0260 <span class="comment">% -------------------------------------------------------------------------</span>
+0261 
+0262 <a name="_sub1" href="#_subfunctions" class="code">function P = compute_tc_mat(ID)</a>
+0263 <span class="comment">% function to compute the block averaging matrix (P) necessary to apply</span>
+0264 <span class="comment">% temporal compression</span>
+0265 
+0266 <span class="comment">% give each block a unique id</span>
+0267 IDc = zeros(size(ID,1),1);
+0268 C = {}; 
+0269 ccount = 0; 
+0270 lastid = zeros(1,5);
+0271 <span class="keyword">for</span> c = 1:size(ID,1)
+0272     currid = ID(c,1:5);  
+0273     <span class="keyword">if</span> any(lastid ~= currid)
+0274         ccount = ccount + 1;
+0275     <span class="keyword">end</span>
+0276     lastid = currid;
+0277     IDc(c) = ccount;
+0278 <span class="keyword">end</span>
+0279 
+0280 <span class="comment">% Compute sample averaging matrix</span>
+0281 cids  = unique(IDc);
+0282 cnums = histc(IDc,cids);
+0283 C = cell(length(cnums),1);
+0284 <span class="keyword">for</span> c = 1:length(cnums)
+0285     C{c} = 1/cnums(c) .* ones(1,cnums(c));
+0286 <span class="keyword">end</span>
+0287 P = blkdiag(C{:});
+0288 <span class="keyword">end</span>
+0289 
+0290 <a name="_sub2" href="#_subfunctions" class="code">function P = compute_sa_mat(ID)</a>
+0291 <span class="comment">% function to compute the block averaging matrix (P) necessary to apply</span>
+0292 <span class="comment">% temporal compression</span>
+0293 
+0294 <span class="comment">% give each subject a unique id</span>
+0295 IDs = zeros(size(ID,1),1);
+0296 ccount = 0; 
+0297 lastid = zeros(1,2);
+0298 <span class="keyword">for</span> s = 1:size(ID,1)
+0299     currid = ID(s,1:2);  
+0300     <span class="keyword">if</span> any(lastid ~= currid)
+0301         ccount = ccount + 1;
+0302     <span class="keyword">end</span>
+0303     lastid = currid;
+0304     IDs(s) = ccount;
+0305 <span class="keyword">end</span>
+0306 
+0307 subs = unique(IDs);
+0308 
+0309 P = [];
+0310 <span class="keyword">for</span> s = 1:length(subs)
+0311     sidx = IDs == subs(s);
+0312     conds = unique(ID(sidx,4));
+0313     <span class="keyword">for</span> c = 1:length(conds)
+0314         p = (IDs == s &amp; ID(:,4) == conds(c))';
+0315         P = [P; 1./sum(p) * double(p)];
+0316     <span class="keyword">end</span>
+0317 <span class="keyword">end</span>
+0318 P = double(P);
+0319 <span class="keyword">end</span>
+0320</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

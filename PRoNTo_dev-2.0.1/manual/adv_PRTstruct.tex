@@ -1,0 +1,200 @@
+\chapter{PRT structure}
+\label{sec:PRTstruct}
+\minitoc
+
+This is how the main {\tt PRT} structure is organised.
+
+{\tt PRT}
+\begin{list}{$\bullet$}
+    {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.2cm}}
+\item group
+    \begin{list}{$\bullet$}
+        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.7cm}}
+    \item gr\_name
+    \item subject
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item subj\_name()
+        \item modality()
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item mod\_name
+            \item detrend
+            \item covar
+            \item rt\_subj
+            \item scans
+            \item design
+                \begin{list}{$\bullet$}
+                    {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.2cm}}
+                \item conds
+                    \begin{list}{$\bullet$}
+                        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.7cm}}
+                    \item cond\_name()
+                    \item onsets()
+                    \item durations()
+                    \item rt\_trial()
+                    \item scans()
+                    \item blocks()
+                    \item discardedscans()
+                    \item hrfdiscardedscans()
+                    \end{list}
+                \item stats
+                    \begin{list}{$\bullet$}
+                        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.7cm}}
+                    \item overlap
+                    \item goodscans
+                    \item discscans
+                    \item meanovl
+                    \item stdovl
+                    \item mgoodovl
+                    \item sgoodovl
+                    \item goodovl
+                    \end{list}
+                \item TR
+                \item unit
+                \item covar
+                \end{list}
+            \end{list}
+        \end{list}
+    \item hrfoverlap
+    \item hrfdelay
+    \end{list}
+\item masks
+    \begin{list}{$\bullet$}
+        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.7cm}}
+    \item mod\_name
+    \item fname
+    \end{list}
+\item fs
+    \begin{list}{$\bullet$}
+        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.7cm}}
+    \item fs\_name
+    \item k\_file
+    \item id\_col\_names
+    \item fas
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item im
+        \item ifa
+        \end{list}
+    \item modality
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item mod\_name
+        \item detrend
+        \item param\_dt
+        \item mode
+        \item idfeat\_fas
+        \item normalise
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item type
+            \item scaling
+            \end{list}
+        \end{list}
+    \item id\_mat
+    \end{list}
+\item fas
+    \begin{list}{$\bullet$}
+        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.7cm}}
+    \item mod\_name
+    \item dat
+    \item detrend
+    \item param\_dt
+    \item hdr
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item fname
+        \item dim
+        \item mat
+        \item pinfo
+        \item dt
+        \item n
+        \item descrip
+        \item private
+        \end{list}
+    \item idfeat\_img
+    \end{list}
+\item model
+    \begin{list}{$\bullet$}
+        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{0.7cm}}
+    \item model\_name()
+    \item input()
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item use\_kernel
+        \item type
+        \item machine
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item function
+            \item args
+            \end{list}
+        \item class
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item class\_name()
+            \item group()
+                \begin{list}{$\bullet$}
+                    {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.2cm}}
+                \item gr\_name
+                \item subj
+                    \begin{list}{$\bullet$}
+                        {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.7cm}}
+                    \item num()
+                    \item modality()
+                    \end{list}
+                \end{list}
+            \end{list}
+        \item fs
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item fs\_name
+            \end{list}
+        \item samp\_idx
+        \item include\_allscans
+        \item targets
+        \item targ\_allscans
+        \item cv\_mat
+        \item operations
+        \item cv\_type
+        \end{list}
+    \item output()
+        \begin{list}{$\bullet$}
+            {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.2cm}}
+        \item fold
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item targets()
+            \item predictions()
+            \item stats()
+                \begin{list}{$\bullet$}
+                    {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{2.2cm}}
+                \item con\_mat
+                \item acc
+                \item c\_acc
+                \item b\_acc
+                \item c\_pv
+                \item acc\_lb
+                \item acc\_ub
+                \end{list}
+            \item func\_val()
+            \item type()
+            \item alpha()
+            \item b()
+            \item totalSV()
+            \end{list}
+        \item stats
+            \begin{list}{$\bullet$}
+                {\setlength{\labelsep}{.2cm}\setlength{\itemindent}{0cm}\setlength{\leftmargin}{1.7cm}}
+            \item con\_mat
+            \item acc
+            \item c\_acc
+            \item b\_acc
+            \item c\_pv
+            \item acc\_lb
+            \item acc\_ub
+            \end{list}
+        \end{list}
+    \end{list}
+\end{list}

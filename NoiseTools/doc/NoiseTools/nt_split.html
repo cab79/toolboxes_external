@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_split</title>
+  <meta name="keywords" content="nt_split">
+  <meta name="description" content="[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_split.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_split
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [idx,score_vector,score]=nt_split(x,depth,thresh,guard) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals
+
+  idx: index at which to split
+  score: proportion variance reduced
+  score_vector: score as a function of split position
+  
+
+  x: data (time * channels)
+  depth: recursion depth (we find on the order of 2^depth split points).
+  thresh: threshold reduction of variance [default: 0]
+  guard: number of samples to avoid at each end (counteracts bias towards splitting near ends)
+  
+
+  This routine finds the best place to split a time series.
+  
+
+ Examples: 
+   nt_split(x);            % find point of largest change
+   nt_split(x.^2);         % largest change of variance
+   nt_split(nt_xprod(x);   % largest change of covariance
+   nt_split(nt_xprod(x,'nodiag'); % same, ignoring variance
+   nt_split(nt_xprod(nt_normrow(x),'nodiag'); % same, each slice normalized
+   nt_split(x,3);          % recurse 3 times (--&gt; 7 split points)
+   nt_split(x,3,10);       % same, but splits are at least 10 points from ends</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_mark.html" class="code" title="function nt_mark(idx,labels,line_params,text_params)">nt_mark</a>	nt_mark(idx,labels)</li><li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cluster1D.html" class="code" title="function [C,A,score]=nt_cluster1D_b(x);">nt_cluster1D</a>	[C,A,score]=nt_cluster1D_b(x) - cluster 1D data into 2 clusters</li><li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)</a>
+0002 <span class="comment">%[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  idx: index at which to split</span>
+0005 <span class="comment">%  score: proportion variance reduced</span>
+0006 <span class="comment">%  score_vector: score as a function of split position</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  x: data (time * channels)</span>
+0010 <span class="comment">%  depth: recursion depth (we find on the order of 2^depth split points).</span>
+0011 <span class="comment">%  thresh: threshold reduction of variance [default: 0]</span>
+0012 <span class="comment">%  guard: number of samples to avoid at each end (counteracts bias towards splitting near ends)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%  This routine finds the best place to split a time series.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Examples:</span>
+0019 <span class="comment">%   nt_split(x);            % find point of largest change</span>
+0020 <span class="comment">%   nt_split(x.^2);         % largest change of variance</span>
+0021 <span class="comment">%   nt_split(nt_xprod(x);   % largest change of covariance</span>
+0022 <span class="comment">%   nt_split(nt_xprod(x,'nodiag'); % same, ignoring variance</span>
+0023 <span class="comment">%   nt_split(nt_xprod(nt_normrow(x),'nodiag'); % same, each slice normalized</span>
+0024 <span class="comment">%   nt_split(x,3);          % recurse 3 times (--&gt; 7 split points)</span>
+0025 <span class="comment">%   nt_split(x,3,10);       % same, but splits are at least 10 points from ends</span>
+0026 
+0027 <span class="keyword">if</span> nargin&lt;2||isempty(depth); depth=1; <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin&lt;3||isempty(thresh); thresh=0; <span class="keyword">end</span>
+0029 <span class="keyword">if</span> nargin&lt;4||isempty(guard); guard=0; <span class="keyword">end</span>
+0030 <span class="keyword">if</span> ndims(x)&gt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0031 
+0032 
+0033 <span class="keyword">if</span> numel(depth)&gt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0034 
+0035 [m,n]=size(x);
+0036 <span class="keyword">if</span> m&lt;2*guard; idx=[]; <span class="keyword">return</span>; <span class="keyword">end</span>
+0037 <span class="comment">% if m==1; idx=1; return; end</span>
+0038 <span class="comment">% if m==0; idx=[]; return; end</span>
+0039 
+0040 x=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(x);
+0041 
+0042 <span class="comment">%{</span>
+0043 For each potential split point we calculate the sum of the per-interval
+0044 ssq of first and second interval. This is vectorized using cumsum.
+0045 <span class="comment">%}</span>
+0046 
+0047 <span class="comment">% to minimize memory requirements code is repeated after flipping:</span>
+0048 xxx=x;
+0049 first_term = cumsum(xxx.^2) - bsxfun(@times, cumsum(xxx).^2,1./(1:m)');
+0050 xxx=flipud(x); 
+0051 second_term = cumsum(xxx.^2) - bsxfun(@times, cumsum(xxx).^2, 1./(1:m)'); <span class="comment">%clear x</span>
+0052 score_vector=first_term+second_term(end:-1:1,:);    <span class="comment">% sum per-interval ssqs</span>
+0053 score_vector=score_vector*diag(1./sum(xxx.^2));  <span class="comment">% normalize each dimension</span>
+0054 score_vector=mean(score_vector,2);      <span class="comment">% average across dimensions</span>
+0055 
+0056 <span class="comment">% find the sweet spot:</span>
+0057 [score0,idx]=min(score_vector(guard+1:end-guard));  idx=idx+guard;
+0058 <span class="comment">%disp(['depth: ',num2str(depth), ', score0: ',num2str(score0)]);</span>
+0059 <span class="keyword">if</span> score0&gt;1-thresh; <span class="comment">% improvement is not good enough</span>
+0060     idx=[]; 
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="keyword">if</span> depth&gt;1 &amp;&amp; ~isempty(idx)
+0064     [a,sv]=<a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>(x(1:idx,:),depth-1,thresh,guard);
+0065     [b,sv]=<a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>(x(idx+1:<span class="keyword">end</span>,:),depth-1,thresh,guard);
+0066     idx=[a,idx,idx+b];
+0067     idx=unique(idx);
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">if</span> nargout&gt;2 || nargout==0;
+0071     <span class="comment">% score = reduction in variance if mean removed from each segment</span>
+0072     ssq_total=sum( (x-repmat(mean(x),size(x,1),1)).^2 );
+0073     idx2=unique([1,idx,m]); 
+0074     ssq=zeros(1,size(x,2));
+0075     <span class="keyword">for</span> iSegment=1:numel(idx2)-1
+0076         xx=x(idx2(iSegment):idx2(iSegment+1),:);
+0077         ssq=ssq + sum( (xx - repmat(mean(xx),size(xx,1),1) ).^2 );
+0078     <span class="keyword">end</span>
+0079     score=(mean(ssq))./mean(ssq_total);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">%disp(['nt_split_nargout: ', num2str(nargout)])</span>
+0083 
+0084 <span class="keyword">if</span> nargout==0;
+0085     disp([<span class="string">'split at '</span>, num2str(idx)]);
+0086     disp([<span class="string">'(%: '</span>, num2str(100*idx/m, <span class="string">'  %.01f'</span>), <span class="string">')'</span>])
+0087     disp([<span class="string">'score: '</span>, num2str(score,  <span class="string">'%.01f'</span>)]);
+0088     
+0089     figure(200);
+0090     subplot 211
+0091     plot(score_vector);
+0092     subplot 212
+0093     plot(x); drawnow
+0094     <a href="nt_mark.html" class="code" title="function nt_mark(idx,labels,line_params,text_params)">nt_mark</a>(idx);
+0095     <span class="keyword">if</span> numel(idx)&gt;1; disp([<span class="string">'smallest interval: '</span>, num2str(min(diff(idx)))]); <span class="keyword">end</span>
+0096     clear idx score score_vector
+0097 <span class="keyword">end</span>
+0098   
+0099 
+0100 <span class="comment">% TODO:</span>
+0101 <span class="comment">% - online &quot;bottom-up&quot; calculation (aggregate rather than split)</span>
+0102 
+0103 
+0104</pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

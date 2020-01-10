@@ -1,0 +1,409 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_compute_weights_regre</title>
+  <meta name="keywords" content="prt_compute_weights_regre">
+  <meta name="description" content="FORMAT prt_compute_weights_regre(PRT,in,model_idx)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_compute_weights_regre.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_compute_weights_regre
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_compute_weights_regre(PRT,in,model_idx)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_compute_weights_regre(PRT,in,model_idx)
+
+ This function calls prt_weights to compute weights
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+         in            - structure with specific information to create
+                         weights
+           .model_name - model name (string)
+           .img_name   - (optional) name of the file to be created
+                         (string)
+           .pathdir    - directory path where to save weights (same as the
+                         one for PRT.mat) (string)
+         model_idx     - model index (integer)
+         flag          - compute weight images for each permutation if 1
+         ibe           - which beta to use for MKL and multiple modalities
+         flag2         - build image of weights per region
+ Output:
+       img_name        - name of the .img file created
+       + image file created on disk
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_apply_operation.html" class="code" title="function out = prt_apply_operation(PRT, in, opid)">prt_apply_operation</a>	function to apply a data operation to the training, test and</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_compute_weights.html" class="code" title="function img_name = prt_compute_weights(PRT,in,flag,flag2)">prt_compute_weights</a>	FORMAT prt_compute_weights(PRT,in)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)</a>
+0002 <span class="comment">% FORMAT prt_compute_weights_regre(PRT,in,model_idx)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function calls prt_weights to compute weights</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0007 <span class="comment">%                         at least one estimated model).</span>
+0008 <span class="comment">%         in            - structure with specific information to create</span>
+0009 <span class="comment">%                         weights</span>
+0010 <span class="comment">%           .model_name - model name (string)</span>
+0011 <span class="comment">%           .img_name   - (optional) name of the file to be created</span>
+0012 <span class="comment">%                         (string)</span>
+0013 <span class="comment">%           .pathdir    - directory path where to save weights (same as the</span>
+0014 <span class="comment">%                         one for PRT.mat) (string)</span>
+0015 <span class="comment">%         model_idx     - model index (integer)</span>
+0016 <span class="comment">%         flag          - compute weight images for each permutation if 1</span>
+0017 <span class="comment">%         ibe           - which beta to use for MKL and multiple modalities</span>
+0018 <span class="comment">%         flag2         - build image of weights per region</span>
+0019 <span class="comment">% Output:</span>
+0020 <span class="comment">%       img_name        - name of the .img file created</span>
+0021 <span class="comment">%       + image file created on disk</span>
+0022 <span class="comment">%__________________________________________________________________________</span>
+0023 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0024 
+0025 <span class="comment">% Written by M.J.Rosa</span>
+0026 <span class="comment">% $Id$</span>
+0027 
+0028 <span class="comment">% Find machine</span>
+0029 <span class="comment">% -------------------------------------------------------------------------</span>
+0030 mfunc       = PRT.model(model_idx).input.machine.function;
+0031 mname       = PRT.model(model_idx).model_name;
+0032 m.args      = [];
+0033 
+0034 <span class="keyword">if</span> nargin&lt;5
+0035     ibe=[];
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">if</span> nargin&lt;6
+0038     flag2 = 0;
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% unfortunately a bug somewhere causes shifts in weight image if</span>
+0042 <span class="comment">% .nii is used...</span>
+0043 
+0044 <span class="keyword">switch</span> mfunc
+0045     <span class="keyword">case</span> <span class="string">'prt_machine_sMKL_reg'</span>
+0046         m.function = <span class="string">'prt_weights_sMKL_reg'</span>;
+0047         img_mach{1} = [<span class="string">'weights_'</span>,mname,<span class="string">'.img'</span>];
+0048     <span class="keyword">case</span> <span class="string">'prt_machine_RT_bin'</span>
+0049         error(<span class="string">'prt_compute_weights:MachineNotSupported'</span>,<span class="keyword">...</span>
+0050             <span class="string">'Error: weights computation not supported for this machine!'</span>);
+0051     <span class="keyword">otherwise</span>
+0052         m.function  = <span class="string">'prt_weights_bin_linkernel'</span>;
+0053         img_mach{1} = [<span class="string">'weights_'</span>,mname,<span class="string">'.img'</span>];
+0054 <span class="keyword">end</span>
+0055 
+0056 nimage = length(img_mach);
+0057 <span class="comment">% Image name</span>
+0058 <span class="comment">% -------------------------------------------------------------------------</span>
+0059 <span class="keyword">if</span> ~isempty(in.img_name)
+0060     <span class="keyword">if</span> ~(prt_checkAlphaNumUnder(in.img_name))
+0061         error(<span class="string">'prt_compute_weights:NameNotAlphaNumeric'</span>,<span class="keyword">...</span>
+0062             <span class="string">'Error: image name should contain only alpha-numeric elements!'</span>);
+0063     <span class="keyword">end</span>
+0064     <span class="keyword">if</span> nimage&gt;1 &amp;&amp; ~flag2
+0065         <span class="keyword">for</span> c = 1:nimage
+0066             in.img_name_c  = [in.img_name,<span class="string">'_'</span>,num2str(c),<span class="string">'.img'</span>];
+0067             img_name{c}    = fullfile(in.pathdir,in.img_name_c);
+0068         <span class="keyword">end</span>
+0069     <span class="keyword">else</span>
+0070         img_name{1}   = fullfile(in.pathdir,[in.img_name,<span class="string">'.img'</span>]);
+0071     <span class="keyword">end</span>
+0072 <span class="keyword">else</span>
+0073     <span class="keyword">for</span> c = 1:nimage
+0074         img_name{c}    = fullfile(in.pathdir,img_mach{c});
+0075     <span class="keyword">end</span>
+0076 <span class="keyword">end</span>
+0077 
+0078 <span class="comment">% Other info</span>
+0079 <span class="comment">% -------------------------------------------------------------------------</span>
+0080 fs_name  = PRT.model(model_idx).input.fs(1).fs_name;
+0081 samp_idx = PRT.model(model_idx).input.samp_idx;
+0082 nfold    = length(PRT.model(model_idx).output.fold);
+0083 
+0084 <span class="comment">% Find feature set</span>
+0085 <span class="comment">% -------------------------------------------------------------------------</span>
+0086 nfs = length(PRT.fs);
+0087 <span class="keyword">for</span> f = 1:nfs
+0088     <span class="keyword">if</span> strcmp(PRT.fs(f).fs_name,fs_name)
+0089         fs_idx = f;
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span>
+0092 ID     = PRT.fs(fs_idx).id_mat(PRT.model(model_idx).input.samp_idx,:);
+0093 ID_all = PRT.fs(fs_idx).id_mat;
+0094 
+0095 <span class="comment">% Find modality (now as inputs)</span>
+0096 <span class="comment">% -------------------------------------------------------------------------</span>
+0097 fas_idx = in.fas_idx;
+0098 mm = in.mm;
+0099 
+0100 <span class="comment">% Get the indexes of the voxels which are in the first/second level mask</span>
+0101 <span class="comment">% -------------------------------------------------------------------------</span>
+0102 
+0103 idROI = [];
+0104 idfeat = PRT.fas(fas_idx(1)).idfeat_img;
+0105 <span class="keyword">if</span> isempty(PRT.fs(fs_idx).modality(mm(1)).idfeat_fas) <span class="comment">% get the 2nd level masking</span>
+0106     idfeat_fas = 1:length(idfeat);
+0107 <span class="keyword">else</span>
+0108     idfeat_fas = PRT.fs(fs_idx).modality(mm(1)).idfeat_fas;
+0109 <span class="keyword">end</span>
+0110 <span class="keyword">if</span> PRT.fs(fs_idx).multkernelROI
+0111     m_train = cell(length(PRT.fs(fs_idx).modality(mm(1)).idfeat_img),1);
+0112     <span class="keyword">for</span> i = 1:length(PRT.fs(fs_idx).modality(mm(1)).idfeat_img)
+0113         tmp1 = PRT.fs(fs_idx).modality(mm(1)).idfeat_img{i};
+0114         idROI=[idROI;tmp1];
+0115         tmp = idfeat_fas(tmp1);
+0116         m_train{i} = idfeat(tmp);
+0117     <span class="keyword">end</span>
+0118     id2 = idfeat_fas(sort(idROI));
+0119 <span class="keyword">else</span>
+0120     id2 = idfeat_fas;
+0121 <span class="keyword">end</span>
+0122 mask_train = idfeat(id2);
+0123 voxtr = find(ismember(idfeat,mask_train));
+0124 
+0125 
+0126 <span class="comment">% Create image</span>
+0127 <span class="comment">% -------------------------------------------------------------------------</span>
+0128 
+0129 <span class="keyword">if</span> flag
+0130     <span class="comment">%create images for each permutation</span>
+0131     <span class="keyword">if</span> isfield(PRT.model(model_idx).output,<span class="string">'permutation'</span>) &amp;&amp; <span class="keyword">...</span>
+0132             ~isempty(PRT.model(model_idx).output.permutation)
+0133         maxp = length(PRT.model(model_idx).output.permutation);
+0134     <span class="keyword">else</span>
+0135         disp(<span class="string">'No parameters saved for the permutation, building weight image only'</span>)
+0136     <span class="keyword">end</span>
+0137 <span class="keyword">else</span>
+0138     maxp=0;
+0139 <span class="keyword">end</span>
+0140 pthperm = cell(nimage,1);
+0141 <span class="keyword">for</span> p=0:maxp
+0142     <span class="keyword">if</span> p&gt;0
+0143         <span class="keyword">for</span> c = 1:nimage
+0144             [pth,nam] = fileparts(img_name{c});            
+0145             <span class="keyword">if</span> p==1
+0146                 pthperm{c} = fullfile(pth,[<span class="string">'perm_'</span>,nam]);
+0147                 <span class="keyword">if</span> ~exist(pthperm{c},<span class="string">'dir'</span>)
+0148                     mkdir(pth,[<span class="string">'perm_'</span>,nam]);
+0149                 <span class="keyword">end</span>
+0150             <span class="keyword">end</span>            
+0151             img_nam{c} = fullfile(pthperm{c},[nam,<span class="string">'_perm'</span>,num2str(p),<span class="string">'.img'</span>]);
+0152         <span class="keyword">end</span>
+0153         fprintf(<span class="string">'Permutation: %d of %d \n'</span>,p, <span class="keyword">...</span>
+0154             length(PRT.model(model_idx).output.permutation));
+0155     <span class="keyword">else</span>
+0156         img_nam = img_name;
+0157     <span class="keyword">end</span>
+0158     
+0159     <span class="comment">% check that image does not exist, otherwise, delete</span>
+0160     <span class="keyword">if</span> exist(img_nam{1},<span class="string">'file'</span>)
+0161         <span class="keyword">for</span> c = 1:nimage
+0162             delete(img_nam{c});
+0163             <span class="comment">% delete hdr:</span>
+0164             [pth,nam] = fileparts(img_nam{c});
+0165             hdr_name  = [pth,filesep,nam,<span class="string">'.hdr'</span>];
+0166             delete(hdr_name)
+0167         <span class="keyword">end</span>
+0168     <span class="keyword">end</span>
+0169     
+0170     hdr        = PRT.fas(fas_idx(1)).hdr.private;
+0171     dat_dim    = hdr.dat.dim;
+0172     
+0173     <span class="keyword">if</span> length(dat_dim)==2, dat_dim = [dat_dim 1]; <span class="keyword">end</span> <span class="comment">% handling case of 2D image</span>
+0174     
+0175     img4d = cell(nimage,1); <span class="comment">% afm</span>
+0176     <span class="keyword">for</span> c = 1:nimage
+0177         <span class="keyword">if</span> p==0 <span class="comment">%save folds for the 'true' image</span>
+0178             folds_comp=nfold+1;
+0179         <span class="keyword">else</span>    <span class="comment">%save the average across folds only for permutations</span>
+0180             folds_comp=1;
+0181         <span class="keyword">end</span>
+0182         img4d{c} = file_array(img_nam{c},[dat_dim(1),dat_dim(2),<span class="keyword">...</span>
+0183             dat_dim(3),folds_comp],<span class="string">'float32-le'</span>,0,1,0);
+0184     <span class="keyword">end</span>
+0185     
+0186     zdim    = dat_dim(3);
+0187     xydim   = dat_dim(1)*dat_dim(2);
+0188     <span class="comment">% norm3d  = 0;</span>
+0189     
+0190     disp(<span class="string">'Computing weights.......&gt;&gt;'</span>)
+0191     
+0192     <span class="keyword">for</span> z = 1:zdim
+0193         
+0194         fprintf(<span class="string">'Slice: %d of %d \n'</span>,z,zdim);
+0195         
+0196         img3dav = cell(1,nimage);
+0197         <span class="keyword">for</span> c = 1:nimage
+0198             img3dav{c}  = zeros(1,xydim); <span class="comment">% average weight map</span>
+0199         <span class="keyword">end</span>
+0200         
+0201         <span class="keyword">if</span> ~isempty(idROI) <span class="comment">%get indexes in each slice for each ROI</span>
+0202             feat_slc = mask_train(mask_train&gt;=(xydim*(z-1)+1) &amp; <span class="keyword">...</span>
+0203                 mask_train&lt;=(xydim*z));
+0204             <span class="keyword">for</span> ir = 1:length(m_train)
+0205                 tmp = m_train{ir}(m_train{ir}&gt;=(xydim*(z-1)+1) &amp; <span class="keyword">...</span>
+0206                     m_train{ir}&lt;=(xydim*z));
+0207                 m.args.idfeat_img{ir} = find(ismember(feat_slc,tmp));
+0208             <span class="keyword">end</span>
+0209             feat_slc = find(mask_train&gt;=(xydim*(z-1)+1) &amp; <span class="keyword">...</span>
+0210                 mask_train&lt;=(xydim*z));
+0211         <span class="keyword">else</span>
+0212             feat_slc = find(mask_train&gt;=(xydim*(z-1)+1) &amp; <span class="keyword">...</span>
+0213                 mask_train&lt;=(xydim*z));
+0214             m.args.idfeat_img = {1:length(feat_slc)};
+0215         <span class="keyword">end</span>      
+0216         
+0217         <span class="keyword">if</span> isempty(feat_slc)
+0218             
+0219             <span class="keyword">for</span> c = 1:nimage
+0220                 img4d{c}(:,:,z,:) = NaN*zeros(dat_dim(1),dat_dim(2),1,folds_comp);
+0221             <span class="keyword">end</span>
+0222             
+0223         <span class="keyword">else</span>
+0224             
+0225             <span class="keyword">for</span> f = 1:nfold
+0226                 
+0227                 train_idx      = PRT.model(model_idx).input.cv_mat(:,f)==1;
+0228                 train          = samp_idx(train_idx);
+0229                 train_all      = zeros(size(ID_all,1),1); train_all(train) = 1;
+0230                 <span class="keyword">if</span> p&gt;0
+0231                     d.coeffs   = PRT.model(model_idx).output.permutation(p).fold(f).alpha;
+0232                 <span class="keyword">else</span>
+0233                     d.coeffs   = PRT.model(model_idx).output.fold(f).alpha;
+0234                 <span class="keyword">end</span>
+0235                 
+0236                 d.datamat = zeros(length(train), length(feat_slc));
+0237                 <span class="keyword">for</span> i = 1:length(fas_idx)
+0238                     <span class="comment">% indexes to access the file array</span>
+0239                     indm = find(PRT.fs(fs_idx).fas.im == fas_idx(i));
+0240                     <span class="keyword">if</span> PRT.fs(fs_idx).multkernel
+0241                         indtr = ID(train_idx,3) == fas_idx(1);
+0242                         indm = indm(find(train_all));
+0243                     <span class="keyword">else</span>
+0244                         indtr = ID(train_idx,3) == fas_idx(i);
+0245                         indm = indm(find(train_all(ID_all(:,3)==fas_idx(i))));
+0246                     <span class="keyword">end</span>
+0247                     ifa  = PRT.fs(fs_idx).fas.ifa(indm);
+0248                     
+0249                     <span class="comment">% index for the target data matrix</span>
+0250                     d.datamat(indtr,:) = PRT.fas(fas_idx(i)).dat(ifa,voxtr(feat_slc));
+0251                 <span class="keyword">end</span>
+0252                 
+0253                 <span class="comment">% Apply any operations specified during training</span>
+0254                 ops = PRT.model(model_idx).input.operations(PRT.model(model_idx).input.operations ~=0 );
+0255                 cvdata.train      = {d.datamat};
+0256                 cvdata.tr_id      = ID(train_idx,:);
+0257                 cvdata.use_kernel = false; <span class="comment">% need to apply the operation to the data</span>
+0258                 <span class="keyword">for</span> o = 1:length(ops)
+0259                     cvdata = <a href="prt_apply_operation.html" class="code" title="function out = prt_apply_operation(PRT, in, opid)">prt_apply_operation</a>(PRT, cvdata, ops(o));
+0260                 <span class="keyword">end</span>
+0261                 d.datamat = cvdata.train{:};
+0262                 
+0263                 <span class="keyword">if</span> strcmpi(mfunc,<span class="string">'prt_machine_sMKL_reg'</span>)
+0264                     <span class="keyword">if</span> isempty(ibe)
+0265                         m.args.betas = PRT.model(model_idx).output.fold(f).beta;
+0266                     <span class="keyword">else</span>
+0267                         m.args.betas = PRT.model(model_idx).output.fold(f).beta(ibe);
+0268                     <span class="keyword">end</span>
+0269                 <span class="keyword">end</span>
+0270                 
+0271                 <span class="keyword">if</span> flag2
+0272                     m.args.flag = 1;
+0273                 <span class="keyword">end</span>
+0274                 
+0275                 <span class="comment">% COMPUTE WEIGHTS</span>
+0276                 wimg      = prt_weights(d,m);
+0277                 
+0278                 <span class="keyword">for</span> c = 1:nimage,
+0279                     img3d              = zeros(1,xydim);
+0280                     indi               = mask_train(feat_slc)-xydim*(z-1);
+0281                     indm               = setdiff(1:xydim,indi);
+0282                     img3d(indi)        = wimg{c};
+0283                     norm3d{c}(f)       = sum(img3d.^2);
+0284                     img3d(indm)        = NaN;
+0285                     img3dav{c}         = img3dav{c} + img3d;
+0286                     <span class="keyword">if</span> p==0
+0287                         img4d{c}(:,:,z,f)  = reshape(img3d,dat_dim(1),dat_dim(2),1,1);
+0288                     <span class="keyword">end</span>
+0289                 <span class="keyword">end</span>
+0290                 
+0291             <span class="keyword">end</span>
+0292             
+0293             
+0294             
+0295             <span class="comment">% Create average fold</span>
+0296             <span class="comment">%------------------------------------------------------------------</span>
+0297             <span class="keyword">for</span> c = 1:nimage
+0298                 norm4d{c}(z,:)             = norm3d{c};
+0299                 img3dav{c}                 = img3dav{c}/nfold; <span class="comment">%afm</span>
+0300                 img4d{c}(:,:,z,folds_comp) = reshape(img3dav{c},dat_dim(1),dat_dim(2),1,1); <span class="comment">%afm</span>
+0301                 norm4dav{c}(z,:)           = sum(img3dav{c}(isfinite(img3dav{c})).^2); <span class="comment">%afm</span>
+0302             <span class="keyword">end</span>
+0303         <span class="keyword">end</span>
+0304         
+0305     <span class="keyword">end</span>
+0306     
+0307     <span class="keyword">for</span> c =1:nimage
+0308         norm4d{c}   = sqrt(sum(norm4d{c},1));
+0309         norm4dav{c} = sqrt(sum(norm4dav{c},1)); <span class="comment">%afm</span>
+0310     <span class="keyword">end</span>
+0311     
+0312     disp(<span class="string">'Normalising weights---------&gt;&gt;'</span>)
+0313     <span class="keyword">if</span> p==0
+0314         <span class="keyword">for</span> f = 1:nfold,
+0315             <span class="keyword">for</span> c = 1:nimage
+0316                 <span class="keyword">if</span> unique(norm4d{c}(1,f))~=0
+0317                     img4d{c}(:,:,:,f) = img4d{c}(:,:,:,f)./norm4d{c}(1,f);
+0318                 <span class="keyword">else</span>
+0319                     img4d{c}(:,:,:,f) = img4d{c}(:,:,:,f);
+0320                 <span class="keyword">end</span>
+0321             <span class="keyword">end</span>
+0322         <span class="keyword">end</span>
+0323     <span class="keyword">end</span>
+0324     
+0325     <span class="keyword">for</span> c = 1:nimage <span class="comment">%afm</span>
+0326         img4d{c}(:,:,:,folds_comp) = img4d{c}(:,:,:,folds_comp)./norm4dav{c}; <span class="comment">%afm</span>
+0327     <span class="keyword">end</span> <span class="comment">%afm</span>
+0328     
+0329     <span class="comment">% Create weigths file</span>
+0330     <span class="comment">%-------------------------------------------------------------------------</span>
+0331     clear No
+0332     <span class="keyword">for</span> c = 1:nimage
+0333         fprintf(<span class="string">'Creating image %d of %d---------&gt;&gt;\n'</span>,c,nimage);
+0334         No         = hdr;              <span class="comment">% copy header</span>
+0335         No.dat     = img4d{c};         <span class="comment">% change file_array</span>
+0336         No.descrip = <span class="string">'Pronto weigths'</span>; <span class="comment">% description</span>
+0337         create(No);                    <span class="comment">% write header</span>
+0338         disp(<span class="string">'Done.'</span>)
+0339     <span class="keyword">end</span>
+0340 <span class="keyword">end</span>
+0341</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

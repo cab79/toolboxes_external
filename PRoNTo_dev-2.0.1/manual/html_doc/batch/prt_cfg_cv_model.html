@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cfg_cv_model</title>
+  <meta name="keywords" content="prt_cfg_cv_model">
+  <meta name="description" content="Preprocessing of the data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_cfg_cv_model.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cfg_cv_model
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Preprocessing of the data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function cv_model = prt_cfg_cv_model </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Preprocessing of the data.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_run_cv_model.html" class="code" title="function out = prt_run_cv_model(varargin)">prt_run_cv_model</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_batch.html" class="code" title="function prt = prt_cfg_batch">prt_cfg_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cdep = vout_data(job)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function cv_model = prt_cfg_cv_model</a>
+0002 <span class="comment">% Preprocessing of the data.</span>
+0003 <span class="comment">%_______________________________________________________________________</span>
+0004 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0005 
+0006 <span class="comment">% Written by A. Marquand</span>
+0007 <span class="comment">% $Id$</span>
+0008 
+0009 <span class="comment">% ---------------------------------------------------------------------</span>
+0010 <span class="comment">% filename Filename(s) of data</span>
+0011 <span class="comment">% ---------------------------------------------------------------------</span>
+0012 infile        = cfg_files;
+0013 infile.tag    = <span class="string">'infile'</span>;
+0014 infile.name   = <span class="string">'Load PRT.mat'</span>;
+0015 infile.filter = <span class="string">'mat'</span>;
+0016 infile.num    = [1 1];
+0017 infile.help   = {<span class="string">'Select PRT.mat (file containing data/design structure).'</span>};
+0018 
+0019 <span class="comment">% ---------------------------------------------------------------------</span>
+0020 <span class="comment">% model_name Feature set name</span>
+0021 <span class="comment">% ---------------------------------------------------------------------</span>
+0022 model_name         = cfg_entry;
+0023 model_name.tag     = <span class="string">'model_name'</span>;
+0024 model_name.name    = <span class="string">'Model name'</span>;
+0025 model_name.help    = {<span class="string">'Name of a model. Must match your entry in the '</span><span class="keyword">...</span>
+0026                       <span class="string">'''Specify model'' batch module.'</span>};
+0027 model_name.strtype = <span class="string">'s'</span>;
+0028 model_name.num     = [1 Inf];
+0029 
+0030 <span class="comment">% ---------------------------------------------------------------------</span>
+0031 <span class="comment">% no_perm No permutation test</span>
+0032 <span class="comment">% ---------------------------------------------------------------------</span>
+0033 no_perm         = cfg_const;
+0034 no_perm.tag     = <span class="string">'no_perm'</span>;
+0035 no_perm.name    = <span class="string">'No permutation test'</span>;
+0036 no_perm.val     = {1};
+0037 no_perm.help    = {<span class="string">'Do not perform permutation test'</span>};
+0038 
+0039 <span class="comment">% ---------------------------------------------------------------------</span>
+0040 <span class="comment">% N_perm Number of permutations</span>
+0041 <span class="comment">% ---------------------------------------------------------------------</span>
+0042 N_perm         = cfg_entry;
+0043 N_perm.tag     = <span class="string">'N_perm'</span>;
+0044 N_perm.name    = <span class="string">'Number of permutations'</span>;
+0045 N_perm.help    = {<span class="string">'Enter the number of permutations to perform'</span>};
+0046 N_perm.strtype = <span class="string">'e'</span>;
+0047 N_perm.val     = {1000};
+0048 N_perm.num     = [1 1];
+0049 
+0050 <span class="comment">% ---------------------------------------------------------------------</span>
+0051 <span class="comment">% flag_sw Save the permutations' weights</span>
+0052 <span class="comment">% ---------------------------------------------------------------------</span>
+0053 flag_sw         = cfg_menu;
+0054 flag_sw.tag     = <span class="string">'flag_sw'</span>;
+0055 flag_sw.name    = <span class="string">'Save permutations parameters'</span>;
+0056 flag_sw.help    = {[<span class="string">'Set to Yes to save the parameterss obtained from each'</span> <span class="keyword">...</span>
+0057     <span class="string">'permutation.'</span>]};
+0058 flag_sw.labels  = {
+0059                <span class="string">'Yes'</span>
+0060                <span class="string">'No'</span>
+0061 }';
+0062 flag_sw.values  = {1 0};
+0063 flag_sw.val     = {0};
+0064 
+0065 <span class="comment">% ---------------------------------------------------------------------</span>
+0066 <span class="comment">% perm_t Do permuatation test</span>
+0067 <span class="comment">% ---------------------------------------------------------------------</span>
+0068 perm_t         = cfg_branch;
+0069 perm_t.tag     = <span class="string">'perm_t'</span>;
+0070 perm_t.name    = <span class="string">'Permutation test'</span>;
+0071 perm_t.val     = {N_perm, flag_sw};
+0072 perm_t.help    = {<span class="string">'Perform a permutation test.'</span>};
+0073 
+0074 <span class="comment">% ---------------------------------------------------------------------</span>
+0075 <span class="comment">% detrend Conditions</span>
+0076 <span class="comment">% ---------------------------------------------------------------------</span>
+0077 perm_test        = cfg_choice;
+0078 perm_test.tag    = <span class="string">'perm_test'</span>;
+0079 perm_test.name   = <span class="string">'Do permutation test?'</span>;
+0080 perm_test.values = {no_perm, perm_t};
+0081 perm_test.val    = {no_perm};
+0082 perm_test.help   = {<span class="string">'Perform a permutation test on accuracy, or not'</span>};
+0083 
+0084 <span class="comment">% ---------------------------------------------------------------------</span>
+0085 <span class="comment">% cv_model Preprocessing</span>
+0086 <span class="comment">% ---------------------------------------------------------------------</span>
+0087 cv_model        = cfg_exbranch;
+0088 cv_model.tag    = <span class="string">'cv_model'</span>;
+0089 cv_model.name   = <span class="string">'Run model'</span>;
+0090 cv_model.val    = {infile model_name perm_test};
+0091 cv_model.help   = {<span class="keyword">...</span>
+0092     [<span class="string">'Trains and tests the predictive machine using the cross-validation '</span>,<span class="keyword">...</span>
+0093      <span class="string">'structure specified by the model.'</span>]};
+0094 cv_model.prog   = @<a href="prt_run_cv_model.html" class="code" title="function out = prt_run_cv_model(varargin)">prt_run_cv_model</a>;
+0095 cv_model.vout   = @<a href="#_sub1" class="code" title="subfunction cdep = vout_data(job)">vout_data</a>;
+0096 
+0097 <span class="comment">%------------------------------------------------------------------------</span>
+0098 <span class="comment">%% Output function</span>
+0099 <span class="comment">%------------------------------------------------------------------------</span>
+0100 <a name="_sub1" href="#_subfunctions" class="code">function cdep = vout_data(job)</a>
+0101 <span class="comment">% Specifies the output from this modules, i.e. the filename of the mat file</span>
+0102 
+0103 cdep(1)            = cfg_dep;
+0104 cdep(1).sname      = <span class="string">'PRT.mat file'</span>;
+0105 cdep(1).src_output = substruct(<span class="string">'.'</span>,<span class="string">'files'</span>);
+0106 cdep(1).tgt_spec   = cfg_findspec({{<span class="string">'filter'</span>,<span class="string">'mat'</span>,<span class="string">'strtype'</span>,<span class="string">'e'</span>}});
+0107 <span class="comment">%------------------------------------------------------------------------</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

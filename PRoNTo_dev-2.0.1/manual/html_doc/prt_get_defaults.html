@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_get_defaults</title>
+  <meta name="keywords" content="prt_get_defaults">
+  <meta name="description" content="Get/set the defaults values associated with an identifier">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_get_defaults.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_get_defaults
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Get/set the defaults values associated with an identifier</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = prt_get_defaults(defstr, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Get/set the defaults values associated with an identifier
+
+ FORMAT defaults = prt_get_defaults
+ Return the global &quot;defaults&quot; variable defined in prt_defaults.m.
+
+ FORMAT defval = prt_get_defaults(defstr)
+ Return the defaults value associated with identifier &quot;defstr&quot;. 
+ Currently, this is a '.' subscript reference into the global  
+ &quot;prt_def&quot; variable defined in prt_defaults.m.
+
+ FORMAT prt_get_defaults(defstr, defval)
+ Sets the defaults value associated with identifier &quot;defstr&quot;. The new
+ defaults value applies immediately to:
+ * new modules in batch jobs
+ * modules in batch jobs that have not been saved yet
+ This value will not be saved for future sessions of PRoNTo. To make
+ persistent changes, edit prt_defaults.m.
+
+ The structure and content of this file are largely inspired by SPM &amp;
+ Matlabbatch.
+ http://www.fil.ion.ucl.ac.uk/spm
+ http://sourceforge.net/projects/matlabbatch/
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_defaults.html" class="code" title="function prt_defaults">prt_defaults</a>	Sets the defaults which are used by the Pattern Recognition for</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_check_design.html" class="code" title="function [conds] = prt_check_design(cond,tr,units,hrfoverlap,hrfdelay)">prt_check_design</a>	FORMAT [conds] = prt_check_design(cond,tr,units,hrfoverlap)</li><li><a href="prt_data_conditions.html" class="code" title="function varargout = prt_data_conditions(varargin)">prt_data_conditions</a>	PRT_DATA_CONDITIONS M-file for prt_data_conditions.fig</li><li><a href="prt_data_modality.html" class="code" title="function varargout = prt_data_modality(varargin)">prt_data_modality</a>	PRT_DATA_MODALITY M-file for prt_data_modality.fig</li><li><a href="prt_data_review.html" class="code" title="function varargout = prt_data_review(varargin)">prt_data_review</a>	PRT_DATA_REVIEW M-file for prt_data_review.fig</li><li><a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>	Function to build file arrays containing the (linearly detrended) data</li><li><a href="prt_permutation.html" class="code" title="function [] = prt_permutation(PRT, n_perm, modelid, path, flag)">prt_permutation</a>	Function to compute permutation test</li><li><a href="prt_text_input.html" class="code" title="function varargout = prt_text_input(varargin)">prt_text_input</a>	PRT_TEXT_INPUT M-file for prt_text_input.fig</li><li><a href="prt_ui_compute_weights.html" class="code" title="function varargout = prt_ui_compute_weights(varargin)">prt_ui_compute_weights</a>	PRT_UI_COMPUTE_WEIGHTS M-file for prt_ui_compute_weights.fig</li><li><a href="prt_ui_custom_CV.html" class="code" title="function varargout = prt_ui_custom_CV(varargin)">prt_ui_custom_CV</a>	PRT_UI_CUSTOM_CV M-file for prt_ui_custom_CV.fig</li><li><a href="prt_ui_cv_model.html" class="code" title="function varargout = prt_ui_cv_model(varargin)">prt_ui_cv_model</a>	PRT_UI_CV_MODEL M-file for prt_ui_cv_model.fig</li><li><a href="prt_ui_design.html" class="code" title="function varargout = prt_ui_design(varargin)">prt_ui_design</a>	PRT_UI_DESIGN M-file for prt_ui_design.fig</li><li><a href="prt_ui_disp_weights.html" class="code" title="function varargout = prt_ui_disp_weights(varargin)">prt_ui_disp_weights</a>	PRT_UI_DISP_WEIGHTS MATLAB code for prt_ui_disp_weights.fig</li><li><a href="prt_ui_main.html" class="code" title="function varargout = prt_ui_main(varargin)">prt_ui_main</a>	PRT_UI_MAIN M-file for prt_ui_main.fig</li><li><a href="prt_ui_model.html" class="code" title="function varargout = prt_ui_model(varargin)">prt_ui_model</a>	PRT_UI_KERNEL_CONSTRUCTION M-file for prt_ui_kernel_construction.fig</li><li><a href="prt_ui_prepare_data.html" class="code" title="function varargout = prt_ui_prepare_data(varargin)">prt_ui_prepare_data</a>	PRT_UI_KERNEL MATLAB code for prt_ui_kernel.fig</li><li><a href="prt_ui_prepare_datamod.html" class="code" title="function varargout = prt_ui_prepare_datamod(varargin)">prt_ui_prepare_datamod</a>	PRT_UI_KERNEL_MODALITY M-file for prt_ui_kernel_modality.fig</li><li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_ROI.html" class="code" title="function varargout = prt_ui_results_ROI(varargin)">prt_ui_results_ROI</a>	PRT_UI_RESULTS_ROI M-file for prt_ui_results_ROI.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li><li><a href="prt_ui_reviewCV.html" class="code" title="function varargout = prt_ui_reviewCV(varargin)">prt_ui_reviewCV</a>	PRT_UI_REVIEWCV M-file for prt_ui_reviewCV.fig</li><li><a href="prt_ui_reviewmodel.html" class="code" title="function varargout = prt_ui_reviewmodel(varargin)">prt_ui_reviewmodel</a>	PRT_UI_REVIEWMODEL M-file for prt_ui_reviewmodel.fig</li><li><a href="prt_ui_select_class.html" class="code" title="function varargout = prt_ui_select_class(varargin)">prt_ui_select_class</a>	PRT_UI_SELECT_CLASS M-file for prt_ui_select_class.fig</li><li><a href="prt_ui_select_reg.html" class="code" title="function varargout = prt_ui_select_reg(varargin)">prt_ui_select_reg</a>	PRT_UI_SELECT_REG M-file for prt_ui_select_reg.fig</li><li><a href="prt_ui_specify_CV_basis.html" class="code" title="function varargout = prt_ui_specify_CV_basis(varargin)">prt_ui_specify_CV_basis</a>	PRT_UI_SPECIFY_CV_BASIS M-file for prt_ui_specify_CV_basis.fig</li><li><a href="prt_ui_stats.html" class="code" title="function varargout = prt_ui_stats(varargin)">prt_ui_stats</a>	PRT_UI_STATS MATLAB code for prt_ui_stats.fig</li><li><a href="prt_ui_sure.html" class="code" title="function varargout = prt_ui_sure(varargin)">prt_ui_sure</a>	PRT_UI_SURE M-file for prt_ui_sure.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = prt_get_defaults(defstr, varargin)</a>
+0002 <span class="comment">% Get/set the defaults values associated with an identifier</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% FORMAT defaults = prt_get_defaults</span>
+0005 <span class="comment">% Return the global &quot;defaults&quot; variable defined in prt_defaults.m.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% FORMAT defval = prt_get_defaults(defstr)</span>
+0008 <span class="comment">% Return the defaults value associated with identifier &quot;defstr&quot;.</span>
+0009 <span class="comment">% Currently, this is a '.' subscript reference into the global</span>
+0010 <span class="comment">% &quot;prt_def&quot; variable defined in prt_defaults.m.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% FORMAT prt_get_defaults(defstr, defval)</span>
+0013 <span class="comment">% Sets the defaults value associated with identifier &quot;defstr&quot;. The new</span>
+0014 <span class="comment">% defaults value applies immediately to:</span>
+0015 <span class="comment">% * new modules in batch jobs</span>
+0016 <span class="comment">% * modules in batch jobs that have not been saved yet</span>
+0017 <span class="comment">% This value will not be saved for future sessions of PRoNTo. To make</span>
+0018 <span class="comment">% persistent changes, edit prt_defaults.m.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% The structure and content of this file are largely inspired by SPM &amp;</span>
+0021 <span class="comment">% Matlabbatch.</span>
+0022 <span class="comment">% http://www.fil.ion.ucl.ac.uk/spm</span>
+0023 <span class="comment">% http://sourceforge.net/projects/matlabbatch/</span>
+0024 <span class="comment">%__________________________________________________________________________</span>
+0025 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0026 
+0027 <span class="comment">% Originally written by Volkmar Glauche</span>
+0028 <span class="comment">% Then modified for use with the PRoNTo toolbox by Christophe Phillips</span>
+0029 <span class="comment">% $Id$</span>
+0030 
+0031 <span class="keyword">global</span> prt_def;
+0032 <span class="keyword">if</span> isempty(prt_def)
+0033     <a href="prt_defaults.html" class="code" title="function prt_defaults">prt_defaults</a>;
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="keyword">if</span> nargin == 0
+0037     varargout{1} = prt_def;
+0038     <span class="keyword">return</span>
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% construct subscript reference struct from dot delimited tag string</span>
+0042 tags = textscan(defstr,<span class="string">'%s'</span>, <span class="string">'delimiter'</span>,<span class="string">'.'</span>);
+0043 subs = struct(<span class="string">'type'</span>,<span class="string">'.'</span>,<span class="string">'subs'</span>,tags{1}');
+0044 
+0045 <span class="keyword">if</span> nargin == 1
+0046     varargout{1} = subsref(prt_def, subs);
+0047 <span class="keyword">else</span>
+0048     prt_def = subsasgn(prt_def, subs, varargin{1});
+0049 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

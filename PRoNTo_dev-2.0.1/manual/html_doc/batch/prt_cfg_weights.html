@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cfg_weights</title>
+  <meta name="keywords" content="prt_cfg_weights">
+  <meta name="description" content="Preprocessing of the data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_cfg_weights.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cfg_weights
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Preprocessing of the data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function weights = prt_cfg_weights </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Preprocessing of the data.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_run_weights.html" class="code" title="function out = prt_run_weights(varargin)">prt_run_weights</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_batch.html" class="code" title="function prt = prt_cfg_batch">prt_cfg_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cdep = vout_data(job)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function weights = prt_cfg_weights</a>
+0002 <span class="comment">% Preprocessing of the data.</span>
+0003 <span class="comment">%_______________________________________________________________________</span>
+0004 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0005 
+0006 <span class="comment">% Written by M.J.Rosa</span>
+0007 <span class="comment">% $Id$</span>
+0008 
+0009 <span class="comment">% ---------------------------------------------------------------------</span>
+0010 <span class="comment">% filename Filename(s) of data</span>
+0011 <span class="comment">% ---------------------------------------------------------------------</span>
+0012 infile        = cfg_files;
+0013 infile.tag    = <span class="string">'infile'</span>;
+0014 infile.name   = <span class="string">'Load PRT.mat'</span>;
+0015 infile.filter = <span class="string">'mat'</span>;
+0016 infile.num    = [1 1];
+0017 infile.help   = {[<span class="string">'Select PRT.mat (file containing data/design/models '</span>,<span class="keyword">...</span>
+0018                  <span class="string">'structure).'</span>]};
+0019 
+0020 <span class="comment">% ---------------------------------------------------------------------</span>
+0021 <span class="comment">% model_name Feature set name</span>
+0022 <span class="comment">% ---------------------------------------------------------------------</span>
+0023 model_name         = cfg_entry;
+0024 model_name.tag     = <span class="string">'model_name'</span>;
+0025 model_name.name    = <span class="string">'Model name'</span>;
+0026 model_name.help    = {<span class="string">'Name of a model. Must correspond with one '</span> <span class="keyword">...</span>
+0027                       <span class="string">'specified in ''Run model'' and ''Specify model'''</span><span class="keyword">...</span>
+0028                       <span class="string">'batch modules.'</span> };
+0029 model_name.strtype = <span class="string">'s'</span>;
+0030 model_name.num     = [1 Inf];
+0031 
+0032 <span class="comment">% ---------------------------------------------------------------------</span>
+0033 <span class="comment">% img_name Feature set name</span>
+0034 <span class="comment">% ---------------------------------------------------------------------</span>
+0035 img_name         = cfg_entry;
+0036 img_name.tag     = <span class="string">'img_name'</span>;
+0037 img_name.name    = <span class="string">'Image name (optional)'</span>;
+0038 img_name.help    = {[<span class="string">'Name of the file with weights (optional). If left empty '</span>,<span class="keyword">...</span>
+0039                     <span class="string">' an automatic name will be generated.'</span>]};
+0040 img_name.strtype = <span class="string">'s'</span>;
+0041 img_name.num     = [0 Inf];
+0042 img_name.val     = {<span class="string">''</span>};
+0043 
+0044 <span class="comment">% ---------------------------------------------------------------------</span>
+0045 <span class="comment">% flag_cwi Build the weight images for each permutation (optional)</span>
+0046 <span class="comment">% ---------------------------------------------------------------------</span>
+0047 flag_cwi         = cfg_menu;
+0048 flag_cwi.tag     = <span class="string">'flag_cwi'</span>;
+0049 flag_cwi.name    = <span class="string">'Build weight images for permutations'</span>;
+0050 flag_cwi.help    = {[<span class="string">'Set to Yes to compute the weight images obtained '</span> <span class="keyword">...</span>
+0051     <span class="string">'from each permutation. This is to further assess the significance '</span> <span class="keyword">...</span>
+0052     <span class="string">'of the ranking distance between two models.'</span>]};
+0053 flag_cwi.labels  = {
+0054                <span class="string">'Yes'</span>
+0055                <span class="string">'No'</span>
+0056 }';
+0057 flag_cwi.values  = {1 0};
+0058 flag_cwi.val     = {0};
+0059 
+0060 <span class="comment">% ---------------------------------------------------------------------</span>
+0061 <span class="comment">% atl_name Filename for the atlas to compute the weights per ROI</span>
+0062 <span class="comment">% ---------------------------------------------------------------------</span>
+0063 atl_name         = cfg_files;
+0064 atl_name.tag     = <span class="string">'atl_name'</span>;
+0065 atl_name.name    = <span class="string">'Load Atlas'</span>;
+0066 atl_name.ufilter = <span class="string">'.*'</span>;
+0067 atl_name.filter  = <span class="string">'image'</span>;
+0068 atl_name.num     = [0 1];
+0069 atl_name.val     = {{<span class="string">''</span>}};
+0070 atl_name.def     = @(val)prt_get_defaults(<span class="string">'fs.atlasroi'</span>, val{:});
+0071 atl_name.help    = {<span class="string">'Select atlas file to build weights per ROI.'</span>};
+0072 
+0073 <span class="comment">% ---------------------------------------------------------------------</span>
+0074 <span class="comment">% no_atl No weight per ROI</span>
+0075 <span class="comment">% ---------------------------------------------------------------------</span>
+0076 no_atl         = cfg_const;
+0077 no_atl.tag     = <span class="string">'no_atl'</span>;
+0078 no_atl.name    = <span class="string">'No weight per ROI'</span>;
+0079 no_atl.val     = {0};
+0080 no_atl.help    = {<span class="string">'Not computing weight per ROI.'</span>};
+0081 
+0082 <span class="comment">% ---------------------------------------------------------------------</span>
+0083 <span class="comment">% build_wpr Build the weight images per ROI</span>
+0084 <span class="comment">% ---------------------------------------------------------------------</span>
+0085 build_wpr         = cfg_choice;
+0086 build_wpr.tag     = <span class="string">'build_wpr'</span>;
+0087 build_wpr.name    = <span class="string">'Build weight images per ROI'</span>;
+0088 build_wpr.help    = {[<span class="string">'Set to Yes to compute the weight images per ROI '</span> <span class="keyword">...</span>
+0089     <span class="string">'You need then to select the atlas image.'</span>]};
+0090 <span class="comment">% build_wpr.labels  = {</span>
+0091 <span class="comment">%                'Yes'</span>
+0092 <span class="comment">%                'No'</span>
+0093 <span class="comment">% }';</span>
+0094 build_wpr.values  = {no_atl atl_name};
+0095 build_wpr.val     = {no_atl};
+0096 
+0097 <span class="comment">% ---------------------------------------------------------------------</span>
+0098 <span class="comment">% flag_wroi Build the weight images for each ROI (optional)</span>
+0099 <span class="comment">% ---------------------------------------------------------------------</span>
+0100 flag_wroi         = cfg_menu;
+0101 flag_wroi.tag     = <span class="string">'flag_cwi'</span>;
+0102 flag_wroi.name    = <span class="string">'Build weight images per ROI'</span>;
+0103 flag_wroi.help    = {[<span class="string">'Set to Yes to compute the weight images obtained '</span> <span class="keyword">...</span>
+0104     <span class="string">'from each ROI.'</span>]};
+0105 flag_wroi.labels  = {
+0106                <span class="string">'Yes'</span>
+0107                <span class="string">'No'</span>
+0108 }';
+0109 flag_wroi.values  = {1 0};
+0110 flag_wroi.val     = {0};
+0111 
+0112 <span class="comment">% ---------------------------------------------------------------------</span>
+0113 <span class="comment">% cv_model Preprocessing</span>
+0114 <span class="comment">% ---------------------------------------------------------------------</span>
+0115 weights        = cfg_exbranch;
+0116 weights.tag    = <span class="string">'weights'</span>;
+0117 weights.name   = <span class="string">'Compute weights'</span>;
+0118 weights.val    = {infile model_name img_name build_wpr flag_cwi};
+0119 weights.help   = {[
+0120     <span class="string">'Compute weights. This module computes the linear weights of a classifier '</span>,<span class="keyword">...</span>
+0121     <span class="string">'and saves them as a 4D image. 3 dimensions correspond to the image dimensions specified in '</span>,<span class="keyword">...</span>
+0122     <span class="string">'the second-level mask, while the extra dimension corresponds to the number of folds. '</span>,<span class="keyword">...</span>
+0123     <span class="string">'There is one 3D weights image per fold.'</span>]};
+0124 weights.prog   = @<a href="prt_run_weights.html" class="code" title="function out = prt_run_weights(varargin)">prt_run_weights</a>;
+0125 weights.vout   = @<a href="#_sub1" class="code" title="subfunction cdep = vout_data(job)">vout_data</a>;
+0126 
+0127 <span class="comment">%------------------------------------------------------------------------</span>
+0128 <span class="comment">%% Output function</span>
+0129 <span class="comment">%------------------------------------------------------------------------</span>
+0130 <a name="_sub1" href="#_subfunctions" class="code">function cdep = vout_data(job)</a>
+0131 <span class="comment">% Specifies the output from this modules, i.e. the filename of the mat file</span>
+0132 
+0133 cdep(1)            = cfg_dep;
+0134 cdep(1).sname      = <span class="string">'PRT.mat file'</span>;
+0135 cdep(1).src_output = substruct(<span class="string">'.'</span>,<span class="string">'files'</span>);
+0136 cdep(1).tgt_spec   = cfg_findspec({{<span class="string">'filter'</span>,<span class="string">'mat'</span>,<span class="string">'strtype'</span>,<span class="string">'e'</span>}});
+0137 cdep(2)            = cfg_dep;
+0138 cdep(2).sname      = <span class="string">'Weight image file'</span>;
+0139 cdep(2).src_output = substruct(<span class="string">'.'</span>,<span class="string">'files'</span>);
+0140 cdep(2).tgt_spec   = cfg_findspec({{<span class="string">'filter'</span>,<span class="string">'img'</span>,<span class="string">'strtype'</span>,<span class="string">'e'</span>}});
+0141 <span class="comment">%------------------------------------------------------------------------</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

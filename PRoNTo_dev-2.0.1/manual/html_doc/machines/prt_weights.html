@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_weights</title>
+  <meta name="keywords" content="prt_weights">
+  <meta name="description" content="Run function to compute weights">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_weights.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_weights
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run function to compute weights</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function weights = prt_weights(d,m) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run function to compute weights
+ FORMAT weights = prt_weights(d,m)
+ Inputs:
+       d   - data structure
+             (fields of .d can vary depending on weights function)
+       m   - machine structure
+           .function - function to compute weights (string)
+           .args     - function arguments
+ Output:
+       weights - weights vector [Nfeatures x 1]
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function weights = prt_weights(d,m)</a>
+0002 <span class="comment">% Run function to compute weights</span>
+0003 <span class="comment">% FORMAT weights = prt_weights(d,m)</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%       d   - data structure</span>
+0006 <span class="comment">%             (fields of .d can vary depending on weights function)</span>
+0007 <span class="comment">%       m   - machine structure</span>
+0008 <span class="comment">%           .function - function to compute weights (string)</span>
+0009 <span class="comment">%           .args     - function arguments</span>
+0010 <span class="comment">% Output:</span>
+0011 <span class="comment">%       weights - weights vector [Nfeatures x 1]</span>
+0012 <span class="comment">%__________________________________________________________________________</span>
+0013 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0014 
+0015 <span class="comment">% Written by M.J.Rosa and J.Mourao-Miranda</span>
+0016 <span class="comment">% $Id$</span>
+0017 
+0018 SANITYCHECK = true; <span class="comment">% turn off for speed</span>
+0019 
+0020 <span class="comment">% initial checks</span>
+0021 <span class="comment">%--------------------------------------------------------------------------</span>
+0022 <span class="keyword">if</span> SANITYCHECK == true
+0023     <span class="keyword">if</span> ~isempty(m)
+0024         <span class="keyword">if</span> isstruct(m)
+0025             <span class="keyword">if</span> isfield(m,<span class="string">'function'</span>)
+0026                 <span class="keyword">if</span> ~ischar(m.function)
+0027                     error(<span class="string">'prt_weights:functionNotString'</span>,<span class="keyword">...</span>
+0028                         <span class="string">'Error: ''function'' should be a string!'</span>);
+0029                 <span class="keyword">end</span>
+0030                 <span class="keyword">if</span> ~exist(m.function,<span class="string">'file'</span>)
+0031                     error(<span class="string">'prt_weights:functionFileNotFound'</span>,<span class="keyword">...</span>
+0032                         <span class="string">'Error: %s function could not be found!'</span>,<span class="keyword">...</span>
+0033                         m.function);
+0034                 <span class="keyword">end</span>
+0035             <span class="keyword">else</span>
+0036                 error(<span class="string">'prt_weights:functionNotField'</span>,<span class="keyword">...</span>
+0037                     <span class="string">'Error: ''function'' should be a field of machine!'</span>);
+0038             <span class="keyword">end</span>
+0039             <span class="keyword">if</span> ~isfield(m,<span class="string">'args'</span>)
+0040                 m.args = [];
+0041             <span class="keyword">end</span>
+0042         <span class="keyword">else</span>
+0043             error(<span class="string">'prt_weights:machineNotStruct'</span>,<span class="keyword">...</span>
+0044                 <span class="string">'Error: machine should be a structure!'</span>);
+0045         <span class="keyword">end</span>
+0046     <span class="keyword">else</span>
+0047         error(<span class="string">'prt_weights:machineEmpty'</span>,<span class="keyword">...</span>
+0048             <span class="string">'Error: ''machine'' cannot be empty!'</span>);
+0049     <span class="keyword">end</span>
+0050     <span class="keyword">if</span> ~isempty(d)
+0051         <span class="keyword">if</span> ~isstruct(d)
+0052             error(<span class="string">'prt_weights:dataNotStruct'</span>,<span class="keyword">...</span>
+0053                 <span class="string">'Error: data should be a structure!'</span>);
+0054         <span class="keyword">end</span>
+0055     <span class="keyword">else</span>
+0056         error(<span class="string">'prt_weights:dataStructEmpty'</span>,<span class="keyword">...</span>
+0057             <span class="string">'Error: ''data'' struct cannot be empty!'</span>);
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">end</span>
+0060 
+0061 <span class="comment">% run weights</span>
+0062 <span class="comment">%--------------------------------------------------------------------------</span>
+0063 fnch    = str2func(m.function);
+0064 weights = fnch(d,m.args);
+0065 
+0066 <span class="comment">% final checks</span>
+0067 <span class="comment">%--------------------------------------------------------------------------</span>
+0068 <span class="keyword">if</span> SANITYCHECK == true
+0069     <span class="keyword">if</span> ~iscell(weights)
+0070         error(<span class="string">'prt_weights:weightsNotVector'</span>,<span class="keyword">...</span>
+0071             <span class="string">'Error: weights should be a cell!'</span>);
+0072     <span class="keyword">else</span>
+0073         <span class="keyword">if</span> ~isvector(weights{1})
+0074             error(<span class="string">'prt_weights:weightsNotVector'</span>,<span class="keyword">...</span>
+0075                 <span class="string">'Error: weights cell should contain vectors!'</span>);
+0076         <span class="keyword">end</span>
+0077     <span class="keyword">end</span>
+0078 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

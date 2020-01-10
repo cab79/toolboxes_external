@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cv_fold</title>
+  <meta name="keywords" content="prt_cv_fold">
+  <meta name="description" content="Function to run a single cross-validation fold">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_cv_fold.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cv_fold
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to run a single cross-validation fold</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [model, targets] = prt_cv_fold(PRT, in) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to run a single cross-validation fold 
+
+ Inputs:
+ -------
+ PRT:           data structure
+ in.mid:        index to the model we are working on
+ in.ID:         ID matrix
+ in.CV:         Cross-validation matrix (current fold only)
+ in.Phi_all:    Cell array of data matri(ces) (training and test)
+ in.t           prediction targets
+
+ Outputs:
+ --------
+ model:         the model returned by the machine
+ targets.train: training targets
+ targets.test:  test targets
+
+ Notes: 
+ ------
+ The training and test targets output byt this function are not
+ necessarily equivalent to the targets that are supplied to the function.
+ e.g. some data operations can modify the number of samples (e.g. sample
+ averaging). In such cases size(targets.train) ~= size(in.t)
+
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_apply_operation.html" class="code" title="function out = prt_apply_operation(PRT, in, opid)">prt_apply_operation</a>	function to apply a data operation to the training, test and</li><li><a href="prt_cv_opt_param.html" class="code" title="function param = prt_cv_opt_param(PRT,ID,model_id)">prt_cv_opt_param</a>	Function to pass optional (advanced) parameters into the classifier.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cv_model.html" class="code" title="function [outfile]=prt_cv_model(PRT,in)">prt_cv_model</a>	Function to run a cross-validation structure on a given model</li><li><a href="prt_nested_cv.html" class="code" title="function [out] = prt_nested_cv(PRT, in)">prt_nested_cv</a>	Function to perform the nested CV</li><li><a href="prt_permutation.html" class="code" title="function [] = prt_permutation(PRT, n_perm, modelid, path, flag)">prt_permutation</a>	Function to compute permutation test</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [Phi_tr Phi_te Phi_tt] = split_data(Phi_all, tr_idx, te_idx, usebf)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model, targets] = prt_cv_fold(PRT, in)</a>
+0002 <span class="comment">% Function to run a single cross-validation fold</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">% -------</span>
+0006 <span class="comment">% PRT:           data structure</span>
+0007 <span class="comment">% in.mid:        index to the model we are working on</span>
+0008 <span class="comment">% in.ID:         ID matrix</span>
+0009 <span class="comment">% in.CV:         Cross-validation matrix (current fold only)</span>
+0010 <span class="comment">% in.Phi_all:    Cell array of data matri(ces) (training and test)</span>
+0011 <span class="comment">% in.t           prediction targets</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">% --------</span>
+0015 <span class="comment">% model:         the model returned by the machine</span>
+0016 <span class="comment">% targets.train: training targets</span>
+0017 <span class="comment">% targets.test:  test targets</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Notes:</span>
+0020 <span class="comment">% ------</span>
+0021 <span class="comment">% The training and test targets output byt this function are not</span>
+0022 <span class="comment">% necessarily equivalent to the targets that are supplied to the function.</span>
+0023 <span class="comment">% e.g. some data operations can modify the number of samples (e.g. sample</span>
+0024 <span class="comment">% averaging). In such cases size(targets.train) ~= size(in.t)</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%__________________________________________________________________________</span>
+0027 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0028 
+0029 <span class="comment">% Written by A Marquand</span>
+0030 <span class="comment">% $Id$</span>
+0031 
+0032 tr_idx = in.CV == 1;
+0033 te_idx = in.CV == 2;
+0034 
+0035 [Phi_tr, Phi_te, Phi_tt] = <span class="keyword">...</span>
+0036     <a href="#_sub1" class="code" title="subfunction [Phi_tr Phi_te Phi_tt] = split_data(Phi_all, tr_idx, te_idx, usebf)">split_data</a>(in.Phi_all, tr_idx, te_idx, PRT.model(in.mid).input.use_kernel);
+0037 
+0038 <span class="comment">% Assemble data structure to supply to machine</span>
+0039 cvdata.train      = Phi_tr;
+0040 cvdata.test       = Phi_te;
+0041 <span class="keyword">if</span> PRT.model(in.mid).input.use_kernel
+0042     cvdata.testcov    = Phi_tt;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">% configure basic CV parameters</span>
+0046 cvdata.tr_targets = in.t(tr_idx,:);
+0047 cvdata.te_targets = in.t(te_idx,:);
+0048 cvdata.tr_id      = in.ID(tr_idx,:);
+0049 cvdata.te_id      = in.ID(te_idx,:);
+0050 cvdata.use_kernel = PRT.model(in.mid).input.use_kernel;
+0051 cvdata.pred_type  = PRT.model(in.mid).input.type;
+0052 
+0053 <span class="comment">% configure additional CV parameters (e.g. needed to compute a GLM)</span>
+0054 cvdata.tr_param = <a href="prt_cv_opt_param.html" class="code" title="function param = prt_cv_opt_param(PRT,ID,model_id)">prt_cv_opt_param</a>(PRT, in.ID(tr_idx,:), in.mid);
+0055 cvdata.te_param = <a href="prt_cv_opt_param.html" class="code" title="function param = prt_cv_opt_param(PRT,ID,model_id)">prt_cv_opt_param</a>(PRT, in.ID(te_idx,:), in.mid);
+0056 
+0057 <span class="comment">% Apply any operations specified</span>
+0058 ops = PRT.model(in.mid).input.operations(PRT.model(in.mid).input.operations ~=0 );
+0059 <span class="keyword">for</span> o = 1:length(ops)
+0060     <span class="keyword">if</span> any(ismember(ops,5))
+0061         cvdata.tr_cov = in.cov(tr_idx,:);
+0062         cvdata.te_cov = in.cov(te_idx,:);
+0063     <span class="keyword">end</span>
+0064     cvdata = <a href="prt_apply_operation.html" class="code" title="function out = prt_apply_operation(PRT, in, opid)">prt_apply_operation</a>(PRT, cvdata, ops(o));
+0065 <span class="keyword">end</span>
+0066 
+0067 <span class="comment">% train the prediction model</span>
+0068 <span class="keyword">try</span>
+0069     model = prt_machine(cvdata, PRT.model(in.mid).input.machine);
+0070 <span class="keyword">catch</span> err
+0071     warning(<span class="string">'prt_cv_fold:modelDidNotReturn'</span>,<span class="keyword">...</span>
+0072         <span class="string">'Prediction method did not return [%s]'</span>,err.message);
+0073     model.predictions = zeros(size(cvdata.te_targets));
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="comment">% check that it produced a predictions field</span>
+0077 <span class="keyword">if</span> ~any(strcmpi(fieldnames(model),<span class="string">'predictions'</span>))
+0078     error([<span class="string">'prt_cv_model:machineDoesNotGivePredictions'</span>,<span class="keyword">...</span>
+0079         <span class="string">'Machine did not produce a predictions field'</span>]);
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">% does the model alter the target vector (e.g. change its dimension) ?</span>
+0083 <span class="keyword">if</span> isfield(model,<span class="string">'te_targets'</span>)
+0084     targets.test = model.te_targets(:);
+0085 <span class="keyword">else</span>
+0086     targets.test = cvdata.te_targets(:);
+0087 <span class="keyword">end</span>
+0088 <span class="keyword">if</span> isfield(model,<span class="string">'tr_targets'</span>)
+0089     targets.train = model.tr_targets(:);
+0090 <span class="keyword">else</span>
+0091     targets.train= cvdata.tr_targets(:);
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">% -------------------------------------------------------------------------</span>
+0097 <span class="comment">% Private functions</span>
+0098 <span class="comment">% -------------------------------------------------------------------------</span>
+0099         
+0100 <a name="_sub1" href="#_subfunctions" class="code">function [Phi_tr Phi_te Phi_tt] = split_data(Phi_all, tr_idx, te_idx, usebf)</a>
+0101 <span class="comment">% function to split the data matrix into training and test</span>
+0102 
+0103 n_mat = length(Phi_all);
+0104 
+0105 <span class="comment">% training</span>
+0106 Phi_tr = cell(1,n_mat);
+0107 <span class="keyword">for</span> i = 1:n_mat;
+0108     <span class="keyword">if</span> usebf
+0109         cols_tr = tr_idx;
+0110     <span class="keyword">else</span>
+0111         cols_tr = size(Phi_all{i},2);
+0112     <span class="keyword">end</span>
+0113     
+0114     Phi_tr{i} = Phi_all{i}(tr_idx,cols_tr);
+0115 
+0116 <span class="keyword">end</span>
+0117 
+0118 <span class="comment">% test</span>
+0119 Phi_te  = cell(1,n_mat);
+0120 Phi_tt = cell(1,n_mat);
+0121 <span class="keyword">if</span> usebf
+0122     cols_tr = tr_idx;
+0123     cols_te = te_idx;
+0124 <span class="keyword">else</span>
+0125     cols_tr = size(Phi_all{i},2);
+0126     <span class="comment">%cols_te = size(Phi_all{i},2);</span>
+0127 <span class="keyword">end</span>
+0128 
+0129 <span class="keyword">for</span> i = 1:length(Phi_all)
+0130     Phi_te{i} = Phi_all{i}(te_idx, cols_tr);
+0131     <span class="keyword">if</span> usebf
+0132         Phi_tt{i} = Phi_all{i}(te_idx, cols_te);
+0133     <span class="keyword">else</span>
+0134         Phi_tt{i} = [];
+0135     <span class="keyword">end</span>
+0136 <span class="keyword">end</span>
+0137 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

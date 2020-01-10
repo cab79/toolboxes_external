@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_machine_sMKL_cla</title>
+  <meta name="keywords" content="prt_machine_sMKL_cla">
+  <meta name="description" content="Run L1-norm MKL - wrapper for simpleMKL">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_machine_sMKL_cla.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_machine_sMKL_cla
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run L1-norm MKL - wrapper for simpleMKL</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function output = prt_machine_sMKL_cla(d,args) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run L1-norm MKL - wrapper for simpleMKL
+ FORMAT output = prt_machine_sMKL_cla(d,args)
+ Inputs:
+   d         - structure with data information, with mandatory fields:
+     .train      - training data (cell array of matrices of row vectors,
+                   each [Ntr x D]). each matrix contains one representation
+                   of the data. This is useful for approaches such as
+                   multiple kernel learning.
+     .test       - testing data  (cell array of matrices row vectors, each
+                   [Nte x D])
+     .tr_targets - training labels (for classification) or values (for
+                   regression) (column vector, [Ntr x 1])
+     .use_kernel - flag, is data in form of kernel matrices (true) of in 
+                form of features (false)
+    args     - simpleMKL arguments
+ Output:
+    output  - output of machine (struct).
+     * Mandatory fields:
+      .predictions - predictions of classification or regression [Nte x D]
+     * Optional fields:
+      .func_val - value of the decision function
+      .type     - which type of machine this is (here, 'classifier')
+      .
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = prt_machine_sMKL_cla(d,args)</a>
+0002 <span class="comment">% Run L1-norm MKL - wrapper for simpleMKL</span>
+0003 <span class="comment">% FORMAT output = prt_machine_sMKL_cla(d,args)</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%   d         - structure with data information, with mandatory fields:</span>
+0006 <span class="comment">%     .train      - training data (cell array of matrices of row vectors,</span>
+0007 <span class="comment">%                   each [Ntr x D]). each matrix contains one representation</span>
+0008 <span class="comment">%                   of the data. This is useful for approaches such as</span>
+0009 <span class="comment">%                   multiple kernel learning.</span>
+0010 <span class="comment">%     .test       - testing data  (cell array of matrices row vectors, each</span>
+0011 <span class="comment">%                   [Nte x D])</span>
+0012 <span class="comment">%     .tr_targets - training labels (for classification) or values (for</span>
+0013 <span class="comment">%                   regression) (column vector, [Ntr x 1])</span>
+0014 <span class="comment">%     .use_kernel - flag, is data in form of kernel matrices (true) of in</span>
+0015 <span class="comment">%                form of features (false)</span>
+0016 <span class="comment">%    args     - simpleMKL arguments</span>
+0017 <span class="comment">% Output:</span>
+0018 <span class="comment">%    output  - output of machine (struct).</span>
+0019 <span class="comment">%     * Mandatory fields:</span>
+0020 <span class="comment">%      .predictions - predictions of classification or regression [Nte x D]</span>
+0021 <span class="comment">%     * Optional fields:</span>
+0022 <span class="comment">%      .func_val - value of the decision function</span>
+0023 <span class="comment">%      .type     - which type of machine this is (here, 'classifier')</span>
+0024 <span class="comment">%      .</span>
+0025 <span class="comment">%__________________________________________________________________________</span>
+0026 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0027 
+0028 <span class="comment">% Written by J. Mourao-Miranda</span>
+0029 
+0030 def = prt_get_defaults;
+0031 
+0032 <span class="comment">%------------------------------------------------------</span>
+0033 <span class="comment">% configure simpleMKL options</span>
+0034 <span class="comment">%------------------------------------------------------</span>
+0035 verbose=0;
+0036 options.algo=<span class="string">'svmclass'</span>; <span class="comment">% Choice of algorithm in mklsvm can be either</span>
+0037 <span class="comment">% 'svmclass' or 'svmreg'</span>
+0038 
+0039 <span class="comment">%------------------------------------------------------</span>
+0040 <span class="comment">% choosing the stopping criterion</span>
+0041 <span class="comment">%------------------------------------------------------</span>
+0042 options.stopvariation=0; <span class="comment">% use variation of weights for stopping criterion</span>
+0043 options.stopKKT=0;       <span class="comment">% set to 1 if you use KKTcondition for stopping criterion</span>
+0044 options.stopdualitygap=1; <span class="comment">% set to 1 for using duality gap for stopping criterion</span>
+0045 
+0046 <span class="comment">%------------------------------------------------------</span>
+0047 <span class="comment">% choosing the stopping criterion value</span>
+0048 <span class="comment">%------------------------------------------------------</span>
+0049 options.seuildiffsigma=1e-2;        <span class="comment">% stopping criterion for weight variation</span>
+0050 options.seuildiffconstraint=0.1;    <span class="comment">% stopping criterion for KKT</span>
+0051 options.seuildualitygap=0.01;       <span class="comment">% stopping criterion for duality gap</span>
+0052 
+0053 <span class="comment">%------------------------------------------------------</span>
+0054 <span class="comment">% Setting some numerical parameters</span>
+0055 <span class="comment">%------------------------------------------------------</span>
+0056 options.goldensearch_deltmax=1e-1; <span class="comment">% initial precision of golden section search</span>
+0057 options.numericalprecision=1e-8;   <span class="comment">% numerical precision weights below this value</span>
+0058 <span class="comment">% are set to zero</span>
+0059 options.lambdareg = 1e-8;          <span class="comment">% ridge added to kernel matrix</span>
+0060 
+0061 <span class="comment">%------------------------------------------------------</span>
+0062 <span class="comment">% some algorithms paramaters</span>
+0063 <span class="comment">%------------------------------------------------------</span>
+0064 options.firstbasevariable=<span class="string">'first'</span>; <span class="comment">% tie breaking method for choosing the base</span>
+0065 <span class="comment">% variable in the reduced gradient method</span>
+0066 options.nbitermax=def.model.l1MKLmaxitr;  <span class="comment">% maximal number of iteration</span>
+0067 options.seuil=0;                   <span class="comment">% forcing to zero weights lower than this</span>
+0068 options.seuilitermax=10;           <span class="comment">% value, for iterations lower than this one</span>
+0069 
+0070 options.miniter=0;                 <span class="comment">% minimal number of iterations</span>
+0071 options.verbosesvm=0;              <span class="comment">% verbosity of inner svm algorithm</span>
+0072 options.efficientkernel=0;         <span class="comment">% use efficient storage of kernels</span>
+0073 
+0074 <span class="comment">%------------------------------------------------------</span>
+0075 <span class="comment">% Sanity check</span>
+0076 <span class="comment">%------------------------------------------------------</span>
+0077 SANITYCHECK=true; <span class="comment">% can turn off for &quot;speed&quot;. Expert only.</span>
+0078 
+0079 <span class="keyword">if</span> SANITYCHECK==true
+0080     <span class="comment">% args should be a string (empty or otherwise)</span>
+0081     <span class="keyword">if</span> ~isnumeric(args)
+0082         error(<span class="string">'prt_machine_sMKL_cla:MKLargsNotNumber'</span>,[<span class="string">'Error: L1_MKL'</span><span class="keyword">...</span>
+0083             <span class="string">' args should be a number. '</span> <span class="keyword">...</span>
+0084             <span class="string">' SOLUTION: Please change range'</span>]);
+0085     <span class="keyword">end</span>
+0086     
+0087     <span class="comment">% check it is indeed a two-class classification problem</span>
+0088     uTL=unique(d.tr_targets(:));
+0089     nC=numel(uTL);
+0090     <span class="keyword">if</span> nC&gt;2
+0091         error(<span class="string">'prt_machine_sMKL_cla:problemNotBinary'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0092             <span class="string">' This machine is only for two-class problems but the'</span> <span class="keyword">...</span>
+0093             <span class="string">' current problem has '</span> num2str(nC) <span class="string">' ! '</span> <span class="keyword">...</span>
+0094             <span class="string">'SOLUTION: Please select another machine than '</span> <span class="keyword">...</span>
+0095             <span class="string">'prt_machine_sMKL_cla'</span>]);
+0096     <span class="keyword">end</span>
+0097     <span class="comment">% check it is indeed labelled correctly (probably should be done</span>
+0098     <span class="keyword">if</span> ~all(uTL==[1 2]')
+0099         error(<span class="string">'prt_machine_sMKL_cla:LabellingIncorect'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0100             <span class="string">' This machine needs labels to be in {1,2} '</span> <span class="keyword">...</span>
+0101             <span class="string">' but they are '</span> mat2str(uTL) <span class="string">' ! '</span> <span class="keyword">...</span>
+0102             <span class="string">'SOLUTION: Please relabel your classes by changing the '</span><span class="keyword">...</span>
+0103             <span class="string">' ''tr_targets'' argument to prt_machine_sMKL_cla'</span>]);
+0104     <span class="keyword">end</span>
+0105 <span class="keyword">end</span>
+0106 
+0107 <span class="comment">%--------------------------------------------------------------------------</span>
+0108 <span class="comment">% Run simpleMKL</span>
+0109 <span class="comment">%--------------------------------------------------------------------------</span>
+0110 C_opt = args;
+0111 options.sigmainit = 1/size(d.train,2)*ones(1,size(d.train,2)); <span class="comment">%initialize kernel weights</span>
+0112 
+0113 <span class="comment">% change targets from 1/2 to -1/1</span>
+0114 tr_targets = d.tr_targets;
+0115 c1PredIdx  = tr_targets  ==1; 
+0116 tr_targets  (c1PredIdx)  = 1; <span class="comment">%positive values = 1</span>
+0117 tr_targets  (~c1PredIdx) = -1; <span class="comment">%negative values = 2</span>
+0118 
+0119 <span class="comment">%reshape previously normalized kernel</span>
+0120 ktrain = zeros(size(d.train{1},1),size(d.train{1},1),size(d.train,2));
+0121 ktest = zeros(size(d.test{1},1),size(d.train{1},1),size(d.train,2));
+0122 <span class="keyword">for</span> k = 1:size(d.train,2)
+0123     <span class="keyword">if</span> sum(sum(isnan(d.train{k})))==0;
+0124         ktrain(:,:,k) =  d.train{k}  ;
+0125     <span class="keyword">end</span>
+0126     <span class="keyword">if</span> sum(sum(isnan(d.test{k}))) ==0
+0127         ktest(:,:,k) =  d.test{k}   ;
+0128     <span class="keyword">end</span>
+0129 <span class="keyword">end</span>
+0130 
+0131 [beta,alpha_sv,b,pos] = mklsvm(ktrain,tr_targets,C_opt,options,verbose);
+0132 
+0133 alpha = zeros(length(d.tr_targets),1);
+0134 alpha(pos) = alpha_sv;
+0135 
+0136 ktest_final = zeros(length(d.te_targets),length(d.tr_targets));
+0137 
+0138 <span class="keyword">for</span> i = 1:size(d.train,2)
+0139     ktest_final = ktest_final + beta(i)*ktest(:,:,i);
+0140 <span class="keyword">end</span>
+0141 
+0142 func_val = (ktest_final*alpha)+b;
+0143 
+0144 predictions = sign(func_val);
+0145 
+0146 
+0147 <span class="comment">% Outputs</span>
+0148 <span class="comment">%--------------------------------------------------------------------------</span>
+0149 <span class="comment">% change predictions from 1/-1 to 1/2</span>
+0150 c1PredIdx               = predictions==1; 
+0151 predictions(c1PredIdx)  = 1; <span class="comment">%positive values = 1</span>
+0152 predictions(~c1PredIdx) = 2; <span class="comment">%negative values = 2</span>
+0153 
+0154 output.predictions = predictions;
+0155 output.func_val    = func_val;
+0156 output.type        = <span class="string">'classifier'</span>;
+0157 output.alpha       = alpha;
+0158 output.b           = b;
+0159 output.totalSV     = length(alpha_sv);
+0160 output.beta        = beta; <span class="comment">%kernel weights</span>
+0161 
+0162 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

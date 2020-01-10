@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_pca0</title>
+  <meta name="keywords" content="nt_pca0">
+  <meta name="description" content="[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_pca0.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_pca0
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca
+
+  topcs: matrix to convert data to PCs
+  pwr: power per PC
+
+  x: data matrix
+  shifts: array of shifts to apply
+  nkeep: number of PCs to keep
+  w: weight (see nt_cov)
+  threshold: remove components with normalized eigenvalues smaller than threshold (default: 0)
+
+ mean is NOT removed prior to processing</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>	[topcs,eigenvalues]=pcarot(cov,nkeep,threshold,N) - PCA matrix from covariance</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_pca_kmeans.html" class="code" title="function [topcs,pwr]=nt_pca_kmeans(x,shifts,nkeep)">nt_pca_kmeans</a>	[topcs,pwr]=nt_pca_kmeans(x,nkeep) - PCA preceded by kmeans for speed</li><li><a href="nt_peaky.html" class="code" title="function [tocomps,ii]=nt_peaky(c,x,T,nSmooth)">nt_peaky</a>	[tocomps,ii]=nt_peaky(c,x,T,nSmooth) - find components that maximize peakiness</li><li><a href="nt_qca0.html" class="code" title="function [tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads)">nt_qca0</a>	[tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li><li><a href="nt_qca02.html" class="code" title="function [tosquare,quad,tosquare2,quad2,D]=nt_qca02(x,npcs,nsmooth)">nt_qca02</a>	[tosquare,quad,tosquare2,quad2,D]=nt_qca02(x,npcs,nsmooth) - maximize induced power using quadratic component analysis</li><li><a href="nt_qpca0.html" class="code" title="function [tosquares,quads,D]=nt_qpca0(x,npcs,nsmooth,nquads)">nt_qpca0</a>	[tosquares,quads,D]=nt_qpca0(x,npcs,nsmooth,nquads) - quadratic PCA</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)</a>
+0002 <span class="comment">%[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  topcs: matrix to convert data to PCs</span>
+0005 <span class="comment">%  pwr: power per PC</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  x: data matrix</span>
+0008 <span class="comment">%  shifts: array of shifts to apply</span>
+0009 <span class="comment">%  nkeep: number of PCs to keep</span>
+0010 <span class="comment">%  w: weight (see nt_cov)</span>
+0011 <span class="comment">%  threshold: remove components with normalized eigenvalues smaller than threshold (default: 0)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% mean is NOT removed prior to processing</span>
+0014 
+0015 
+0016 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0017 <span class="keyword">if</span> nargin&lt;2||isempty(shifts); shifts=[0]; <span class="keyword">end</span>
+0018 <span class="keyword">if</span> nargin&lt;3; nkeep=[]; <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;4||isempty(threshold); threshold=0; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> nargin&lt;5; w=[]; <span class="keyword">end</span>
+0021 
+0022 [m,n,o]=size(x);
+0023 
+0024 <span class="comment">% remove mean</span>
+0025 <span class="comment">%x=fold(demean(unfold(x)),size(x,1));</span>
+0026 
+0027 <span class="comment">% covariance</span>
+0028 <span class="keyword">if</span> isempty(w);
+0029     c=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(x,shifts);
+0030 <span class="keyword">else</span>
+0031     c=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(x,shifts,w);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% PCA matrix</span>
+0035 <span class="keyword">if</span> ~isempty(nkeep)
+0036     topcs=<a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>(c,nkeep);
+0037 <span class="keyword">else</span>
+0038     topcs=<a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>(c);
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">%if ~isempty(nkeep); topcs=topcs(:,1:nkeep); end</span>
+0042 
+0043 <span class="comment">% power per PC</span>
+0044 pwr=diag(topcs'*c*topcs)/(m*o);
+0045 idx=find(pwr/max(pwr)&gt;threshold);
+0046 pwr=pwr(idx);
+0047 topcs=topcs(:,idx);
+0048 
+0049 <span class="comment">% matrix to normalized PCs</span>
+0050 <span class="comment">%topcs=topcs*diag(1./sqrt(pwr));</span></pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

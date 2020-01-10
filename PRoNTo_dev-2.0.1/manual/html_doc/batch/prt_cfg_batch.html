@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cfg_batch</title>
+  <meta name="keywords" content="prt_cfg_batch">
+  <meta name="description" content="Pattern Recognition for Neuroimaging Toolbox, PRoNTo.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_cfg_batch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cfg_batch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt = prt_cfg_batch </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Pattern Recognition for Neuroimaging Toolbox, PRoNTo.
+ PRT configuration file
+ This builds the whole tree for the various tools and their GUI.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_cv_model.html" class="code" title="function cv_model = prt_cfg_cv_model">prt_cfg_cv_model</a>	Preprocessing of the data.</li><li><a href="prt_cfg_design.html" class="code" title="function data = prt_cfg_design">prt_cfg_design</a>	Data & design configuration file</li><li><a href="prt_cfg_fs.html" class="code" title="function fs = prt_cfg_fs">prt_cfg_fs</a>	Data & design configuration file</li><li><a href="prt_cfg_model.html" class="code" title="function model = prt_cfg_model">prt_cfg_model</a>	Data & design configuration file</li><li><a href="prt_cfg_weights.html" class="code" title="function weights = prt_cfg_weights">prt_cfg_weights</a>	Preprocessing of the data.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt = prt_cfg_batch</a>
+0002 <span class="comment">% Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</span>
+0003 <span class="comment">% PRT configuration file</span>
+0004 <span class="comment">% This builds the whole tree for the various tools and their GUI.</span>
+0005 <span class="comment">%_______________________________________________________________________</span>
+0006 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0007 
+0008 <span class="comment">% Written by Christophe Phillips</span>
+0009 <span class="comment">% $Id$</span>
+0010 
+0011 <span class="comment">% NOTE:</span>
+0012 <span class="comment">% Only de-comment the following line if</span>
+0013 <span class="comment">% - PRT is installed in SPM8/12 toolbox directory, for example</span>
+0014 <span class="comment">%   SPM12\toolbox\PRoNTo</span>
+0015 <span class="comment">% - and this directory isn't saved on Matlab path (which it shouldn't)</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% if ~isdeployed, addpath(fullfile(spm('Dir'),'toolbox','PRoNTo')); end</span>
+0018 
+0019 <span class="comment">% ---------------------------------------------------------------------</span>
+0020 <span class="comment">%% prt PRoNTo series of modules</span>
+0021 <span class="comment">% ---------------------------------------------------------------------</span>
+0022 prt         = cfg_choice;
+0023 prt.tag     = <span class="string">'prt'</span>;
+0024 prt.name    = <span class="string">'PRoNTo'</span>;
+0025 prt.help    = {[<span class="keyword">...</span>
+0026     <span class="string">'This is the batch interface for PRoNTo, i.e. Pattern Recognition '</span><span class="keyword">...</span>
+0027     <span class="string">'for Neuroimaging Toolbox providing a GUI for the various tools.'</span>]
+0028                   }';
+0029 prt.values  = {<a href="prt_cfg_design.html" class="code" title="function data = prt_cfg_design">prt_cfg_design</a>, <span class="keyword">...</span>
+0030                <a href="prt_cfg_fs.html" class="code" title="function fs = prt_cfg_fs">prt_cfg_fs</a>, <span class="keyword">...</span>
+0031                <a href="prt_cfg_model.html" class="code" title="function model = prt_cfg_model">prt_cfg_model</a>, <span class="keyword">...</span>
+0032                <a href="prt_cfg_cv_model.html" class="code" title="function cv_model = prt_cfg_cv_model">prt_cfg_cv_model</a>,<span class="keyword">...</span>
+0033                <a href="prt_cfg_weights.html" class="code" title="function weights = prt_cfg_weights">prt_cfg_weights</a>};
+0034 <span class="comment">%------------------------------------------------------------------------</span>
+0035 
+0036 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,9 @@
+Trying to add new property 'svn:keywords'
+but the property already exists.
+<<<<<<< (local property value)
+Id=======
+HeadURL
+Revision
+Author
+Date
+ID>>>>>>> (incoming property value)

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_run_weights</title>
+  <meta name="keywords" content="prt_run_weights">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_run_weights.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_run_weights
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_run_weights(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ PRONTO job execution function
+
+ INPUT
+   job    - harvested job data structure (see matlabbatch help)
+
+ OUTPUT
+   out    - filename of saved data structure (1 file per group, per 
+            subject, per modality, per condition 
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_weights.html" class="code" title="function weights = prt_cfg_weights">prt_cfg_weights</a>	Preprocessing of the data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_run_weights(varargin)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% PRONTO job execution function</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% INPUT</span>
+0006 <span class="comment">%   job    - harvested job data structure (see matlabbatch help)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% OUTPUT</span>
+0009 <span class="comment">%   out    - filename of saved data structure (1 file per group, per</span>
+0010 <span class="comment">%            subject, per modality, per condition</span>
+0011 <span class="comment">%__________________________________________________________________________</span>
+0012 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0013 
+0014 <span class="comment">% Written by M.J.Rosa</span>
+0015 <span class="comment">% $Id$</span>
+0016 
+0017 job   = varargin{1};
+0018 
+0019 <span class="comment">% Load PRT.mat</span>
+0020 <span class="comment">% -------------------------------------------------------------------------</span>
+0021 fname  = char(job.infile);
+0022 PRT    = prt_load(fname);
+0023 <span class="keyword">if</span> ~isempty(PRT)
+0024     handles.dat = PRT;
+0025 <span class="keyword">else</span>
+0026     beep
+0027     disp(<span class="string">'Could not load file'</span>)
+0028     <span class="keyword">return</span>
+0029 <span class="keyword">end</span>
+0030 pathdir = regexprep(fname,<span class="string">'PRT.mat'</span>, <span class="string">''</span>);
+0031 
+0032 <span class="comment">% -------------------------------------------------------------------------</span>
+0033 <span class="comment">% Input file</span>
+0034 <span class="comment">% -------------------------------------------------------------------------</span>
+0035 in.img_name   = job.img_name;
+0036 in.model_name = job.model_name;
+0037 in.pathdir    = pathdir;
+0038 <span class="keyword">if</span> isfield(job,<span class="string">'flag_cwi'</span>)
+0039     flag      = job.flag_cwi;
+0040 <span class="keyword">else</span>
+0041     flag      = 0;
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% -------------------------------------------------------------------------</span>
+0045 <span class="comment">% Weights per ROI</span>
+0046 <span class="comment">% -------------------------------------------------------------------------</span>
+0047 <span class="keyword">if</span> isfield(job, <span class="string">'build_wpr'</span>)
+0048     <span class="keyword">if</span> isfield(job.build_wpr,<span class="string">'atl_name'</span>) &amp;&amp; ~isempty(job.build_wpr.atl_name{1})
+0049         in.atl_name = job.build_wpr.atl_name{1};
+0050         flag2 = 1;
+0051     <span class="keyword">else</span>
+0052         in.atl_name = [];
+0053         flag2 = 0;
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">else</span> <span class="comment">% This should make things compatible older jobs...</span>
+0056     in.atl_name = [];
+0057     flag2 = 0;
+0058 <span class="keyword">end</span>
+0059 
+0060 img_name = prt_compute_weights(PRT, in, flag, flag2);
+0061 
+0062 <span class="comment">% -------------------------------------------------------------------------</span>
+0063 <span class="comment">% Function output</span>
+0064 <span class="comment">% -------------------------------------------------------------------------</span>
+0065 disp(<span class="string">'Weights computation complete.'</span>)
+0066 out.files{1} = fname;
+0067 out.files{2} = img_name;
+0068 disp(<span class="string">'Done'</span>)
+0069 
+0070  <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

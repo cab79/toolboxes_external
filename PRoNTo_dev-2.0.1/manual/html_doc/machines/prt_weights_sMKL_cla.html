@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_weights_sMKL_cla</title>
+  <meta name="keywords" content="prt_weights_sMKL_cla">
+  <meta name="description" content="Run function to compute weights for binary MKL">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_weights_sMKL_cla.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_weights_sMKL_cla
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run function to compute weights for binary MKL</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function weights = prt_weights_sMKL_cla(d,args) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run function to compute weights for binary MKL
+ FORMAT weights = prt_weights_sMKL (d,args)
+ Inputs:
+       d               - data structure
+           .datamat    - data matrix [Nfeatures x Nexamples]
+           .coeffs     - coefficients vector [Nexamples x 1]
+           .betas      - kernel weights
+           .idfeat_img - cell with indece
+       args            - function arguments (can be left empty)
+ Output:
+       weights         - vector with weights [Nfeatures x 1]
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function weights = prt_weights_sMKL_cla(d,args)</a>
+0002 <span class="comment">% Run function to compute weights for binary MKL</span>
+0003 <span class="comment">% FORMAT weights = prt_weights_sMKL (d,args)</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%       d               - data structure</span>
+0006 <span class="comment">%           .datamat    - data matrix [Nfeatures x Nexamples]</span>
+0007 <span class="comment">%           .coeffs     - coefficients vector [Nexamples x 1]</span>
+0008 <span class="comment">%           .betas      - kernel weights</span>
+0009 <span class="comment">%           .idfeat_img - cell with indece</span>
+0010 <span class="comment">%       args            - function arguments (can be left empty)</span>
+0011 <span class="comment">% Output:</span>
+0012 <span class="comment">%       weights         - vector with weights [Nfeatures x 1]</span>
+0013 <span class="comment">%__________________________________________________________________________</span>
+0014 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0015 
+0016 <span class="comment">% Written by J.Mourao-Miranda</span>
+0017 
+0018 SANITYCHECK = true; <span class="comment">% turn off for speed</span>
+0019 
+0020 <span class="comment">% initial checks</span>
+0021 <span class="comment">%--------------------------------------------------------------------------</span>
+0022 <span class="keyword">if</span> SANITYCHECK == true
+0023     <span class="keyword">if</span> isempty(d)
+0024         error(<span class="string">'prt_weights_svm_bin:DataEmpty'</span>,<span class="keyword">...</span>
+0025             <span class="string">'Error: ''data'' cannot be empty!'</span>);
+0026     <span class="keyword">else</span>
+0027         <span class="keyword">if</span> ~isfield(d,<span class="string">'datamat'</span>)
+0028             error(<span class="string">'prt_weights_svm_bin:noDatamatField'</span>,<span class="keyword">...</span>
+0029                 [<span class="string">'Error: ''data'' struct must contain a ''datamat'' '</span><span class="keyword">...</span>
+0030                 <span class="string">' field!'</span>]);
+0031         <span class="keyword">end</span>
+0032         <span class="keyword">if</span> isfield(d,<span class="string">'coeffs'</span>)
+0033             <span class="keyword">if</span> ~isvector(d.coeffs)
+0034                 error(<span class="string">'prt_weights_svm_bin:CoeffsnoVector'</span>,<span class="keyword">...</span>
+0035                     <span class="string">'Error: ''coeffs'' must be a vector!'</span>);
+0036             <span class="keyword">else</span>
+0037                 ncoeffs = length(d.coeffs);
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">else</span>
+0040             error(<span class="string">'prt_weights_svm_bin:noCoeffsField'</span>,<span class="keyword">...</span>
+0041                 [<span class="string">'Error: ''data'' struct must contain ''coeffs'' '</span><span class="keyword">...</span>
+0042                 <span class="string">' field!'</span>]);
+0043         <span class="keyword">end</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% create 1D image</span>
+0048 <span class="comment">%--------------------------------------------------------------------------</span>
+0049 
+0050 
+0051 <span class="comment">% compute weigths</span>
+0052 
+0053 img1d     = zeros(size(d.datamat(1,:)),<span class="string">'single'</span>);
+0054 
+0055 <span class="keyword">for</span> k=1:length(args.betas)
+0056     
+0057     betas = single(args.betas(k));
+0058     index_k = args.idfeat_img{k};
+0059     
+0060     <span class="keyword">if</span> ~isempty(index_k) &amp;&amp; betas~=0
+0061         <span class="keyword">if</span> ~isfield(args,<span class="string">'flag'</span>) || ~args.flag
+0062             <span class="keyword">for</span> i=1:ncoeffs
+0063             
+0064             tmp1 = single(d.datamat(i,index_k));
+0065             tmp2 = single(d.coeffs(i));
+0066             
+0067             img1d(index_k) = img1d(index_k) + tmp1 * tmp2;
+0068             
+0069             <span class="keyword">end</span>   
+0070         <span class="keyword">else</span>
+0071             img1d(index_k) = ones(1,length(index_k));
+0072         <span class="keyword">end</span>        
+0073         
+0074         img1d(index_k) = betas * img1d(index_k);
+0075     <span class="keyword">end</span>
+0076     
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">% weigths</span>
+0080 weights{1}  = img1d; <span class="comment">% originally, it was: weights  = img1d</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

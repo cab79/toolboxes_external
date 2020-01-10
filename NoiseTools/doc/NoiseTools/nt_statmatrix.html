@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_statmatrix</title>
+  <meta name="keywords" content="nt_statmatrix">
+  <meta name="description" content="stats=nt_statMatrix(x,plot_params) - calculate statistics arrays for each dim of matrix">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_statmatrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_statmatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>stats=nt_statMatrix(x,plot_params) - calculate statistics arrays for each dim of matrix</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function stats=nt_statMatrix(x,plot_params) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">stats=nt_statMatrix(x,plot_params) - calculate statistics arrays for each dim of matrix
+
+  stats: array of statistics arrays
+
+  x: data to stat
+  plot_params: parameters</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_dataview.html" class="code" title="function [p,data]=nt_dataview(data,p)">nt_dataview</a>	[p,data]=nt_dataview(data,p) - view data sets</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function nt_plotstats(stats)</a></li><li><a href="#_sub2" class="code">function h=nt_plot2(x,y,c)</a></li><li><a href="#_sub3" class="code">function m = nanmean(x,dim)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function stats=nt_statMatrix(x,plot_params)</a>
+0002 <span class="comment">%stats=nt_statMatrix(x,plot_params) - calculate statistics arrays for each dim of matrix</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  stats: array of statistics arrays</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%  x: data to stat</span>
+0007 <span class="comment">%  plot_params: parameters</span>
+0008 
+0009 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0010 <span class="keyword">if</span> nargin&lt;2;
+0011     plot_params.bottom=0.1;
+0012     plot_params.height=0.8;
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% count true number of dimensions</span>
+0016 nDims=ndims(x);
+0017 sizeX=size(x);
+0018 <span class="keyword">if</span> nDims==2 &amp;&amp; (sizeX(1)==1 || sizeX(2)==1)
+0019     nDims=1;
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="comment">% if we're plotting, concatenate dimensions beyond 4th</span>
+0023 <span class="keyword">if</span> nargout==0 &amp;&amp; ndims(x)&gt;4; x=x(:,:,:,:); nDims=4; <span class="keyword">end</span>
+0024 
+0025 stats={}; 
+0026 <span class="keyword">if</span> 0
+0027     <span class="comment">% computationally expensive</span>
+0028     <span class="keyword">for</span> iDim=1:nDims
+0029         sz=size(x);
+0030         x=reshape(x,sz(1),[]);
+0031         stats{iDim}.iDim=iDim;
+0032         stats{iDim}.n=size(x,2);
+0033         stats{iDim}.min=min(x')';
+0034         stats{iDim}.max=max(x')';
+0035         stats{iDim}.mean=<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(x')';
+0036         stats{iDim}.var=nanvar(x')';
+0037         x=reshape(x,sz);
+0038         x=shiftdim(x,1);
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">else</span>
+0041     <span class="comment">% cheaper</span>
+0042     sz=size(x);
+0043     <span class="keyword">for</span> iDim=1:nDims
+0044         stats{iDim}.iDim=iDim;
+0045         stats{iDim}.n=size(x,iDim);
+0046         
+0047         <span class="comment">% min</span>
+0048         y=x;
+0049         <span class="keyword">for</span> k=1:iDim-1;
+0050              y=squeeze(min(y,[],1));
+0051         <span class="keyword">end</span>
+0052         <span class="keyword">if</span> iDim&lt;nDims; y=min(y(:,:),[],2); <span class="keyword">else</span> y=min(y(:,:),[],1); <span class="keyword">end</span>
+0053         stats{iDim}.min=y(:); 
+0054 
+0055         <span class="comment">% max</span>
+0056         y=x;
+0057         <span class="keyword">for</span> k=1:iDim-1;
+0058             y=squeeze(max(y,[],1));
+0059         <span class="keyword">end</span>
+0060         <span class="keyword">if</span> iDim&lt;nDims; y=max(y(:,:),[],2); <span class="keyword">else</span> y=max(y(:,:),[],1); <span class="keyword">end</span>
+0061         stats{iDim}.max=y(:); 
+0062 
+0063         <span class="comment">% mean</span>
+0064         y=x;
+0065         <span class="keyword">for</span> k=1:iDim-1;
+0066             y=squeeze(<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y,1));
+0067         <span class="keyword">end</span>
+0068         <span class="keyword">if</span> iDim&lt;nDims; y=<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y(:,:),2); <span class="keyword">else</span> y=<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y(:,:),1); <span class="keyword">end</span>
+0069         stats{iDim}.mean=y(:); 
+0070       
+0071         <span class="comment">% var</span>
+0072         y=x.^2;
+0073         <span class="keyword">for</span> k=1:iDim-1;
+0074             y=squeeze(<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y,1));
+0075         <span class="keyword">end</span>
+0076         <span class="keyword">if</span> iDim&lt;nDims; y=<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y(:,:),2); <span class="keyword">else</span> y=<a href="#_sub3" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(y(:,:),1); <span class="keyword">end</span>
+0077         stats{iDim}.var=y(:)-stats{iDim}.mean.^2; 
+0078         <span class="comment">%nt_whoss</span>
+0079         
+0080     <span class="keyword">end</span>
+0081 <span class="keyword">end</span>
+0082 
+0083 
+0084 <span class="comment">% plot the statistics</span>
+0085 <span class="keyword">if</span> nargout==0;
+0086     <span class="keyword">if</span> isempty(get(0,<span class="string">'currentfigure'</span>));
+0087         figH=figure;
+0088         set(gcf,<span class="string">'color'</span>,[1 1 1]);
+0089     <span class="keyword">end</span>
+0090     figH=figure(gcf); <span class="comment">%clf</span>
+0091     <span class="comment">%set(gcf,'name',inputname(1));</span>
+0092 
+0093     fontsize=12;
+0094     
+0095     <span class="comment">% plot in 1,2,3 or 4 panels depending on number of dimensions</span>
+0096     <span class="keyword">switch</span> nDims
+0097         <span class="keyword">case</span> 1
+0098             axes(<span class="string">'position'</span>,[0.05, plot_params.bottom, 0.93, plot_params.height]);  set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0099             plot(x, <span class="string">'k'</span>);  title([<span class="string">'n = '</span>, num2str(sizeX(1))]);
+0100             xlabel(<span class="string">'samples'</span>);
+0101         <span class="keyword">case</span> 2
+0102             axes(<span class="string">'position'</span>,[0.05, plot_params.bottom, 0.45, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0103             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{1});
+0104             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(1))]);
+0105             axes(<span class="string">'position'</span>,[0.53, plot_params.bottom, 0.45, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0106             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{2});
+0107             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(2))]); set(gca,<span class="string">'ytick'</span>,[]);
+0108         <span class="keyword">case</span> 3
+0109             axes(<span class="string">'position'</span>,[0.05, plot_params.bottom, 0.3, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0110             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{1});
+0111             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(1))]);
+0112             axes(<span class="string">'position'</span>,[0.37, plot_params.bottom, 0.3, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0113             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{2});
+0114             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(2))]); set(gca,<span class="string">'ytick'</span>,[]);
+0115             axes(<span class="string">'position'</span>,[0.69, plot_params.bottom, 0.3, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0116             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{3});
+0117             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(3))]); set(gca,<span class="string">'ytick'</span>,[]);
+0118         <span class="keyword">otherwise</span> <span class="comment">% limit to 4 panels (last dims are concatenated)</span>
+0119             axes(<span class="string">'position'</span>,[0.05, plot_params.bottom, 0.2, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0120             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{1});
+0121             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(1))]);
+0122             axes(<span class="string">'position'</span>,[0.27, plot_params.bottom, 0.2, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0123             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{2});
+0124             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(2))]); set(gca,<span class="string">'ytick'</span>,[]);
+0125             axes(<span class="string">'position'</span>,[0.49, plot_params.bottom, 0.2, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0126             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{3});
+0127             xlabel(<span class="string">'samples'</span>); title([<span class="string">'n = '</span>, num2str(sizeX(3))]); set(gca,<span class="string">'ytick'</span>,[]);
+0128             axes(<span class="string">'position'</span>,[0.71, plot_params.bottom, 0.2, plot_params.height]); set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>,<span class="string">'fontsize'</span>,fontsize);
+0129             <a href="#_sub1" class="code" title="subfunction nt_plotstats(stats)">nt_plotstats</a>(stats{4});
+0130             xlabel(<span class="string">'samples'</span>); 
+0131             title_string=[<span class="string">'n = '</span>, num2str(sizeX(4))];
+0132             <span class="keyword">for</span> k=5:numel(sizeX)
+0133                 title_string=[title_string,<span class="string">'*'</span>,num2str(sizeX(k))];
+0134             <span class="keyword">end</span>
+0135             title(title_string); 
+0136             set(gca,<span class="string">'ytick'</span>,[]);
+0137             
+0138     <span class="keyword">end</span>
+0139 <span class="keyword">end</span>
+0140             
+0141 
+0142 <a name="_sub1" href="#_subfunctions" class="code">function nt_plotstats(stats)</a>
+0143 <span class="comment">%h=nt_plotstats(stats)</span>
+0144 <span class="comment">%</span>
+0145 <span class="comment">%  stats: stats stucture</span>
+0146 
+0147 holdStatus=ishold;
+0148 hold on
+0149 <span class="keyword">if</span> isfield(stats,<span class="string">'min'</span>)
+0150     <a href="#_sub2" class="code" title="subfunction h=nt_plot2(x,y,c)">nt_plot2</a>(1:size(stats.min,1), [stats.min,stats.max], [1 1 1]*0.9);
+0151 <span class="keyword">end</span>
+0152 <span class="keyword">if</span> isfield(stats,<span class="string">'var'</span>)
+0153     sd=sqrt(stats.var);
+0154     <a href="#_sub2" class="code" title="subfunction h=nt_plot2(x,y,c)">nt_plot2</a>(1:size(stats.mean,1), [stats.mean+sd,stats.mean-sd], [1 1 1]* 0.5);
+0155 <span class="keyword">end</span>
+0156 <a href="#_sub2" class="code" title="subfunction h=nt_plot2(x,y,c)">nt_plot2</a>(1:size(stats.mean,1),[stats.mean,stats.mean], [0 0 0]);
+0157 stats.mean(find(stats.min~=stats.max))=nan;
+0158 plot(1:size(stats.mean,1),[stats.mean,stats.mean], <span class="string">'.b'</span>);
+0159 <span class="keyword">if</span> holdStatus;
+0160     hold on;
+0161 <span class="keyword">else</span>
+0162     hold off
+0163 <span class="keyword">end</span>
+0164 
+0165 <a name="_sub2" href="#_subfunctions" class="code">function h=nt_plot2(x,y,c)</a>
+0166 <span class="comment">%h=nt_plot2(x,y,c) - color region between two plots</span>
+0167 <span class="comment">%</span>
+0168 <span class="comment">%</span>
+0169 <span class="comment">%  x: abscissa</span>
+0170 <span class="comment">%  y: ordinate (1 or 2 columns)</span>
+0171 <span class="comment">%  c: color (see 'fill')</span>
+0172 <span class="comment">%</span>
+0173 <span class="comment">%  h: vector of handles to patches</span>
+0174 <span class="comment">%</span>
+0175 <span class="comment">%  nt_plot2(x</span>
+0176 
+0177 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0178 
+0179 <span class="comment">% process parameters</span>
+0180 <span class="keyword">if</span> nargin==1;
+0181     y=x;
+0182     x=(1:size(y,1))';
+0183     c=[0 0 0];
+0184 <span class="keyword">elseif</span> nargin==2;
+0185     c=[0,0,0];
+0186 <span class="keyword">elseif</span> nargin==3;
+0187     ;
+0188 <span class="keyword">else</span>
+0189     error(<span class="string">'!'</span>);
+0190 <span class="keyword">end</span>
+0191 
+0192 <span class="comment">% format data</span>
+0193 <span class="keyword">if</span> size(y,2)==1
+0194     y=[y,zeros(size(y))];
+0195 <span class="keyword">elseif</span> size(y,2)&gt;2
+0196     error(<span class="string">'!'</span>);
+0197 <span class="keyword">else</span>
+0198     ;
+0199 <span class="keyword">end</span>
+0200 x=x(:);
+0201 
+0202 <span class="keyword">if</span> 1
+0203 <span class="comment">% make sure that y(:,1)&lt;y(:,2);</span>
+0204     yy=y;
+0205     yy(:,1)=min(y,[],2);
+0206     yy(:,2)=max(y,[],2);
+0207     y=yy;
+0208 
+0209     <span class="comment">% downsample if data array is too large</span>
+0210     TARGET_N=2000;
+0211     <span class="keyword">if</span> size(x,1)&gt;TARGET_N
+0212         DSR=ceil(size(x,1)/TARGET_N);
+0213         n=floor(size(x,1)/DSR);
+0214         x=x(1:DSR:end);
+0215         x=x(1:n);
+0216         y_extra=y(DSR*n:<span class="keyword">end</span>,:);
+0217         y=y(1:DSR*n,:);
+0218         a=min(reshape(y(:,1),DSR,size(y,1)/DSR));
+0219         b=max(reshape(y(:,2),DSR,size(y,1)/DSR));
+0220         a(end)=min(a(end),min(y_extra(:,1)));
+0221         b(end)=max(b(end),max(y_extra(:,2)));
+0222         y=[a',b'];
+0223     <span class="keyword">end</span>
+0224 <span class="keyword">end</span>
+0225 
+0226 <span class="comment">% draw plot</span>
+0227 h=fill([x;flipud(x)],[y(:,1);flipud(y(:,2))],c, <span class="string">'edgecolor'</span>, c);
+0228 <span class="keyword">if</span> x(end)&gt;x(1); 
+0229     xlim([x(1)-1,x(end)+1]);
+0230 <span class="keyword">end</span>
+0231 set(gca,<span class="string">'box'</span>,<span class="string">'on'</span>);
+0232 
+0233 <span class="comment">% from stats toolbox</span>
+0234 <a name="_sub3" href="#_subfunctions" class="code">function m = nanmean(x,dim)</a>
+0235 <span class="comment">%%</span>
+0236 
+0237 <span class="comment">% Find NaNs and set them to zero</span>
+0238 nans = isnan(x);
+0239 x(nans) = 0;
+0240 
+0241 <span class="keyword">if</span> nargin == 1 <span class="comment">% let sum deal with figuring out which dimension to use</span>
+0242     <span class="comment">% Count up non-NaNs.</span>
+0243     n = sum(~nans);
+0244     n(n==0) = NaN; <span class="comment">% prevent divideByZero warnings</span>
+0245     <span class="comment">% Sum up non-NaNs, and divide by the number of non-NaNs.</span>
+0246     m = sum(x) ./ n;
+0247 <span class="keyword">else</span>
+0248     <span class="comment">% Count up non-NaNs.</span>
+0249     n = sum(~nans,dim);
+0250     n(n==0) = NaN; <span class="comment">% prevent divideByZero warnings</span>
+0251     <span class="comment">% Sum up non-NaNs, and divide by the number of non-NaNs.</span>
+0252     m = sum(x,dim) ./ n;
+0253 <span class="keyword">end</span>
+0254</pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

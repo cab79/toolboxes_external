@@ -1,0 +1,378 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_compute_cv_mat</title>
+  <meta name="keywords" content="prt_compute_cv_mat">
+  <meta name="description" content="Function to compute the cross-validation matrix. Also does error checking">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_compute_cv_mat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_compute_cv_mat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to compute the cross-validation matrix. Also does error checking</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [CV,ID] = prt_compute_cv_mat(PRT, in, modelid, use_nested_cv) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to compute the cross-validation matrix. Also does error checking</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_init_fs.html" class="code" title="function [fid,PRT,tocomp] = prt_init_fs(PRT, in, mids,mask,precmask,headers)">prt_init_fs</a>	function to initialise the kernel data structure</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_model.html" class="code" title="function [PRT, CV, ID] = prt_model(PRT,in)">prt_model</a>	Function to configure and build the PRT.model data structure</li><li><a href="prt_nested_cv.html" class="code" title="function [out] = prt_nested_cv(PRT, in)">prt_nested_cv</a>	Function to perform the nested CV</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [CV,ID] = prt_compute_cv_mat(PRT, in, modelid, use_nested_cv)</a>
+0002 <span class="comment">% Function to compute the cross-validation matrix. Also does error checking</span>
+0003 
+0004 <span class="comment">% Check if the use_nested_cv varible has been inputed</span>
+0005 <span class="keyword">if</span> ~exist(<span class="string">'use_nested_cv'</span>, <span class="string">'var'</span>)
+0006     use_nested_cv = false;
+0007 <span class="keyword">end</span>
+0008 
+0009 <span class="keyword">if</span> use_nested_cv
+0010     fid = <a href="prt_init_fs.html" class="code" title="function [fid,PRT,tocomp] = prt_init_fs(PRT, in, mids,mask,precmask,headers)">prt_init_fs</a>(PRT,PRT.model(modelid).input.fs(1));
+0011 <span class="keyword">else</span>
+0012     fid = <a href="prt_init_fs.html" class="code" title="function [fid,PRT,tocomp] = prt_init_fs(PRT, in, mids,mask,precmask,headers)">prt_init_fs</a>(PRT, in.fs(1));
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% create the PRT.model(modelid).input.cv field</span>
+0016 <span class="keyword">if</span> ~isfield(PRT.model(modelid).input, <span class="string">'cv'</span>)
+0017     PRT.model(modelid).input.cv={};
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">if</span> ~use_nested_cv
+0021     <span class="keyword">if</span> isfield(PRT.model(modelid).input,<span class="string">'cv_k'</span>)
+0022         k = PRT.model(modelid).input.cv_k;
+0023     <span class="keyword">elseif</span> isfield(in.cv,<span class="string">'k'</span>)
+0024         k = in.cv.k;
+0025         PRT.model(modelid).input.cv_k = k;
+0026     <span class="keyword">else</span>
+0027         k=0; <span class="comment">%loo cv</span>
+0028         PRT.model(modelid).input.cv_k = k;
+0029     <span class="keyword">end</span>
+0030 <span class="keyword">else</span>
+0031     k = in.cv.k;    
+0032 <span class="keyword">end</span>
+0033 
+0034 
+0035 <span class="keyword">if</span> k==1 <span class="comment">%half-half</span>
+0036     k=2;
+0037     flaghh=1;
+0038     PRT.model(modelid).input.cv_k = k;
+0039 <span class="keyword">else</span>
+0040     flaghh=0;
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="keyword">if</span> isfield(in,<span class="string">'include_allscans'</span>) &amp;&amp; in.include_allscans
+0044     <span class="comment">% use the full id matrix if not user-provided (nested CV)</span>
+0045     <span class="keyword">if</span> use_nested_cv == false 
+0046         ID = PRT.fs(fid).id_mat;
+0047     <span class="keyword">else</span>
+0048         ID = in.ID;
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">else</span>
+0051     <span class="keyword">if</span> use_nested_cv == false
+0052         ID = PRT.fs(fid).id_mat(PRT.model(modelid).input.samp_idx,:);
+0053     <span class="keyword">else</span>
+0054         ID = in.ID;
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="keyword">switch</span> in.cv.type
+0059     <span class="keyword">case</span> <span class="string">'loso'</span>
+0060         <span class="comment">% leave-one-subject-out</span>
+0061         <span class="comment">% give each subject a unique id</span>
+0062         [gids,d1] = unique(ID(:,1), <span class="string">'last'</span>);
+0063         [gids,d2] = unique(ID(:,1),<span class="string">'first'</span>);
+0064         gc = 0;
+0065         ns=zeros(length(gids),1);
+0066         dID = ID;
+0067         <span class="keyword">for</span> g = 1:length(gids)
+0068             ns(g)=length(unique(ID(d2(g):d1(g),2)));
+0069             gidx = ID(:,1) == gids(g);
+0070             dID(gidx,2) = dID(gidx,2) + gc;
+0071             gc = gc + ns(g);
+0072         <span class="keyword">end</span>
+0073         <span class="comment">% Compute CV matrix</span>
+0074         <span class="keyword">if</span> k&gt;1 <span class="comment">%k-fold CV</span>
+0075             nsf=floor(gc/k);
+0076             <span class="comment">% Check that the number of folds does not exceed the number of</span>
+0077             <span class="comment">% subjects</span>
+0078             <span class="keyword">if</span> length(unique(dID(:,2)))&lt;2*nsf
+0079                 error(<span class="string">'prt_model:losoSelectedWithTooLargeK'</span>,<span class="keyword">...</span>
+0080                     <span class="string">'More than 50%% of data in testing set, reduce k'</span>);
+0081             <span class="keyword">end</span>
+0082             mns=mod(gc,k);
+0083             dk=nsf*ones(1,k);
+0084             dk(end)=dk(end)+mns;
+0085             inds=1;
+0086             sk=[];
+0087             <span class="keyword">for</span> ii=1:length(dk)
+0088                 sk=[sk,inds*ones(1,dk(ii))];
+0089                 inds=inds+1;
+0090             <span class="keyword">end</span>
+0091         <span class="keyword">else</span> <span class="comment">%Leave-One-Subject-Out</span>
+0092             sk=1:gc;
+0093         <span class="keyword">end</span>
+0094         snums=[];
+0095         <span class="keyword">for</span> g = 1:length(gids)
+0096             snums = [snums;histc(dID(d2(g):d1(g),2),unique(dID(d2(g):d1(g),2)))];
+0097         <span class="keyword">end</span>
+0098         <span class="keyword">if</span> length(snums) == 1
+0099             error(<span class="string">'prt_model:losoSelectedWithOneSubject'</span>,<span class="keyword">...</span>
+0100                 <span class="string">'LOSO CV selected but only one subject is included'</span>);
+0101         <span class="keyword">end</span>
+0102         G = cell(length(unique(sk)),1);
+0103         <span class="keyword">for</span> s = 1:length(unique(sk))
+0104             G{s} = ones(sum(snums(sk==s)),1);
+0105         <span class="keyword">end</span>
+0106         CV = blkdiag(G{:}) + 1;
+0107         <span class="keyword">if</span> flaghh
+0108             CV=CV(:,1);
+0109         <span class="keyword">end</span>
+0110         
+0111         
+0112     <span class="keyword">case</span> <span class="string">'losgo'</span>
+0113         <span class="comment">%modify the ID to take the structure of the classes into account</span>
+0114         vcl=zeros(size(ID,1),2);
+0115         <span class="keyword">if</span> isfield(in,<span class="string">'class'</span>)
+0116             <span class="keyword">for</span> ic=1:length(in.class)
+0117                 nsg=1;
+0118                 <span class="keyword">for</span> ig=1:length(in.class(ic).group)
+0119                     gnames={PRT.group(:).gr_name};
+0120                     [d,ng]=ismember(in.class(ic).group(ig).gr_name,gnames);
+0121                     <span class="keyword">for</span> is=1:length(in.class(ic).group(ig).subj)
+0122                         inds=find(ID(:,1)==ng);
+0123                         indss=find(ID(inds,2)==is);
+0124                         vcl(inds(indss),1)=ic;
+0125                         vcl(inds(indss),2)=nsg;
+0126                         nsg=nsg+1;
+0127                     <span class="keyword">end</span>
+0128                 <span class="keyword">end</span>
+0129             <span class="keyword">end</span>
+0130             <span class="comment">% leave-one-subject-per-group-out</span>
+0131             [gids,d1] = unique(vcl(:,1), <span class="string">'last'</span>);
+0132             [gids,d2] = unique(vcl(:,1),<span class="string">'first'</span>);
+0133             <span class="comment">%compute the number of subjects per class</span>
+0134             ns=zeros(length(gids),1);
+0135             <span class="keyword">for</span> ig= 1:length(gids)
+0136                 ns(ig)=length(unique(vcl(d2(ig):d1(ig),2)));
+0137             <span class="keyword">end</span>
+0138         <span class="keyword">elseif</span> isfield(in,<span class="string">'t'</span>)
+0139             ntar = unique(in.t);
+0140             nsg = 1;
+0141             ns=zeros(length(ntar),1);
+0142             <span class="keyword">for</span> ic = 1:length(ntar)
+0143                 inds = find(in.t == ic);
+0144                 ns(ic) = length(inds);
+0145                 vcl(inds,1) = ic;
+0146                 ngi = unique(ID(inds,1));
+0147                 <span class="keyword">for</span> ig = 1:length(ngi)
+0148                     igi = find(ID(inds,1)==ngi(ig));
+0149                     indss = unique(ID(inds(igi),2));
+0150                     <span class="keyword">for</span> is = 1:length(indss)
+0151                         inss = find(ID(inds(igi),2) == indss(is));
+0152                         vcl(inds(igi(inss)),2) = nsg;
+0153                         nsg = nsg + 1;
+0154                     <span class="keyword">end</span>
+0155                 <span class="keyword">end</span>
+0156             <span class="keyword">end</span>
+0157         <span class="keyword">end</span>
+0158         
+0159         
+0160         sids=max(ns);
+0161         <span class="keyword">if</span> sids == 1
+0162             error(<span class="string">'prt_model:losgoSelectedWithOneSubject'</span>,<span class="keyword">...</span>
+0163                 <span class="string">'LOSGO CV selected but only one subject is included'</span>);
+0164         <span class="keyword">end</span>
+0165         [nsf]=floor(min(ns/k));
+0166         <span class="keyword">if</span> k==0
+0167             CV = zeros(size(ID,1),sids);
+0168         <span class="keyword">else</span>
+0169             CV = zeros(size(ID,1),k);
+0170         <span class="keyword">end</span>
+0171         <span class="keyword">if</span> k&gt;1 &amp;&amp; nsf==1
+0172             disp(<span class="string">'Performing Leave-One Subject per Group-Out'</span>)
+0173         <span class="keyword">end</span>
+0174         snums=[];
+0175         <span class="keyword">for</span> g=1:length(ns)
+0176             is=vcl(:,1)==g;
+0177             <span class="keyword">if</span> k&gt;1 &amp;&amp; nsf&gt;1 <span class="comment">%k-fold CV</span>
+0178                 nsfg=floor(ns(g)/k);
+0179                 <span class="keyword">if</span> nsfg&lt;1
+0180                     error(<span class="string">'prt_model:losgoSelectedWithTooLargeK'</span>,<span class="keyword">...</span>
+0181                         [<span class="string">'Number of subjects in group '</span>,num2str(g),<span class="string">' smaller than k'</span>]);
+0182                 <span class="keyword">elseif</span> nsfg*2&gt;ns
+0183                     error(<span class="string">'prt_model:losgoSelectedWithTooLargeK2'</span>,<span class="keyword">...</span>
+0184                         [<span class="string">'Leaving more than 50%% of subjects in group '</span>,num2str(g),<span class="string">' out'</span>]);
+0185                 <span class="keyword">end</span>
+0186                 mns=mod(ns(g),nsfg);
+0187                 dk=nsfg*ones(1,floor(length(unique(vcl(is,2)))/nsfg));
+0188                 <span class="keyword">if</span> mns&gt;0
+0189                     dk(end)=dk(end)+mns;
+0190                 <span class="keyword">end</span>
+0191                 inds=1;
+0192                 sk=[];
+0193                 <span class="keyword">for</span> ii=1:length(dk)
+0194                     sk=[sk,inds*ones(1,dk(ii))];
+0195                     inds=inds+1;
+0196                 <span class="keyword">end</span>
+0197             <span class="keyword">else</span> <span class="comment">%Leave-One-Subject per Group-Out</span>
+0198                 sk=1:ns(g);
+0199             <span class="keyword">end</span>
+0200             snums = histc(vcl(is,2),unique(vcl(is,2)));
+0201             G = cell(length(unique(sk)),1);
+0202             <span class="keyword">for</span> s = 1:length(unique(sk))
+0203                 G{s} = ones(sum(snums(sk==s)),1);
+0204             <span class="keyword">end</span>
+0205             CV(is,1:max(sk)) = blkdiag(G{:}) + 1;
+0206             <span class="keyword">if</span> length(unique(sk))&lt;size(CV,2)  <span class="comment">%smaller group, fill with 'train'</span>
+0207                 CV(is,length(unique(sk))+1:size(CV,2))= <span class="keyword">...</span>
+0208                     ones(length(find(is)),length(length(unique(sk))+1:size(CV,2)));
+0209             <span class="keyword">end</span>
+0210             <span class="keyword">if</span> flaghh
+0211                 CV=CV(:,1);
+0212             <span class="keyword">end</span>
+0213         <span class="keyword">end</span>
+0214 
+0215         
+0216         
+0217     <span class="keyword">case</span> <span class="string">'lobo'</span>
+0218         <span class="comment">% leave-one-block-out - limited to one single subject for the</span>
+0219         <span class="comment">% moment</span>
+0220         <span class="comment">% blocks already have a unique ID</span>
+0221         
+0222         [cids,d1] = unique(ID(:,4), <span class="string">'last'</span>);
+0223         [cids,d2] = unique(ID(:,4),<span class="string">'first'</span>);
+0224         gc = 0;
+0225         nb=zeros(length(cids),1);
+0226         dID = ID;
+0227         <span class="keyword">for</span> c = 1:length(cids)
+0228             nb(c)=length(unique(ID(d2(c):d1(c),5)));
+0229             cidx = ID(:,4) == cids(c);
+0230             dID(cidx,5) = dID(cidx,5) + gc;
+0231             gc = gc + nb(c);
+0232         <span class="keyword">end</span>
+0233 
+0234         <span class="keyword">if</span> k&gt;1 <span class="comment">%k-fold CV</span>
+0235             nsb=floor(gc/k);
+0236             <span class="comment">% Check that the number of folds does not exceed the number of</span>
+0237             <span class="comment">% subjects</span>
+0238             <span class="keyword">if</span> length(unique(dID(:,5)))&lt;2*nsb
+0239                 error(<span class="string">'prt_model:loboSelectedWithTooLargeK'</span>,<span class="keyword">...</span>
+0240                     <span class="string">'More than 50%% of data in testing set, reduce k'</span>);
+0241             <span class="keyword">end</span>
+0242             mns=mod(gc,k);
+0243             dk=nsb*ones(1,k);
+0244             dk(end)=dk(end)+mns;
+0245             inds=1;
+0246             sk=[];
+0247             <span class="keyword">for</span> ii=1:length(dk)
+0248                 sk=[sk,inds*ones(1,dk(ii))];
+0249                 inds=inds+1;
+0250             <span class="keyword">end</span>
+0251         <span class="keyword">else</span> <span class="comment">%Leave-One-Block-Out</span>
+0252             sk = 1:gc;
+0253         <span class="keyword">end</span>
+0254         snums=[];
+0255         <span class="keyword">for</span> g = 1:length(cids)
+0256             snums = [snums;histc(dID(d2(g):d1(g),5),unique(dID(d2(g):d1(g),5)))];
+0257         <span class="keyword">end</span>
+0258         <span class="keyword">if</span> length(snums) == 1
+0259             error(<span class="string">'prt_model:logoSelectedWithOneSubject'</span>,<span class="keyword">...</span>
+0260                 <span class="string">'LOGO CV selected but only one block is included'</span>);
+0261         <span class="keyword">end</span>
+0262         G = cell(length(unique(sk)),1);
+0263         <span class="keyword">for</span> s = 1:length(unique(sk))
+0264             G{s} = ones(sum(snums(sk==s)),1);
+0265         <span class="keyword">end</span>
+0266         CV = blkdiag(G{:}) + 1;
+0267         <span class="keyword">if</span> flaghh
+0268             CV=CV(:,1);
+0269         <span class="keyword">end</span>
+0270         
+0271     <span class="keyword">case</span> <span class="string">'locbo'</span>
+0272         <span class="comment">% leave-one-condition-per-block-out</span>
+0273         error(<span class="string">'leave-one-condition-per-block-out not yet implemented'</span>);
+0274         
+0275     <span class="keyword">case</span> <span class="string">'loro'</span>
+0276         <span class="comment">% leave-one-run-out</span>
+0277         
+0278         mids = unique(ID(:,3));
+0279         
+0280         CV = zeros(size(ID,1),length(mids));
+0281         <span class="keyword">for</span> m = 1:length(mids)
+0282             midx = ID(:,3) == mids(m);
+0283             CV(:,m) = double(midx) + 1;
+0284         <span class="keyword">end</span>
+0285         
+0286     <span class="keyword">case</span> <span class="string">'custom'</span>
+0287         <span class="comment">% load matrix and check that each fold contains test and train data.</span>
+0288         <span class="keyword">if</span> isfield(in.cv,<span class="string">'mat_file'</span>) &amp;&amp; ~isempty(in.cv.mat_file)
+0289             load(in.cv.mat_file)
+0290             <span class="keyword">if</span> ~exist(<span class="string">'CV'</span>)
+0291                 error(<span class="string">'No CV variable found in the mat file provided'</span>)
+0292             <span class="keyword">else</span>
+0293                 <span class="keyword">if</span> size(CV,1) ~= size(ID,1)
+0294                     error(<span class="string">'CV does not comprise the same number of samples as selected'</span>)
+0295                 <span class="keyword">else</span>
+0296                     nfo = size(CV,2);
+0297                     macv = max(CV);
+0298                     <span class="keyword">if</span> length(find(macv==2)) ~= nfo <span class="comment">%test data in all folds</span>
+0299                         error(<span class="string">'One (or more) fold does not contain test data'</span>)
+0300                     <span class="keyword">else</span>
+0301                         [i,j]=find(CV==1);
+0302                         <span class="keyword">if</span> length(unique(j)) ~= nfo <span class="comment">%train data in all folds</span>
+0303                             error(<span class="string">'One (or more) fold does not contain train data'</span>)
+0304                         <span class="keyword">else</span>
+0305                             lv=CV&gt;2;
+0306                             sv=CV&lt;0;
+0307                             <span class="keyword">if</span> any(any(lv)) || any(any(sv))
+0308                                 error(<span class="string">'Values larger than 2 or smaller than 0 found in CV'</span>)
+0309                             <span class="keyword">end</span>
+0310                         <span class="keyword">end</span>
+0311                     <span class="keyword">end</span>
+0312                 <span class="keyword">end</span>
+0313             <span class="keyword">end</span>
+0314         <span class="keyword">elseif</span> isfield(PRT.model(modelid).input,<span class="string">'cv_mat'</span>) &amp;&amp; <span class="keyword">...</span>
+0315                 ~isempty(PRT.model(modelid).input.cv_mat) <span class="comment">% custom CV specified by GUI</span>
+0316             CV = PRT.model(modelid).input.cv_mat;
+0317         <span class="keyword">else</span>
+0318             <span class="comment">% custom CV with only number of folds specified</span>
+0319             <span class="keyword">if</span> isfield(in.cv,<span class="string">'k'</span>)
+0320                 CV = ones(size(ID,1),in.cv.k);
+0321             <span class="keyword">end</span>
+0322             
+0323         <span class="keyword">end</span>
+0324         
+0325         
+0326     <span class="keyword">otherwise</span>
+0327         error(<span class="string">'prt_cv:unknownTypeSpecified'</span>,<span class="keyword">...</span>
+0328             [<span class="string">'Unknown type specified for CV structure ('</span>,in.type',<span class="string">')'</span>]);
+0329 <span class="keyword">end</span>
+0330 
+0331 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

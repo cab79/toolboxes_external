@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_plot_ROC</title>
+  <meta name="keywords" content="prt_plot_ROC">
+  <meta name="description" content="FORMAT prt_plot_ROC(PRT, model, fold, axes_handle)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_plot_ROC.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_plot_ROC
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_plot_ROC(PRT, model, fold, axes_handle)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt_plot_ROC(PRT, model, fold, axes_handle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_plot_ROC(PRT, model, fold, axes_handle)
+
+ This function plots the ROC plot that appears on prt_ui_results 
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+       model           - the number of the model that will be ploted
+       fold            - the number of the fold
+       axes_handle     - (Optional) axes where the plot will be displayed
+
+ Output:
+       None        
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt_plot_ROC(PRT, model, fold, axes_handle)</a>
+0002 <span class="comment">% FORMAT prt_plot_ROC(PRT, model, fold, axes_handle)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function plots the ROC plot that appears on prt_ui_results</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0007 <span class="comment">%                         at least one estimated model).</span>
+0008 <span class="comment">%       model           - the number of the model that will be ploted</span>
+0009 <span class="comment">%       fold            - the number of the fold</span>
+0010 <span class="comment">%       axes_handle     - (Optional) axes where the plot will be displayed</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Output:</span>
+0013 <span class="comment">%       None</span>
+0014 <span class="comment">%__________________________________________________________________________</span>
+0015 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0016 
+0017 <span class="comment">% Written by M. J. Rosa</span>
+0018 <span class="comment">% $Id: prt_plot_ROC.m 706 2013-06-07 14:33:34Z cphillip $</span>
+0019 
+0020 
+0021 nfold = length(PRT.model(model).output.fold);
+0022 
+0023 <span class="keyword">if</span> fold == 1
+0024     fVals   = [];
+0025     targets = [];
+0026     
+0027     <span class="keyword">for</span> f = 1:nfold,
+0028         targets = [targets;PRT.model(model).output.fold(f).targets];
+0029         <span class="keyword">if</span> isfield(PRT.model(model).output.fold(f),<span class="string">'func_val'</span>)
+0030             fVvals_exist = 1;
+0031             fVals  = [fVals;PRT.model(model).output.fold(f).func_val];
+0032         <span class="keyword">else</span>
+0033             fVvals_exist = 0;
+0034             fVals  = [fVals;<span class="keyword">...</span>
+0035                 PRT.model(model).output.fold(f).predictions];
+0036         <span class="keyword">end</span>
+0037     <span class="keyword">end</span>
+0038     targpos = targets == 1; 
+0039     
+0040 <span class="keyword">else</span>
+0041     <span class="comment">% if folds wise</span>
+0042     targets = PRT.model(model).output.fold(fold-1).targets;
+0043         targpos = targets == 1;
+0044     <span class="keyword">if</span> isfield(PRT.model(model).output.fold(fold-1),<span class="string">'func_val'</span>)
+0045         fVals  = PRT.model(model).output.fold(fold-1).func_val;
+0046         fVvals_exist = 1;
+0047     <span class="keyword">else</span>
+0048         fVvals_exist = 0;
+0049         fVals  = PRT.model(model).output.fold(fold-1).predictions;
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 
+0054 
+0055 <span class="comment">%If no axes_handle is given, create a new window</span>
+0056 <span class="keyword">if</span> ~exist(<span class="string">'axes_handle'</span>, <span class="string">'var'</span>)
+0057     figure;
+0058     axes_handle = axes;
+0059 <span class="keyword">else</span>
+0060     set(axes_handle, <span class="string">'XScale'</span>,<span class="string">'linear'</span>);
+0061 <span class="keyword">end</span>
+0062 
+0063 
+0064 rotate3d off
+0065 cla(axes_handle, <span class="string">'reset'</span>);
+0066 [y,idx] = sort(fVals);
+0067 targpos = targpos(idx);
+0068 
+0069 fp      = cumsum(single(targpos))/sum(single(targpos));
+0070 tp      = cumsum(single(~targpos))/sum(single(~targpos));
+0071 
+0072 tp      = [0 ; tp ; 1];
+0073 fp      = [0 ; fp ; 1];
+0074 
+0075 n       = size(tp, 1);
+0076 A       = sum((fp(2:n) - fp(1:n-1)).*(tp(2:n)+tp(1:n-1)))/2;
+0077 <span class="comment">%</span>
+0078 <span class="comment">%                 axis xy</span>
+0079 plot(axes_handle,fp,tp,<span class="string">'--ks'</span>,<span class="string">'LineWidth'</span>,1, <span class="string">'MarkerEdgeColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0080     <span class="string">'MarkerFaceColor'</span>,<span class="string">'k'</span>,<span class="keyword">...</span>
+0081     <span class="string">'MarkerSize'</span>,2);
+0082 title(axes_handle,sprintf(<span class="string">'Receiver Operator Curve / Area Under Curve = %3.2f'</span>,A));
+0083 xlabel(axes_handle,<span class="string">'False positives'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
+0084 ylabel(axes_handle,<span class="string">'True positives'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>)
+0085 set(axes_handle,<span class="string">'Color'</span>,[1,1,1])
+0086</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

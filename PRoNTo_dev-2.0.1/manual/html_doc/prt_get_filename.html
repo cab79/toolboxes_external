@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_get_filename</title>
+  <meta name="keywords" content="prt_get_filename">
+  <meta name="description" content="out = prt_get_filename(ids)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_get_filename.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_get_filename
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>out = prt_get_filename(ids)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_get_filename(ids) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> out = prt_get_filename(ids)
+ 
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_get_filename(ids)</a>
+0002 
+0003 <span class="comment">% out = prt_get_filename(ids)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%__________________________________________________________________________</span>
+0006 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0007 
+0008 <span class="comment">% Written by A. Marquand</span>
+0009 <span class="comment">% $Id$</span>
+0010 
+0011 <span class="comment">% Obs: Names return to the simple form: e.g. 'g1_s1_m1_c1'</span>
+0012 
+0013 <span class="keyword">try</span>
+0014     group_prefix = [<span class="string">'g'</span> int2str(ids(1)) <span class="string">'_'</span>];
+0015 <span class="keyword">catch</span>
+0016     group_prefix = <span class="string">''</span>;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">try</span>
+0020     subj_prefix = [<span class="string">'s'</span> int2str(ids(2)) <span class="string">'_'</span>];
+0021 <span class="keyword">catch</span>
+0022     subj_prefix = <span class="string">''</span>;
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">try</span>
+0026     mod_prefix = [<span class="string">'m'</span> int2str(ids(3))];
+0027 <span class="keyword">catch</span>
+0028     mod_prefix = <span class="string">''</span>;
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">try</span>
+0032     cond_prefix = [<span class="string">'_c'</span> int2str(ids(4))];
+0033 <span class="keyword">catch</span>
+0034     cond_prefix = <span class="string">''</span>;
+0035 <span class="keyword">end</span>
+0036 
+0037 out = [<span class="string">'PRT_'</span> group_prefix subj_prefix mod_prefix cond_prefix];</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

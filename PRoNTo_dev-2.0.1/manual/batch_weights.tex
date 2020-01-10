@@ -1,0 +1,40 @@
+% $Id$ 
+
+\chapter{Compute weights  \label{Chap:weights}}
+
+\vskip 1.5cm
+
+Compute weights. This module computes the linear weights of a classifier and saves them as a 4D image. 3 dimensions correspond to the image dimensions specified in the second-level mask, while the extra dimension corresponds to the number of folds. There is one 3D weights image per fold.
+
+
+\section{Load PRT.mat}
+Select PRT.mat (file containing data/design/models structure).
+
+
+\section{Model name}
+Name of a model. Must correspond with one 
+
+specified in 'Run model' and 'Specify model'
+
+batch modules.
+
+
+\section{Image name (optional)}
+Name of the file with weights (optional). If left empty  an automatic name will be generated.
+
+
+\section{Build weight images per ROI}
+Set to Yes to compute the weight images per ROI You need then to select the atlas image.
+
+
+\subsection{No weight per ROI}
+Not computing weight per ROI.
+
+
+\subsection{Load Atlas}
+Select atlas file to build weights per ROI.
+
+
+\section{Build weight images for permutations}
+Set to Yes to compute the weight images obtained from each permutation. This is to further assess the significance of the ranking distance between two models.
+

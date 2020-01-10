@@ -1,0 +1,293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_nested_cv</title>
+  <meta name="keywords" content="prt_nested_cv">
+  <meta name="description" content="Function to perform the nested CV">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_nested_cv.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_nested_cv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to perform the nested CV</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [out] = prt_nested_cv(PRT, in) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to perform the nested CV
+
+ Inputs:
+ -------
+   in.nc:          number of classes
+   in.ID:          ID matrix
+   in.mid:         model id
+   in.CV:          cross-validation matrix
+   in.Phi_all:     Kernel
+
+ Outputs:
+ --------
+   out.opt_param:  optimal hyper-parameter choosen using the stats from
+                   the inner CVs
+   out.vary_param: stats values associated with all the hyper-parameters
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_compute_cv_mat.html" class="code" title="function [CV,ID] = prt_compute_cv_mat(PRT, in, modelid, use_nested_cv)">prt_compute_cv_mat</a>	Function to compute the cross-validation matrix. Also does error checking</li><li><a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>	Function to run a single cross-validation fold</li><li><a href="prt_stats.html" class="code" title="function stats = prt_stats(model, tte, nk)">prt_stats</a>	Function to compute predictions machine performance statistcs statistics</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cv_model.html" class="code" title="function [outfile]=prt_cv_model(PRT,in)">prt_cv_model</a>	Function to run a cross-validation structure on a given model</li><li><a href="prt_permutation.html" class="code" title="function [] = prt_permutation(PRT, n_perm, modelid, path, flag)">prt_permutation</a>	Function to compute permutation test</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function opt_stats_ind = get_opt_stats_ind(stats, n_par, classification)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [out] = prt_nested_cv(PRT, in)</a>
+0002 <span class="comment">% Function to perform the nested CV</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">% -------</span>
+0006 <span class="comment">%   in.nc:          number of classes</span>
+0007 <span class="comment">%   in.ID:          ID matrix</span>
+0008 <span class="comment">%   in.mid:         model id</span>
+0009 <span class="comment">%   in.CV:          cross-validation matrix</span>
+0010 <span class="comment">%   in.Phi_all:     Kernel</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">% --------</span>
+0014 <span class="comment">%   out.opt_param:  optimal hyper-parameter choosen using the stats from</span>
+0015 <span class="comment">%                   the inner CVs</span>
+0016 <span class="comment">%   out.vary_param: stats values associated with all the hyper-parameters</span>
+0017 <span class="comment">%__________________________________________________________________________</span>
+0018 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0019 
+0020 <span class="comment">% Written by J.M. Monteiro</span>
+0021 <span class="comment">% $Id$</span>
+0022 
+0023 
+0024 <span class="comment">% Set flag</span>
+0025 use_nested_cv = PRT.model(in.mid).input.use_nested_cv;
+0026 <span class="keyword">if</span> use_nested_cv == false
+0027     error(<span class="string">'prt_nested_cv function called with use_nested_cv = false'</span>);
+0028 <span class="keyword">end</span>
+0029 
+0030 train_entries = find(in.CV == 1);
+0031 
+0032 <span class="comment">% Change fdata</span>
+0033 in.ID      = in.ID(train_entries, :);
+0034 in.t       = in.t(train_entries);
+0035 in.fs      = PRT.fs;
+0036 <span class="keyword">if</span> isfield(PRT.model(in.mid).input,<span class="string">'cv_type_nested'</span>)
+0037     in.cv.type = PRT.model(in.mid).input.cv_type_nested;
+0038     in.cv.k = PRT.model(in.mid).input.cv_k_nested;
+0039 <span class="keyword">else</span>
+0040     in.cv.type = PRT.model(in.mid).input.cv_type;
+0041     in.cv.k = PRT.model(in.mid).input.cv_k;
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">for</span> i=1:length(in.Phi_all)
+0045     in.Phi_all{i} = in.Phi_all{i}(train_entries, train_entries);
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">% Set range of the hyper parameters</span>
+0049 <span class="keyword">switch</span> PRT.model(in.mid).input.machine.function
+0050     <span class="keyword">case</span> {<span class="string">'prt_machine_svm_bin'</span>,<span class="string">'prt_machine_sMKL_cla'</span>,<span class="string">'prt_machine_krr'</span>, <span class="string">'prt_machine_sMKL_reg'</span>}
+0051         <span class="keyword">if</span> ~isempty(PRT.model(in.mid).input.nested_param)
+0052             par = PRT.model(in.mid).input.nested_param;
+0053         <span class="keyword">else</span>
+0054             d1 = -2 : 3;
+0055             par = 10 .^(d1);
+0056             beep
+0057             warning(<span class="string">'No parameter range specified for optimization, using 10^-2 to 10^3'</span>)
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">case</span> <span class="string">'prt_machine_ENMKL'</span>
+0060         <span class="keyword">if</span> ~isempty(PRT.model(in.mid).input.nested_param)
+0061             <span class="comment">% Get parameter ranges from PRT</span>
+0062             c = PRT.model(in.mid).input.nested_param{1};
+0063             mu = PRT.model(in.mid).input.nested_param{2};
+0064             <span class="comment">% Convert them to a matrix with all the combinations</span>
+0065             [c_mesh,mu_mesh] = meshgrid(c, mu);
+0066             par = [c_mesh(:), mu_mesh(:)]';
+0067         <span class="keyword">else</span>
+0068             d1 = -2 : 3;
+0069             c = 10 .^(d1);
+0070             mu = 0:0.1:1;
+0071             [c_mesh,mu_mesh] = meshgrid(c, mu);
+0072             par = [c_mesh(:), mu_mesh(:)]';
+0073             beep
+0074             warning(<span class="string">'No parameter range specified for C and mu, using 10^-2 to 10^3 and 0 to 1'</span>)
+0075         <span class="keyword">end</span>
+0076         
+0077     <span class="keyword">otherwise</span>
+0078         error(<span class="string">'Machine not currently supported for nested CV'</span>);
+0079         
+0080 <span class="keyword">end</span>
+0081 
+0082 out.param = par;
+0083 stats_vec = zeros(1, size(par, 2));
+0084 
+0085 <span class="comment">% generate new CV matrix</span>
+0086 in.CV = <a href="prt_compute_cv_mat.html" class="code" title="function [CV,ID] = prt_compute_cv_mat(PRT, in, modelid, use_nested_cv)">prt_compute_cv_mat</a>(PRT, in, in.mid, use_nested_cv);
+0087 
+0088 <span class="comment">% compute model performance based on hyper-parameter range</span>
+0089 <span class="keyword">for</span> i = 1:size(par, 2)
+0090     
+0091     <span class="keyword">switch</span> PRT.model(in.mid).input.machine.function
+0092         <span class="keyword">case</span> {<span class="string">'prt_machine_svm_bin'</span>,<span class="string">'prt_machine_sMKL_cla'</span>}
+0093             PRT.model(in.mid).input.machine.args = par(i);
+0094             m.type = <span class="string">'classifier'</span>;
+0095             
+0096         <span class="keyword">case</span> {<span class="string">'prt_machine_krr'</span>, <span class="string">'prt_machine_sMKL_reg'</span>}
+0097             PRT.model(in.mid).input.machine.args = par(i);
+0098             m.type = <span class="string">'regression'</span>;
+0099             
+0100         <span class="keyword">case</span> <span class="string">'prt_machine_ENMKL'</span>
+0101             PRT.model(in.mid).input.machine.args = par(:,i)';
+0102             m.type = <span class="string">'classifier'</span>;
+0103             
+0104         <span class="keyword">otherwise</span>
+0105             error(<span class="string">'Machine not currently supported for nested CV'</span>);
+0106     <span class="keyword">end</span>
+0107     
+0108     <span class="comment">% compute the model for each fold of the inner CV</span>
+0109     <span class="keyword">for</span> f = 1:size(in.CV, 2)
+0110         
+0111         fold.ID      = in.ID;
+0112         fold.CV      = in.CV(:,f);
+0113         fold.Phi_all = in.Phi_all;
+0114         fold.t       = in.t;
+0115         fold.mid     = in.mid;
+0116         
+0117         [model, targets] = <a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>(PRT,fold);
+0118         
+0119         <span class="comment">%for classification check that for each fold, the test targets have been trained</span>
+0120         <span class="keyword">if</span> strcmpi(PRT.model(in.mid).input.type,<span class="string">'classification'</span>)
+0121             <span class="keyword">if</span> ~all(ismember(unique(targets.test),unique(targets.train)))
+0122                 beep
+0123                 disp(<span class="string">'At least one class is in the test set but not in the training set'</span>)
+0124                 disp(<span class="string">'Abandoning modelling, please correct class selection/cross-validation'</span>)
+0125                 <span class="keyword">return</span>
+0126             <span class="keyword">end</span>
+0127         <span class="keyword">end</span>
+0128         
+0129         <span class="comment">% Compute stats</span>
+0130         stats = <a href="prt_stats.html" class="code" title="function stats = prt_stats(model, tte, nk)">prt_stats</a>(model, targets.test, in.nc);
+0131         f_stats(f).targets     = targets.test;
+0132         f_stats(f).predictions = model.predictions(:);
+0133         f_stats(f).stats       = stats;
+0134         
+0135         
+0136     <span class="keyword">end</span>
+0137     
+0138     <span class="comment">% Model level statistics (across folds)</span>
+0139     ttt           = vertcat(f_stats(:).targets);
+0140     m.predictions = vertcat(f_stats(:).predictions);
+0141     stats         = <a href="prt_stats.html" class="code" title="function stats = prt_stats(model, tte, nk)">prt_stats</a>(m, ttt(:), in.nc);
+0142     
+0143     
+0144     <span class="keyword">switch</span> PRT.model(in.mid).input.type
+0145         <span class="keyword">case</span> <span class="string">'classification'</span>
+0146             stats_vec(i) = stats.b_acc;
+0147         <span class="keyword">case</span> <span class="string">'regression'</span>
+0148             stats_vec(i) = stats.mse;
+0149         <span class="keyword">otherwise</span>
+0150             error(<span class="string">'Type of model not recognised'</span>);
+0151     <span class="keyword">end</span>
+0152     
+0153     
+0154 <span class="keyword">end</span>
+0155 
+0156 <span class="comment">% For now, only parameter optimisation. Add flag for feature selection</span>
+0157 <span class="comment">% Get optimal parameter</span>
+0158 <span class="keyword">if</span> strcmp(PRT.model(in.mid).input.machine.function, <span class="string">'prt_machine_ENMKL'</span>)
+0159     
+0160     <span class="comment">% Reshape the stats vector into a matrix</span>
+0161     stats_mat = reshape(stats_vec, length(unique(par(2,:))), length(unique(par(1,:))))';
+0162     
+0163     <span class="comment">% Find max</span>
+0164     opt_stats_ind = <a href="#_sub1" class="code" title="subfunction opt_stats_ind = get_opt_stats_ind(stats, n_par, classification)">get_opt_stats_ind</a>(stats_mat, 2, true);
+0165     c_max = c(opt_stats_ind(1));
+0166     mu_max = mu(opt_stats_ind(2));
+0167     
+0168     out.opt_param = [c_max, mu_max];
+0169     out.vary_param = stats_mat;
+0170     
+0171     
+0172 <span class="keyword">else</span>
+0173     
+0174     <span class="keyword">switch</span> PRT.model(in.mid).input.type
+0175         <span class="keyword">case</span> <span class="string">'classification'</span>
+0176             opt_stats_ind = <a href="#_sub1" class="code" title="subfunction opt_stats_ind = get_opt_stats_ind(stats, n_par, classification)">get_opt_stats_ind</a>(stats_vec, 1, true);
+0177         <span class="keyword">case</span> <span class="string">'regression'</span>
+0178             opt_stats_ind = <a href="#_sub1" class="code" title="subfunction opt_stats_ind = get_opt_stats_ind(stats, n_par, classification)">get_opt_stats_ind</a>(stats_vec, 1, false);
+0179         <span class="keyword">otherwise</span>
+0180             error(<span class="string">'Type of model not recognised'</span>);
+0181     <span class="keyword">end</span>
+0182     
+0183     par_opt = par(opt_stats_ind);
+0184     
+0185     out.opt_param = par_opt;
+0186     out.vary_param = stats_vec;
+0187     
+0188 <span class="keyword">end</span>
+0189 
+0190 <span class="keyword">end</span>
+0191 
+0192 
+0193 
+0194 <span class="comment">% -------------------------------------------------------------------------</span>
+0195 <span class="comment">% Private functions</span>
+0196 <span class="comment">% -------------------------------------------------------------------------</span>
+0197 <a name="_sub1" href="#_subfunctions" class="code">function opt_stats_ind = get_opt_stats_ind(stats, n_par, classification)</a>
+0198 
+0199 <span class="keyword">switch</span> n_par
+0200     
+0201     <span class="keyword">case</span> 1
+0202         <span class="keyword">if</span> classification
+0203             opt_stats = max(stats);
+0204         <span class="keyword">else</span>
+0205             opt_stats = min(stats);
+0206         <span class="keyword">end</span>
+0207         
+0208         ind = find(stats == opt_stats);
+0209         opt_stats_ind = round(median(ind));
+0210         
+0211     <span class="keyword">case</span> 2
+0212         <span class="keyword">if</span> classification
+0213             opt_stats = max(max(stats));
+0214         <span class="keyword">else</span>
+0215             opt_stats = min(min(stats));
+0216         <span class="keyword">end</span>
+0217         
+0218         [ind_c, ind_mu] = find(stats==opt_stats);
+0219         
+0220         opt_stats_ind(1) = round(median(ind_c));
+0221         opt_stats_ind(2) = round(median(ind_mu));
+0222         
+0223     <span class="keyword">otherwise</span>
+0224         error(<span class="string">'The number of parameters to optimise must be &lt;=2'</span>)
+0225 <span class="keyword">end</span>
+0226 
+0227 
+0228 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

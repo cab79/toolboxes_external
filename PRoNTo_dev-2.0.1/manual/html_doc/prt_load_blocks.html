@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_load_blocks</title>
+  <meta name="keywords" content="prt_load_blocks">
+  <meta name="description" content="Load one or more blocks of data.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_load_blocks.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_load_blocks
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Load one or more blocks of data.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function block = prt_load_blocks(filenames, bs, br) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Load one or more blocks of data.
+ This script is a effectively a wrapper function that for the routines
+ that actually do the work (SPM nifti routines)
+
+ The syntax is either:
+
+ img = prt_load_blocks(filenames, block_size, block_range) just to specify
+ continuous blocks of data
+
+ or
+
+ img = prt_load_blocks(filenames, voxel_index) to access non continuous
+ blocks
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>	Function to build file arrays containing the (linearly detrended) data</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function block = prt_load_blocks(filenames, bs, br)</a>
+0002 <span class="comment">% Load one or more blocks of data.</span>
+0003 <span class="comment">% This script is a effectively a wrapper function that for the routines</span>
+0004 <span class="comment">% that actually do the work (SPM nifti routines)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% The syntax is either:</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% img = prt_load_blocks(filenames, block_size, block_range) just to specify</span>
+0009 <span class="comment">% continuous blocks of data</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% or</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% img = prt_load_blocks(filenames, voxel_index) to access non continuous</span>
+0014 <span class="comment">% blocks</span>
+0015 <span class="comment">%_______________________________________________________________________</span>
+0016 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0017 
+0018 <span class="comment">% Written by A Marquand</span>
+0019 <span class="comment">% $Id$</span>
+0020 
+0021 <span class="keyword">if</span> nargin &lt;2 || nargin &gt;3
+0022     disp(<span class="string">'Usage: img = prt_load_blocks(filenames, block_size, block_range)'</span>);
+0023     disp(<span class="string">'or'</span>)
+0024     disp(<span class="string">'Usage: img = prt_load_blocks(filenames, voxel_indexes)'</span>);
+0025     <span class="keyword">return</span>;
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% read the image dimensions from the header</span>
+0029 N  = nifti(filenames);
+0030 dm = size(N(1).dat);
+0031 <span class="keyword">if</span> length(dm)==2, dm = [dm 1]; <span class="keyword">end</span> <span class="comment">% handling case of 2D image</span>
+0032 n_vox = prod(dm(1:3));
+0033 
+0034 <span class="keyword">if</span> length(dm) == 3
+0035     n_vol = 1;
+0036 <span class="keyword">else</span>
+0037     n_vol = dm(4);
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% get the data</span>
+0041 <span class="keyword">if</span> nargin==3
+0042     data_range = (br(1)-1)*bs+1:min(br(end)*bs,n_vox);
+0043 <span class="keyword">else</span>
+0044     data_range = bs;
+0045 <span class="keyword">end</span>
+0046 
+0047 block=zeros(length(data_range),length(N));
+0048 <span class="keyword">if</span> n_vol==1
+0049     <span class="keyword">for</span> i=1:length(N)
+0050         block(:,i) = N(i).dat(data_range);
+0051     <span class="keyword">end</span>
+0052 <span class="keyword">else</span>
+0053     <span class="keyword">for</span> i=1:n_vol
+0054         dat_r = N(1).dat(:,:,:,i);
+0055         block(:,i) = dat_r(data_range);
+0056     <span class="keyword">end</span>
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

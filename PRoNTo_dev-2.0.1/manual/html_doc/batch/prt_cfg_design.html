@@ -1,0 +1,647 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cfg_design</title>
+  <meta name="keywords" content="prt_cfg_design">
+  <meta name="description" content="Data &amp; design configuration file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_cfg_design.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cfg_design
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Data &amp; design configuration file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function data = prt_cfg_design </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Data &amp; design configuration file
+ This builds the PRT.mat data and design structure.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_run_design.html" class="code" title="function out = prt_run_design(varargin)">prt_run_design</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_batch.html" class="code" title="function prt = prt_cfg_batch">prt_cfg_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cdep = vout_data(job)</a></li><li><a href="#_sub2" class="code">function t = check_data(data)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = prt_cfg_design</a>
+0002 <span class="comment">% Data &amp; design configuration file</span>
+0003 <span class="comment">% This builds the PRT.mat data and design structure.</span>
+0004 <span class="comment">%_______________________________________________________________________</span>
+0005 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0006 
+0007 <span class="comment">% Written by M.J.Rosa</span>
+0008 <span class="comment">% $Id$</span>
+0009 
+0010 <span class="comment">% ---------------------------------------------------------------------</span>
+0011 <span class="comment">% covar Covariates</span>
+0012 <span class="comment">% ---------------------------------------------------------------------</span>
+0013 covar         = cfg_files;
+0014 covar.tag     = <span class="string">'covar'</span>;
+0015 covar.name    = <span class="string">'Covariates'</span>;
+0016 covar.help    = {[<span class="string">'Select a .mat file containing '</span><span class="keyword">...</span>
+0017     <span class="string">'your covariates (i.e. any other data/information '</span><span class="keyword">...</span>
+0018     <span class="string">'you would like to include in your design). This file '</span><span class="keyword">...</span>
+0019     <span class="string">'should contain a variable ''R'' with a matrix of '</span><span class="keyword">...</span>
+0020     <span class="string">'covariates. On covariate per image is expected.'</span>]};
+0021 covar.val{1}  = {<span class="string">''</span>};
+0022 covar.filter  = <span class="string">'mat'</span>;
+0023 covar.ufilter = <span class="string">'.*'</span>;
+0024 covar.num     = [0 1];
+0025 
+0026 <span class="comment">% ---------------------------------------------------------------------</span>
+0027 <span class="comment">% rt_subj One per subject/scans</span>
+0028 <span class="comment">% ---------------------------------------------------------------------</span>
+0029 rt_subj         = cfg_entry;
+0030 rt_subj.tag     = <span class="string">'rt_subj'</span>;
+0031 rt_subj.name    = <span class="string">'Regression targets (per scans)'</span>;
+0032 rt_subj.help    = {[<span class="string">'Enter one regression target per scan. '</span><span class="keyword">...</span>
+0033     <span class="string">'or enter the name of a variable. '</span><span class="keyword">...</span>
+0034     <span class="string">' This variable should be a vector '</span><span class="keyword">...</span>
+0035     <span class="string">'[Nscans x 1], where Nscans is the number of '</span><span class="keyword">...</span>
+0036     <span class="string">'scans/images.'</span>]};
+0037 rt_subj.strtype = <span class="string">'e'</span>;
+0038 rt_subj.val     = {[]};
+0039 rt_subj.num     = [Inf 0];
+0040 
+0041 <span class="comment">% ---------------------------------------------------------------------</span>
+0042 <span class="comment">% regtrial One per trial</span>
+0043 <span class="comment">% ---------------------------------------------------------------------</span>
+0044 rt_trial         = cfg_entry;
+0045 rt_trial.tag     = <span class="string">'rt_trial'</span>;
+0046 rt_trial.name    = <span class="string">'Regression targets (trials)'</span>;
+0047 rt_trial.help    = {[<span class="string">'Enter one regression target per trial. '</span><span class="keyword">...</span>
+0048     <span class="string">'This vector should have the following dimensions: '</span><span class="keyword">...</span>
+0049     <span class="string">'[Ntrials x 1], where Ntrials is the number of trials.'</span>]
+0050     };
+0051 rt_trial.strtype = <span class="string">'e'</span>;
+0052 rt_trial.val     = {[]};
+0053 rt_trial.num     = [Inf 0];
+0054 
+0055 <span class="comment">% ---------------------------------------------------------------------</span>
+0056 <span class="comment">% TR Interscan interval</span>
+0057 <span class="comment">% ---------------------------------------------------------------------</span>
+0058 TR         = cfg_entry;
+0059 TR.tag     = <span class="string">'TR'</span>;
+0060 TR.name    = <span class="string">'Interscan interval'</span>;
+0061 TR.help    = {<span class="string">'Specify interscan interval (TR). The units should be seconds.'</span>};
+0062 TR.strtype = <span class="string">'e'</span>;
+0063 TR.num     = [Inf 1];
+0064 
+0065 <span class="comment">% ---------------------------------------------------------------------</span>
+0066 <span class="comment">% units Units for design</span>
+0067 <span class="comment">% ---------------------------------------------------------------------</span>
+0068 unit         = cfg_menu;
+0069 unit.tag     = <span class="string">'unit'</span>;
+0070 unit.name    = <span class="string">'Units for design'</span>;
+0071 unit.help    = {[<span class="string">'The onsets of events or blocks can be specified in '</span><span class="keyword">...</span>
+0072     <span class="string">'either scans or seconds.'</span>]};
+0073 unit.labels  = {
+0074     <span class="string">'Scans'</span>
+0075     <span class="string">'Seconds'</span>
+0076     }';
+0077 unit.values  = {0 1};
+0078 unit.val     = {1};
+0079 
+0080 <span class="comment">% ---------------------------------------------------------------------</span>
+0081 <span class="comment">% review Review</span>
+0082 <span class="comment">% ---------------------------------------------------------------------</span>
+0083 review         = cfg_menu;
+0084 review.tag     = <span class="string">'review'</span>;
+0085 review.name    = <span class="string">'Review'</span>;
+0086 review.help    = {[<span class="string">'Choose ''Yes'' if you would like to review your '</span><span class="keyword">...</span>
+0087     <span class="string">'data and design in a separate window.'</span>]};
+0088 review.labels  = {
+0089     <span class="string">'No'</span>
+0090     <span class="string">'Yes'</span>
+0091     }';
+0092 review.values  = {0 1};
+0093 review.val     = {0};
+0094 
+0095 <span class="comment">% ---------------------------------------------------------------------</span>
+0096 <span class="comment">% hrfover HRF Overlap</span>
+0097 <span class="comment">% ---------------------------------------------------------------------</span>
+0098 hrfover         = cfg_entry;
+0099 hrfover.tag     = <span class="string">'hrfover'</span>;
+0100 hrfover.name    = <span class="string">'HRF overlap'</span>;
+0101 hrfover.help    = {[<span class="string">'If using fMRI data please specify the width of the '</span><span class="keyword">...</span>
+0102     <span class="string">'hemodynamic response function (HRF). This will be '</span><span class="keyword">...</span>
+0103     <span class="string">'used to calculate the overlap between events. '</span><span class="keyword">...</span>
+0104     <span class="string">'Leave as 0 for other modalities (other than fMRI).'</span>]};
+0105 hrfover.strtype = <span class="string">'e'</span>;
+0106 hrfover.num     = [1 1];
+0107 hrfover.def     = @(val)prt_get_defaults(<span class="string">'datad.hrfw'</span>, val{:});
+0108 
+0109 <span class="comment">% ---------------------------------------------------------------------</span>
+0110 <span class="comment">% hrfdel HRF Delay</span>
+0111 <span class="comment">% ---------------------------------------------------------------------</span>
+0112 hrfdel         = cfg_entry;
+0113 hrfdel.tag     = <span class="string">'hrfdel'</span>;
+0114 hrfdel.name    = <span class="string">'HRF delay'</span>;
+0115 hrfdel.help    = {[<span class="string">'If using fMRI data please specify the delay of the '</span><span class="keyword">...</span>
+0116     <span class="string">'hemodynamic response function (HRF). This will be '</span><span class="keyword">...</span>
+0117     <span class="string">'used to calculate the overlap between events. Leave '</span><span class="keyword">...</span>
+0118     <span class="string">'as 0 for other modalities (other than fMRI).'</span>]};
+0119 hrfdel.strtype = <span class="string">'e'</span>;
+0120 hrfdel.num     = [1 1];
+0121 hrfdel.def     = @(val)prt_get_defaults(<span class="string">'datad.hrfd'</span>, val{:});
+0122 
+0123 <span class="comment">% ---------------------------------------------------------------------</span>
+0124 <span class="comment">% fmri_des fMRI design specific parameters</span>
+0125 <span class="comment">% ---------------------------------------------------------------------</span>
+0126 fmri_des      = cfg_branch;
+0127 fmri_des.tag  = <span class="string">'fmri_des'</span>;
+0128 fmri_des.name = <span class="string">'fMRI_Des'</span>;
+0129 fmri_des.val  = {hrfover, hrfdel};
+0130 fmri_des.help = {<span class="string">'fMRI design specific parameters, HRF overlap and delay.'</span>};
+0131 
+0132 <span class="comment">% ---------------------------------------------------------------------</span>
+0133 <span class="comment">% mod_name Name</span>
+0134 <span class="comment">% ---------------------------------------------------------------------</span>
+0135 mod_name         = cfg_entry;
+0136 mod_name.tag     = <span class="string">'mod_name'</span>;
+0137 mod_name.name    = <span class="string">'Name'</span>;
+0138 mod_name.help    = {[<span class="string">'Name of modality. Example: ''BOLD''. The names '</span><span class="keyword">...</span>
+0139     <span class="string">'should be consistent accross subjects/groups '</span><span class="keyword">...</span>
+0140     <span class="string">'and the same names specified in the masks.'</span>]};
+0141 mod_name.strtype = <span class="string">'s'</span>;
+0142 mod_name.num     = [1 Inf];
+0143 
+0144 <span class="comment">% ---------------------------------------------------------------------</span>
+0145 <span class="comment">% scans Scans</span>
+0146 <span class="comment">% ---------------------------------------------------------------------</span>
+0147 scans         = cfg_files;
+0148 scans.tag     = <span class="string">'scans'</span>;
+0149 scans.name    = <span class="string">'Scans'</span>;
+0150 scans.help    = {[<span class="string">'Select scans (images) for this modality. They must '</span><span class="keyword">...</span>
+0151     <span class="string">'all have the same image dimensions, orientation, '</span><span class="keyword">...</span>
+0152     <span class="string">'voxel size etc.'</span>]};
+0153 scans.filter = <span class="string">'image'</span>;
+0154 scans.ufilter = <span class="string">'.*'</span>;
+0155 scans.num     = [1 Inf];
+0156 
+0157 <span class="comment">% ---------------------------------------------------------------------</span>
+0158 <span class="comment">% subjects Subjects</span>
+0159 <span class="comment">% ---------------------------------------------------------------------</span>
+0160 subjects         = cfg_files;
+0161 subjects.tag     = <span class="string">'subjects'</span>;
+0162 subjects.name    = <span class="string">'Files'</span>;
+0163 subjects.help    = {[<span class="string">'Select scans (images) for this modality. They must '</span><span class="keyword">...</span>
+0164     <span class="string">'all have the same image dimensions, orientation, '</span><span class="keyword">...</span>
+0165     <span class="string">'voxel size etc.'</span>]};
+0166 subjects.filter  = <span class="string">'image'</span>;
+0167 subjects.num     = [0 Inf];
+0168 
+0169 <span class="comment">% ---------------------------------------------------------------------</span>
+0170 <span class="comment">% modality Modality</span>
+0171 <span class="comment">% ---------------------------------------------------------------------</span>
+0172 modality      = cfg_branch;
+0173 modality.tag  = <span class="string">'modality'</span>;
+0174 modality.name = <span class="string">'Modality'</span>;
+0175 modality.val  = {mod_name, subjects, rt_subj, covar };
+0176 modality.help = {<span class="string">'Specify modality, such as name and data.'</span>};
+0177 
+0178 <span class="comment">% ---------------------------------------------------------------------</span>
+0179 <span class="comment">% images Scans</span>
+0180 <span class="comment">% ---------------------------------------------------------------------</span>
+0181 images        = cfg_repeat;
+0182 images.tag    = <span class="string">'images'</span>;
+0183 images.name   = <span class="string">'Scans'</span>;
+0184 images.values = {modality };
+0185 images.help   = {[<span class="string">'Depending on the type of data at hand, you may have many images (scans) '</span><span class="keyword">...</span>
+0186     <span class="string">'per subject, such as a fMRI time series, or you may have many '</span><span class="keyword">...</span>
+0187     <span class="string">'subjects with only one or a small number of images (scans) per subject, '</span><span class="keyword">...</span>
+0188     <span class="string">'such as PET images. '</span>,<span class="keyword">...</span>
+0189     <span class="string">'Select this option if you have many subjects per modality to spatially '</span>,<span class="keyword">...</span>
+0190     <span class="string">'normalise, but there is one or a small number of scans for '</span><span class="keyword">...</span>
+0191     <span class="string">'each subject. This is a faster option with less information to specify '</span><span class="keyword">...</span>
+0192     <span class="string">'than the ''select by subjects'' option. Both options create the same '</span><span class="keyword">...</span>
+0193     <span class="string">'''PRT.mat'' but ''select by scans'' is optimised for modalities '</span><span class="keyword">...</span>
+0194     <span class="string">'with no design.'</span>]};
+0195 
+0196 <span class="comment">% ---------------------------------------------------------------------</span>
+0197 <span class="comment">% fmask File name</span>
+0198 <span class="comment">% ---------------------------------------------------------------------</span>
+0199 fmask        = cfg_files;
+0200 fmask.tag    = <span class="string">'fmask'</span>;
+0201 fmask.name   = <span class="string">'File'</span>;
+0202 fmask.filter = <span class="string">'image'</span>;
+0203 fmask.ufilter = <span class="string">'.*'</span>;
+0204 fmask.num    = [1 1];
+0205 fmask.help   = {[<span class="string">'Select one first-level mask (image) for each modality. '</span>,<span class="keyword">...</span>
+0206     <span class="string">'This mask is used to optimise the prepare data step. '</span>,<span class="keyword">...</span>
+0207     <span class="string">'In ''specify model'' there is an option to enter a '</span>,<span class="keyword">...</span>
+0208     <span class="string">'second-level mask, which might be used to select only '</span>,<span class="keyword">...</span>
+0209     <span class="string">'a few areas of the brain for subsequent analyses.'</span>]};
+0210 <span class="comment">% ---------------------------------------------------------------------</span>
+0211 <span class="comment">% mask Modality</span>
+0212 <span class="comment">% ---------------------------------------------------------------------</span>
+0213 mask         = cfg_branch;
+0214 mask.tag     = <span class="string">'mask'</span>;
+0215 mask.name    = <span class="string">'Modality'</span>;
+0216 mask.help    = {[<span class="string">'Specify name of modality and file for each mask. '</span>,<span class="keyword">...</span>
+0217     <span class="string">'The name should be consistent with the names chosen '</span>,<span class="keyword">...</span>
+0218     <span class="string">'for the modalities (subjects/scans).'</span>]};
+0219 mask.val     = {mod_name, fmask };
+0220 
+0221 <span class="comment">% ---------------------------------------------------------------------</span>
+0222 <span class="comment">% masks Masks</span>
+0223 <span class="comment">% ---------------------------------------------------------------------</span>
+0224 masks         = cfg_repeat;
+0225 masks.tag     = <span class="string">'masks'</span>;
+0226 masks.name    = <span class="string">'Masks'</span>;
+0227 masks.help    = {[<span class="string">'Select first-level (pre-processing) mask for each '</span>,<span class="keyword">...</span>
+0228     <span class="string">'modality. The name of the modalities should be the same '</span>,<span class="keyword">...</span>
+0229     <span class="string">'as the ones entered for subjects/scans.'</span>]};
+0230 masks.num     = [1 Inf];
+0231 masks.values  = {mask };
+0232 
+0233 <span class="comment">% ---------------------------------------------------------------------</span>
+0234 <span class="comment">% load_SPM Load SPM.mat</span>
+0235 <span class="comment">% ---------------------------------------------------------------------</span>
+0236 load_SPM         = cfg_files;
+0237 load_SPM.tag     = <span class="string">'load_SPM'</span>;
+0238 load_SPM.name    = <span class="string">'Load SPM.mat'</span>;
+0239 load_SPM.help    = {[<span class="string">'Load design from SPM.mat (if you have previously '</span><span class="keyword">...</span>
+0240     <span class="string">'specified the experimental design with SPM).'</span>]};
+0241 load_SPM.filter  = <span class="string">'^SPM\.mat$'</span>;
+0242 load_SPM.num     = [1 1];
+0243 
+0244 <span class="comment">% ---------------------------------------------------------------------</span>
+0245 <span class="comment">% cond_name Name</span>
+0246 <span class="comment">% ---------------------------------------------------------------------</span>
+0247 cond_name         = cfg_entry;
+0248 cond_name.tag     = <span class="string">'cond_name'</span>;
+0249 cond_name.name    = <span class="string">'Name'</span>;
+0250 cond_name.help    = {<span class="string">'Name of condition (alphanumeric strings only).'</span>};
+0251 cond_name.strtype = <span class="string">'s'</span>;
+0252 cond_name.num     = [1 Inf];
+0253 
+0254 <span class="comment">% ---------------------------------------------------------------------</span>
+0255 <span class="comment">% onsets Onsets</span>
+0256 <span class="comment">% ---------------------------------------------------------------------</span>
+0257 onsets         = cfg_entry;
+0258 onsets.tag     = <span class="string">'onsets'</span>;
+0259 onsets.name    = <span class="string">'Onsets'</span>;
+0260 onsets.help    = {<span class="string">'Specify a vector of onset times for this condition type. '</span>};
+0261 onsets.strtype = <span class="string">'e'</span>;
+0262 onsets.num     = [Inf 1];
+0263 
+0264 <span class="comment">% ---------------------------------------------------------------------</span>
+0265 <span class="comment">% durations Durations</span>
+0266 <span class="comment">% ---------------------------------------------------------------------</span>
+0267 durations         = cfg_entry;
+0268 durations.tag     = <span class="string">'durations'</span>;
+0269 durations.name    = <span class="string">'Durations'</span>;
+0270 durations.help    = {[<span class="string">'Specify the event durations. Epoch and '</span><span class="keyword">...</span>
+0271     <span class="string">'event-related responses are modeled in exactly '</span><span class="keyword">...</span>
+0272     <span class="string">'the same way but by specifying their different '</span><span class="keyword">...</span>
+0273     <span class="string">'durations.  Events are specified with a duration '</span><span class="keyword">...</span>
+0274     <span class="string">'of 0.  If you enter a single number for the '</span><span class="keyword">...</span>
+0275     <span class="string">'durations it will be assumed that all trials '</span><span class="keyword">...</span>
+0276     <span class="string">'conform to this duration. If you have multiple '</span><span class="keyword">...</span>
+0277     <span class="string">'different durations, then the number must match '</span><span class="keyword">...</span>
+0278     <span class="string">'the number of onset times.'</span>]};
+0279 durations.strtype = <span class="string">'e'</span>;
+0280 durations.num     = [Inf 1];
+0281 
+0282 <span class="comment">% ---------------------------------------------------------------------</span>
+0283 <span class="comment">% conds Condition</span>
+0284 <span class="comment">% ---------------------------------------------------------------------</span>
+0285 conds         = cfg_branch;
+0286 conds.tag     = <span class="string">'conds'</span>;
+0287 conds.name    = <span class="string">'Condition'</span>;
+0288 conds.help    = {<span class="string">'Specify condition: name, onsets and duration.'</span>};
+0289 conds.val     = {cond_name, onsets, durations};
+0290 
+0291 <span class="comment">% ---------------------------------------------------------------------</span>
+0292 <span class="comment">% conditions Conditions</span>
+0293 <span class="comment">% ---------------------------------------------------------------------</span>
+0294 conditions         = cfg_repeat;
+0295 conditions.tag     = <span class="string">'conditions'</span>;
+0296 conditions.name    = <span class="string">'Conditions'</span>;
+0297 conditions.help    = {[<span class="string">'Specify conditions. You are allowed to combine '</span><span class="keyword">...</span>
+0298     <span class="string">'both event- and epoch-related responses in '</span><span class="keyword">...</span>
+0299     <span class="string">'the same model and/or regressor. Any number of '</span><span class="keyword">...</span>
+0300     <span class="string">'condition (event or epoch) types can be '</span><span class="keyword">...</span>
+0301     <span class="string">'specified.  Epoch and event-related responses '</span><span class="keyword">...</span>
+0302     <span class="string">'are modeled in exactly the same way by '</span><span class="keyword">...</span>
+0303     <span class="string">'specifying their onsets [in terms of onset '</span><span class="keyword">...</span>
+0304     <span class="string">'times] and their durations.  Events are specified '</span><span class="keyword">...</span>
+0305     <span class="string">'with a duration of 0.  If you enter a single '</span><span class="keyword">...</span>
+0306     <span class="string">'number for the durations it will be assumed that '</span><span class="keyword">...</span>
+0307     <span class="string">'all trials conform to this duration.For factorial '</span><span class="keyword">...</span>
+0308     <span class="string">'designs, one can later associate these experimental '</span><span class="keyword">...</span>
+0309     <span class="string">'conditions with the appropriate levels of experimental '</span><span class="keyword">...</span>
+0310     <span class="string">'factors.'</span>]};
+0311 conditions.values  = {conds};
+0312 
+0313 <span class="comment">% ---------------------------------------------------------------------</span>
+0314 <span class="comment">% multi_conds Multiple conditions</span>
+0315 <span class="comment">% ---------------------------------------------------------------------</span>
+0316 multi_conds         = cfg_files;
+0317 multi_conds.tag     = <span class="string">'multi_conds'</span>;
+0318 multi_conds.name    = <span class="string">'Multiple conditions'</span>;
+0319 multi_conds.val{1}  = {<span class="string">''</span>};
+0320 multi_conds.help    = {
+0321     <span class="string">'Select the *.mat file containing details of your multiple experimental conditions. '</span>
+0322     <span class="string">''</span>
+0323     <span class="string">'If you have multiple conditions then entering the details a condition at a time is very inefficient. This option can be used to load all the required information in one go. You will first need to create a *.mat file containing the relevant information. '</span>
+0324     <span class="string">''</span>
+0325     <span class="string">'This *.mat file must include the following cell arrays (each 1 x n): names, onsets and durations. eg. names=cell(1,5), onsets=cell(1,5), durations=cell(1,5), then names{2}=''SSent-DSpeak'', onsets{2}=[3 5 19 222], durations{2}=[0 0 0 0], contain the required details of the second condition. These cell arrays may be made available by your stimulus delivery program, eg. COGENT. The duration vectors can contain a single entry if the durations are identical for all events.'</span>
+0326     <span class="string">''</span>
+0327     <span class="string">'Time and Parametric effects can also be included. For time modulation include a cell array (1 x n) called tmod. It should have a have a single number in each cell. Unused cells may contain either a 0 or be left empty. The number specifies the order of time modulation from 0 = No Time Modulation to 6 = 6th Order Time Modulation. eg. tmod{3} = 1, modulates the 3rd condition by a linear time effect.'</span>
+0328     <span class="string">''</span>
+0329     <span class="string">'For parametric modulation include a structure array, which is up to 1 x n in size, called pmod. n must be less than or equal to the number of cells in the names/onsets/durations cell arrays. The structure array pmod must have the fields: name, param and poly.  Each of these fields is in turn a cell array to allow the inclusion of one or more parametric effects per column of the design. The field name must be a cell array containing strings. The field param is a cell array containing a vector of parameters. Remember each parameter must be the same length as its corresponding onsets vector. The field poly is a cell array (for consistency) with each cell containing a single number specifying the order of the polynomial expansion from 1 to 6.'</span>
+0330     <span class="string">''</span>
+0331     <span class="string">'Note that each condition is assigned its corresponding entry in the structure array (condition 1 parametric modulators are in pmod(1), condition 2 parametric modulators are in pmod(2), etc. Within a condition multiple parametric modulators are accessed via each fields cell arrays. So for condition 1, parametric modulator 1 would be defined in  pmod(1).name{1}, pmod(1).param{1}, and pmod(1).poly{1}. A second parametric modulator for condition 1 would be defined as pmod(1).name{2}, pmod(1).param{2} and pmod(1).poly{2}. If there was also a parametric modulator for condition 2, then remember the first modulator for that condition is in cell array 1: pmod(2).name{1}, pmod(2).param{1}, and pmod(2).poly{1}. If some, but not all conditions are parametrically modulated, then the non-modulated indices in the pmod structure can be left blank. For example, if conditions 1 and 3 but not condition 2 are modulated, then specify pmod(1) and pmod(3). Similarly, if conditions 1 and 2 are modulated but there are 3 conditions overall, it is only necessary for pmod to be a 1 x 2 structure array.'</span>
+0332     <span class="string">''</span>
+0333     <span class="string">'EXAMPLE:'</span>
+0334     <span class="string">'Make an empty pmod structure: '</span>
+0335     <span class="string">'  pmod = struct(''name'',{''''},''param'',{},''poly'',{});'</span>
+0336     <span class="string">'Specify one parametric regressor for the first condition: '</span>
+0337     <span class="string">'  pmod(1).name{1}  = ''regressor1'';'</span>
+0338     <span class="string">'  pmod(1).param{1} = [1 2 4 5 6];'</span>
+0339     <span class="string">'  pmod(1).poly{1}  = 1;'</span>
+0340     <span class="string">'Specify 2 parametric regressors for the second condition: '</span>
+0341     <span class="string">'  pmod(2).name{1}  = ''regressor2-1'';'</span>
+0342     <span class="string">'  pmod(2).param{1} = [1 3 5 7]; '</span>
+0343     <span class="string">'  pmod(2).poly{1}  = 1;'</span>
+0344     <span class="string">'  pmod(2).name{2}  = ''regressor2-2'';'</span>
+0345     <span class="string">'  pmod(2).param{2} = [2 4 6 8 10];'</span>
+0346     <span class="string">'  pmod(2).poly{2}  = 1;'</span>
+0347     <span class="string">''</span>
+0348     <span class="string">'The parametric modulator should be mean corrected if appropriate. Unused structure entries should have all fields left empty.'</span>
+0349     }';
+0350 multi_conds.filter  = <span class="string">'mat'</span>;
+0351 multi_conds.ufilter = <span class="string">'.*'</span>;
+0352 multi_conds.num     = [0 1];
+0353 
+0354 <span class="comment">% ---------------------------------------------------------------------</span>
+0355 <span class="comment">% new_design Specify design</span>
+0356 <span class="comment">% ---------------------------------------------------------------------</span>
+0357 new_design         = cfg_branch;
+0358 new_design.tag     = <span class="string">'new_design'</span>;
+0359 new_design.name    = <span class="string">'Specify design'</span>;
+0360 new_design.help    = {<span class="string">'Specify design: scans (data), onsets and durations.'</span>};
+0361 new_design.val     = {unit conditions multi_conds}; <span class="comment">%covar for covar per trial (v3)</span>
+0362 
+0363 <span class="comment">% ---------------------------------------------------------------------</span>
+0364 <span class="comment">% no_design No design</span>
+0365 <span class="comment">% ---------------------------------------------------------------------</span>
+0366 no_design         = cfg_const;
+0367 no_design.tag     = <span class="string">'no_design'</span>;
+0368 no_design.name    = <span class="string">'No design'</span>;
+0369 no_design.val     = {0};
+0370 no_design.help    = {[<span class="string">'Do not specify design. This option can be used '</span><span class="keyword">...</span>
+0371     <span class="string">'for modalities (e.g. structural scans) that do not '</span><span class="keyword">...</span>
+0372     <span class="string">'have an experimental design.'</span>]};
+0373 
+0374 <span class="comment">% ---------------------------------------------------------------------</span>
+0375 <span class="comment">% design Data &amp; Design</span>
+0376 <span class="comment">% ---------------------------------------------------------------------</span>
+0377 design        = cfg_choice;
+0378 design.tag    = <span class="string">'design'</span>;
+0379 design.name   = <span class="string">'Data &amp; Design'</span>;
+0380 design.help   = {<span class="string">'Specify data and design.'</span>};
+0381 design.values = {load_SPM, new_design, no_design };
+0382 design.val    = {load_SPM };
+0383 
+0384 <span class="comment">% ---------------------------------------------------------------------</span>
+0385 <span class="comment">% subject Modality</span>
+0386 <span class="comment">% ---------------------------------------------------------------------</span>
+0387 subject      = cfg_branch;
+0388 subject.tag  = <span class="string">'subject'</span>;
+0389 subject.name = <span class="string">'Modality'</span>;
+0390 subject.val  = {mod_name, TR, scans, design };
+0391 subject.help = {<span class="string">'Add new modality.'</span>};
+0392 
+0393 <span class="comment">% ---------------------------------------------------------------------</span>
+0394 <span class="comment">% gr_name Name</span>
+0395 <span class="comment">% ---------------------------------------------------------------------</span>
+0396 gr_name         = cfg_entry;
+0397 gr_name.tag     = <span class="string">'gr_name'</span>;
+0398 gr_name.name    = <span class="string">'Name'</span>;
+0399 gr_name.help    = {<span class="string">'Name of the group. Example: ''Controls''.'</span>};
+0400 gr_name.strtype = <span class="string">'s'</span>;
+0401 gr_name.num     = [1 Inf];
+0402 
+0403 <span class="comment">% ---------------------------------------------------------------------</span>
+0404 <span class="comment">% ind_subj Subject</span>
+0405 <span class="comment">% ---------------------------------------------------------------------</span>
+0406 ind_subj         = cfg_repeat;
+0407 ind_subj.tag     = <span class="string">'ind_subj'</span>;
+0408 ind_subj.name    = <span class="string">'Subject'</span>;
+0409 ind_subj.help    = {<span class="string">'Add new modality for this subject.'</span>};
+0410 ind_subj.values  = {subject };
+0411 
+0412 <span class="comment">% ---------------------------------------------------------------------</span>
+0413 <span class="comment">% subjs Subjects</span>
+0414 <span class="comment">% ---------------------------------------------------------------------</span>
+0415 subjs         = cfg_repeat;
+0416 subjs.tag     = <span class="string">'subjs'</span>;
+0417 subjs.name    = <span class="string">'Subjects'</span>;
+0418 subjs.help    = {<span class="string">'Add subjects/scans.'</span>};
+0419 subjs.values  = {ind_subj };
+0420 
+0421 <span class="comment">% ---------------------------------------------------------------------</span>
+0422 <span class="comment">% select Select by</span>
+0423 <span class="comment">% ---------------------------------------------------------------------</span>
+0424 select        = cfg_choice;
+0425 select.tag    = <span class="string">'select'</span>;
+0426 select.name   = <span class="string">'Select by'</span>;
+0427 select.values = {subjs, images};
+0428 select.help   = {<span class="keyword">...</span>
+0429     [<span class="string">'Depending on the type of data at hand, you may have many images (scans) '</span><span class="keyword">...</span>
+0430     <span class="string">'per subject, such as a fMRI time series, or you may have many '</span><span class="keyword">...</span>
+0431     <span class="string">'subjects with only one or a small number of images (scans) per subject '</span><span class="keyword">...</span>
+0432     <span class="string">', such as PET images. If you have many scans per subject select the '</span><span class="keyword">...</span>
+0433     <span class="string">'option ''subjects''. If you have one scan for many subjects select '</span><span class="keyword">...</span>
+0434     <span class="string">'the option ''scans''.'</span>]};
+0435 
+0436 <span class="comment">% ---------------------------------------------------------------------</span>
+0437 <span class="comment">% group Group</span>
+0438 <span class="comment">% ---------------------------------------------------------------------</span>
+0439 group         = cfg_branch;
+0440 group.tag     = <span class="string">'group'</span>;
+0441 group.name    = <span class="string">'Group'</span>;
+0442 group.help    = {<span class="string">'Specify data and design for the group.'</span>};
+0443 group.val     = {gr_name, select };
+0444 
+0445 <span class="comment">% ---------------------------------------------------------------------</span>
+0446 <span class="comment">% groups Groups</span>
+0447 <span class="comment">% ---------------------------------------------------------------------</span>
+0448 groups         = cfg_repeat;
+0449 groups.tag     = <span class="string">'groups'</span>;
+0450 groups.name    = <span class="string">'Groups'</span>;
+0451 groups.help    = {[<span class="string">'Add data and design for one group. Click ''new'' '</span><span class="keyword">...</span>
+0452     <span class="string">'or ''repeat'' to add another group.'</span>]};
+0453 groups.num     = [1 Inf];
+0454 groups.values  = {group };
+0455 
+0456 <span class="comment">% ---------------------------------------------------------------------</span>
+0457 <span class="comment">% dir_name Directory</span>
+0458 <span class="comment">% ---------------------------------------------------------------------</span>
+0459 dir_name         = cfg_files;
+0460 dir_name.tag     = <span class="string">'dir_name'</span>;
+0461 dir_name.name    = <span class="string">'Directory'</span>;
+0462 dir_name.help    = {[<span class="string">'Select a directory where the PRT.mat file '</span><span class="keyword">...</span>
+0463     <span class="string">'containing the specified design and data matrix '</span><span class="keyword">...</span>
+0464     <span class="string">'will be written.'</span>]};
+0465 dir_name.filter  = <span class="string">'dir'</span>;
+0466 dir_name.ufilter = <span class="string">'.*'</span>;
+0467 dir_name.num     = [1 1];
+0468 
+0469 <span class="comment">% ---------------------------------------------------------------------</span>
+0470 <span class="comment">% data Data &amp; Design</span>
+0471 <span class="comment">% ---------------------------------------------------------------------</span>
+0472 data        = cfg_exbranch;
+0473 data.tag    = <span class="string">'data'</span>;
+0474 data.name   = <span class="string">'Data &amp; Design'</span>;
+0475 data.val    = {dir_name groups masks fmri_des review};
+0476 data.help   = {<span class="string">'Specify the data and design for each group (minimum one group).'</span>};
+0477 data.prog   = @<a href="prt_run_design.html" class="code" title="function out = prt_run_design(varargin)">prt_run_design</a>;
+0478 data.vout   = @<a href="#_sub1" class="code" title="subfunction cdep = vout_data(job)">vout_data</a>;
+0479 data.check  = @<a href="#_sub2" class="code" title="subfunction t = check_data(data)">check_data</a>;
+0480 
+0481 <span class="comment">%------------------------------------------------------------------------</span>
+0482 <span class="comment">%% Output function</span>
+0483 <span class="comment">%------------------------------------------------------------------------</span>
+0484 <a name="_sub1" href="#_subfunctions" class="code">function cdep = vout_data(job)</a>
+0485 <span class="comment">% Specifies the output from this modules, i.e. the filename of the mat file</span>
+0486 
+0487 cdep(1)            = cfg_dep;
+0488 cdep(1).sname      = <span class="string">'PRT.mat file'</span>;
+0489 cdep(1).src_output = substruct(<span class="string">'.'</span>,<span class="string">'files'</span>);
+0490 cdep(1).tgt_spec   = cfg_findspec({{<span class="string">'filter'</span>,<span class="string">'mat'</span>,<span class="string">'strtype'</span>,<span class="string">'e'</span>}});
+0491 ngroup = length(job.group);
+0492 <span class="keyword">for</span> g = 1:ngroup
+0493     cdep(1+g)            = cfg_dep; <span class="comment">%#ok&lt;*AGROW&gt;</span>
+0494     cdep(1+g).sname      = sprintf(<span class="string">'Group#%d name'</span>,g);
+0495     cdep(1+g).src_output = substruct(<span class="string">'.'</span>,sprintf(<span class="string">'gr_name%d'</span>,g));
+0496     cdep(1+g).tgt_spec   = cfg_findspec({{<span class="string">'strtype'</span>,<span class="string">'s'</span>}});
+0497 <span class="keyword">end</span>
+0498 nmod = length(job.mask);
+0499 <span class="keyword">for</span> m = 1:nmod
+0500     cdep(1+ngroup+m)            = cfg_dep;
+0501     cdep(1+ngroup+m).sname      = sprintf(<span class="string">'Mod#%d name'</span>,m);
+0502     cdep(1+ngroup+m).src_output = substruct(<span class="string">'.'</span>,sprintf(<span class="string">'mod_name%d'</span>,m));
+0503     cdep(1+ngroup+m).tgt_spec   = cfg_findspec({{<span class="string">'strtype'</span>,<span class="string">'s'</span>}});
+0504 <span class="keyword">end</span>
+0505 
+0506 <span class="comment">%------------------------------------------------------------------------</span>
+0507 <span class="comment">%% Checking functions</span>
+0508 <span class="comment">%------------------------------------------------------------------------</span>
+0509 <a name="_sub2" href="#_subfunctions" class="code">function t = check_data(data)</a>
+0510 <span class="comment">% Checking that the data are consistent.</span>
+0511 t   = {};
+0512 <span class="keyword">if</span> isfield(data,<span class="string">'group'</span>)
+0513     <span class="keyword">if</span> isfield(data,<span class="string">'mask'</span>)
+0514         <span class="comment">% Checking the names of modalities in masks and groups</span>
+0515         <span class="comment">% get modality names from all subjects, if any</span>
+0516         Ngroup = numel(data.group);
+0517         subj_mod = {}; gr_mod = cell(1,Ngroup); Ngr_mod = zeros(1,Ngroup);
+0518         <span class="keyword">for</span> gg = 1:numel(data.group)
+0519             c_smod = 0;
+0520             <span class="keyword">if</span> isfield(data.group(gg).select,<span class="string">'subject'</span>)
+0521                 Nsubj = numel(data.group(gg).select.subject);
+0522                 <span class="keyword">for</span> ss = 1:Nsubj
+0523                     <span class="keyword">if</span> ~isempty(data.group(gg).select.subject{ss})
+0524                         <span class="keyword">for</span> mm = 1:numel(data.group(gg).select.subject{ss})
+0525                             c_smod = c_smod+1;
+0526                             subj_mod{c_smod,gg} = <span class="keyword">...</span>
+0527                                 data.group(gg).select.subject{ss}(mm).mod_name;
+0528                         <span class="keyword">end</span>
+0529                     <span class="keyword">end</span>
+0530                 <span class="keyword">end</span>
+0531                 gr_mod{:,gg} = unique(subj_mod(1:Nsubj,gg));<span class="comment">%[afm]</span>
+0532             <span class="keyword">elseif</span> isfield(data.group(gg).select,<span class="string">'modality'</span>)
+0533                 Nmod = numel(data.group(gg).select.modality);
+0534                 <span class="keyword">for</span> mm = 1:Nmod
+0535                     c_smod = c_smod+1;
+0536                     subj_mod{c_smod,gg} = data.group(gg).select.modality(mm).mod_name;
+0537                 <span class="keyword">end</span>
+0538                 gr_mod{:,gg} = unique(subj_mod(:,gg));
+0539             <span class="keyword">end</span>
+0540             Ngr_mod(gg) = numel(gr_mod{:,gg});
+0541         <span class="keyword">end</span>
+0542         <span class="comment">% get modality names from all masks, if any</span>
+0543         Nmask = numel(data.mask);
+0544         mask_mod = cell(1,Nmask);
+0545         <span class="keyword">for</span> mk = 1:Nmask
+0546             mask_mod{mk} = data.mask(mk).mod_name;
+0547         <span class="keyword">end</span>
+0548         <span class="comment">% make sure all groups have same #modalities</span>
+0549         <span class="keyword">if</span> Ngroup&gt;1
+0550             <span class="keyword">if</span> any(diff(Ngr_mod))
+0551                 t = {<span class="string">'Different number of modalities across groups!'</span>};
+0552                 warndlg(t,<span class="string">'Group modality name'</span>);
+0553                 <span class="keyword">return</span>
+0554             <span class="keyword">end</span>
+0555         <span class="keyword">end</span>
+0556         <span class="comment">% NOTE: should we check if all groups have the same modalities??</span>
+0557         
+0558         <span class="comment">% make sure masks' name fit those of the subjects'</span>
+0559         <span class="comment">% and no duplicate mask names</span>
+0560         <span class="keyword">if</span> numel(unique(mask_mod))~=Nmask
+0561             t = {<span class="string">'Masks'' name not unique!'</span>};
+0562             warndlg(t,<span class="string">'Masks modality name'</span>);
+0563             <span class="keyword">return</span>
+0564         <span class="keyword">end</span>
+0565         ok = zeros(Nmask,1);
+0566         <span class="keyword">for</span> mk=1:Nmask
+0567             <span class="keyword">if</span> any(strcmp(mask_mod{mk},subj_mod(:)))
+0568                 ok(mk) = 1;
+0569             <span class="keyword">end</span>
+0570         <span class="keyword">end</span>
+0571         <span class="keyword">if</span> ~all(ok)
+0572             t{1} = <span class="string">'Some masks name don''t match any subj/img modality!'</span>;
+0573             warndlg(t,<span class="string">'Masks and data modality name'</span>);
+0574             <span class="keyword">return</span>
+0575         <span class="keyword">end</span>
+0576         smods = subj_mod(:);
+0577         smods = smods(~cellfun(@isempty,smods));
+0578         usubj_mod = unique(smods);
+0579         Nsubj_mod = numel(usubj_mod);
+0580         ok = zeros(Nsubj_mod,1);
+0581         <span class="keyword">for</span> sm = 1:Nsubj_mod
+0582             <span class="keyword">if</span> any(strcmp(usubj_mod{sm},mask_mod))
+0583                 ok(sm) = 1;
+0584             <span class="keyword">end</span>
+0585         <span class="keyword">end</span>
+0586         <span class="keyword">if</span> ~all(ok)
+0587             t{1} = <span class="string">'Some subj/img modality! don''t match any masks name'</span>;
+0588             warndlg(t,<span class="string">'Masks and data modality name'</span>);
+0589             <span class="keyword">return</span>
+0590         <span class="keyword">end</span>
+0591         
+0592     <span class="keyword">end</span>
+0593 <span class="keyword">end</span>
+0594 <span class="keyword">return</span>;
+0595 <span class="comment">%-------------------------------------------------------------------------</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

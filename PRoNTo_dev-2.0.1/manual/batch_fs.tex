@@ -1,0 +1,96 @@
+% $Id$ 
+
+\chapter{Feature set/Kernel  \label{Chap:fs}}
+
+\vskip 1.5cm
+
+Compute feature set according to the design specified
+
+
+\section{Load PRT.mat}
+Select data/design structure file (PRT.mat).
+
+
+\section{Feature/kernel name}
+Target name for kernel matrix. This should containonly alphanumerical characters or underscores (\_).
+
+
+\section{Modalities}
+Add modalities
+
+
+\subsection{Modality}
+Specify modality, such as name and data.
+
+
+\subsubsection{Modality name}
+Name of modality. Example: 'BOLD'. Must match design specification
+
+
+\subsubsection{Scans / Conditions}
+Which task conditions do you want to include in the kernel matrix? Select conditions: select specific conditions from the timeseries. All conditions: include all conditions extracted from the timeseries. All scans: include all scans for each subject. This may be used for modalities with only one scan per subject (e.g. PET), if you want to include all scans from an fMRI timeseries (assumes you have not already detrended the timeseries and extracted task components)
+
+
+\paragraph{All scans}
+No design specified. This option can be used for modalities (e.g. structural scans) that do not have an experimental design or for an fMRI designwhere you want to include all scans in the timeseries
+
+
+\paragraph{All Conditions}
+Include all conditions in this kernel matrix
+
+
+\subsubsection{Voxels to include}
+Specify which voxels from the current modality you would like to include
+
+
+\paragraph{All voxels}
+Use all voxels in the design mask for this modality
+
+
+\paragraph{Specify mask file}
+Select a mask for the selected modality.
+
+
+\subsubsection{Detrend}
+Type of temporal detrending to apply
+
+
+\paragraph{None}
+Do not detrend the data 
+
+
+\paragraph{Polynomial detrend }
+Perform a voxel-wise polynomial detrend on the data (1 is linear detrend) 
+
+
+\subparagraph{Order}
+Enter the order for polynomial detrend (1 is linear detrend)
+
+
+\paragraph{Discrete cosine transform}
+Use a discrete cosine basis set to detrend the data.
+
+
+\subparagraph{Cutoff of high-pass filter (second)}
+The default high-pass filter cutoff is 128 seconds (same as SPM)
+
+
+\subsubsection{Scale input scans}
+Do you want to scale the input scans to have a fixed mean (i.e. grand mean scaling)?
+
+
+\paragraph{No scaling}
+Do not scale the input scans
+
+
+\paragraph{Specify from *.mat}
+Specify a mat file containing the scaling parameters for each modality.
+
+
+\subsubsection{Use atlas to build ROI specific kernels}
+Select an atlas file to build one kernel per ROI. The AAL atlas (named 'aal\_79x91x69.img') is available in the 'atlas' subdirectory of PRoNTo
+
+
+\section{Use one kernel per modality}
+Select "Yes" to use one kernel per modality.
+

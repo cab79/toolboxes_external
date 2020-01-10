@@ -1,0 +1,206 @@
+% $Id$ 
+
+\chapter{Data \& Design  \label{Chap:data}}
+
+\vskip 1.5cm
+
+Specify the data and design for each group (minimum one group).
+
+
+\section{Directory}
+Select a directory where the PRT.mat file containing the specified design and data matrix will be written.
+
+
+\section{Groups}
+Add data and design for one group. Click 'new' or 'repeat' to add another group.
+
+
+\subsection{Group}
+Specify data and design for the group.
+
+
+\subsubsection{Name}
+Name of the group. Example: 'Controls'.
+
+
+\subsubsection{Select by}
+Depending on the type of data at hand, you may have many images (scans) per subject, such as a fMRI time series, or you may have many subjects with only one or a small number of images (scans) per subject , such as PET images. If you have many scans per subject select the option 'subjects'. If you have one scan for many subjects select the option 'scans'.
+
+
+\paragraph{Subjects}
+Add subjects/scans.
+
+
+\subparagraph{Subject}
+Add new modality for this subject.
+
+
+\textbf{Modality}
+Add new modality.
+
+
+\textsc{Name}
+Name of modality. Example: 'BOLD'. The names should be consistent accross subjects/groups and the same names specified in the masks.
+
+
+\textsc{Interscan interval}
+Specify interscan interval (TR). The units should be seconds.
+
+
+\textsc{Scans}
+Select scans (images) for this modality. They must all have the same image dimensions, orientation, voxel size etc.
+
+
+\textsc{Data \& Design}
+Specify data and design.
+
+
+\textsl{Load SPM.mat}
+Load design from SPM.mat (if you have previously specified the experimental design with SPM).
+
+
+\textsl{Specify design}
+Specify design: scans (data), onsets and durations.
+
+
+\textit{Units for design}
+The onsets of events or blocks can be specified in either scans or seconds.
+
+
+\textit{Conditions}
+Specify conditions. You are allowed to combine both event- and epoch-related responses in the same model and/or regressor. Any number of condition (event or epoch) types can be specified.  Epoch and event-related responses are modeled in exactly the same way by specifying their onsets [in terms of onset times] and their durations.  Events are specified with a duration of 0.  If you enter a single number for the durations it will be assumed that all trials conform to this duration.For factorial designs, one can later associate these experimental conditions with the appropriate levels of experimental factors.
+
+
+\textit{Condition}
+Specify condition: name, onsets and duration.
+
+
+\textit{Name}
+Name of condition (alphanumeric strings only).
+
+
+\textit{Onsets}
+Specify a vector of onset times for this condition type. 
+
+
+\textit{Durations}
+Specify the event durations. Epoch and event-related responses are modeled in exactly the same way but by specifying their different durations.  Events are specified with a duration of 0.  If you enter a single number for the durations it will be assumed that all trials conform to this duration. If you have multiple different durations, then the number must match the number of onset times.
+
+
+\textit{Multiple conditions}
+Select the *.mat file containing details of your multiple experimental conditions. 
+
+
+
+If you have multiple conditions then entering the details a condition at a time is very inefficient. This option can be used to load all the required information in one go. You will first need to create a *.mat file containing the relevant information. 
+
+
+
+This *.mat file must include the following cell arrays (each 1 x n): names, onsets and durations. eg. names=cell(1,5), onsets=cell(1,5), durations=cell(1,5), then names{2}='SSent-DSpeak', onsets{2}=[3 5 19 222], durations{2}=[0 0 0 0], contain the required details of the second condition. These cell arrays may be made available by your stimulus delivery program, eg. COGENT. The duration vectors can contain a single entry if the durations are identical for all events.
+
+
+
+Time and Parametric effects can also be included. For time modulation include a cell array (1 x n) called tmod. It should have a have a single number in each cell. Unused cells may contain either a 0 or be left empty. The number specifies the order of time modulation from 0 = No Time Modulation to 6 = 6th Order Time Modulation. eg. tmod{3} = 1, modulates the 3rd condition by a linear time effect.
+
+
+
+For parametric modulation include a structure array, which is up to 1 x n in size, called pmod. n must be less than or equal to the number of cells in the names/onsets/durations cell arrays. The structure array pmod must have the fields: name, param and poly.  Each of these fields is in turn a cell array to allow the inclusion of one or more parametric effects per column of the design. The field name must be a cell array containing strings. The field param is a cell array containing a vector of parameters. Remember each parameter must be the same length as its corresponding onsets vector. The field poly is a cell array (for consistency) with each cell containing a single number specifying the order of the polynomial expansion from 1 to 6.
+
+
+
+Note that each condition is assigned its corresponding entry in the structure array (condition 1 parametric modulators are in pmod(1), condition 2 parametric modulators are in pmod(2), etc. Within a condition multiple parametric modulators are accessed via each fields cell arrays. So for condition 1, parametric modulator 1 would be defined in  pmod(1).name{1}, pmod(1).param{1}, and pmod(1).poly{1}. A second parametric modulator for condition 1 would be defined as pmod(1).name{2}, pmod(1).param{2} and pmod(1).poly{2}. If there was also a parametric modulator for condition 2, then remember the first modulator for that condition is in cell array 1: pmod(2).name{1}, pmod(2).param{1}, and pmod(2).poly{1}. If some, but not all conditions are parametrically modulated, then the non-modulated indices in the pmod structure can be left blank. For example, if conditions 1 and 3 but not condition 2 are modulated, then specify pmod(1) and pmod(3). Similarly, if conditions 1 and 2 are modulated but there are 3 conditions overall, it is only necessary for pmod to be a 1 x 2 structure array.
+
+
+
+EXAMPLE:
+
+Make an empty pmod structure: 
+
+  pmod = struct('name',{''},'param',{},'poly',{});
+
+Specify one parametric regressor for the first condition: 
+
+  pmod(1).name{1}  = 'regressor1';
+
+  pmod(1).param{1} = [1 2 4 5 6];
+
+  pmod(1).poly{1}  = 1;
+
+Specify 2 parametric regressors for the second condition: 
+
+  pmod(2).name{1}  = 'regressor2-1';
+
+  pmod(2).param{1} = [1 3 5 7]; 
+
+  pmod(2).poly{1}  = 1;
+
+  pmod(2).name{2}  = 'regressor2-2';
+
+  pmod(2).param{2} = [2 4 6 8 10];
+
+  pmod(2).poly{2}  = 1;
+
+
+
+The parametric modulator should be mean corrected if appropriate. Unused structure entries should have all fields left empty.
+
+
+\textsl{No design}
+Do not specify design. This option can be used for modalities (e.g. structural scans) that do not have an experimental design.
+
+
+\paragraph{Scans}
+Depending on the type of data at hand, you may have many images (scans) per subject, such as a fMRI time series, or you may have many subjects with only one or a small number of images (scans) per subject, such as PET images. Select this option if you have many subjects per modality to spatially normalise, but there is one or a small number of scans for each subject. This is a faster option with less information to specify than the 'select by subjects' option. Both options create the same 'PRT.mat' but 'select by scans' is optimised for modalities with no design.
+
+
+\subparagraph{Modality}
+Specify modality, such as name and data.
+
+
+\textbf{Name}
+Name of modality. Example: 'BOLD'. The names should be consistent accross subjects/groups and the same names specified in the masks.
+
+
+\textbf{Files}
+Select scans (images) for this modality. They must all have the same image dimensions, orientation, voxel size etc.
+
+
+\textbf{Regression targets (per scans)}
+Enter one regression target per scan. or enter the name of a variable.  This variable should be a vector [Nscans x 1], where Nscans is the number of scans/images.
+
+
+\textbf{Covariates}
+Select a .mat file containing your covariates (i.e. any other data/information you would like to include in your design). This file should contain a variable 'R' with a matrix of covariates. On covariate per image is expected.
+
+
+\section{Masks}
+Select first-level (pre-processing) mask for each modality. The name of the modalities should be the same as the ones entered for subjects/scans.
+
+
+\subsection{Modality}
+Specify name of modality and file for each mask. The name should be consistent with the names chosen for the modalities (subjects/scans).
+
+
+\subsubsection{Name}
+Name of modality. Example: 'BOLD'. The names should be consistent accross subjects/groups and the same names specified in the masks.
+
+
+\subsubsection{File}
+Select one first-level mask (image) for each modality. This mask is used to optimise the prepare data step. In 'specify model' there is an option to enter a second-level mask, which might be used to select only a few areas of the brain for subsequent analyses.
+
+
+\section{fMRI\_Des}
+fMRI design specific parameters, HRF overlap and delay.
+
+
+\subsection{HRF overlap}
+If using fMRI data please specify the width of the hemodynamic response function (HRF). This will be used to calculate the overlap between events. Leave as 0 for other modalities (other than fMRI).
+
+
+\subsection{HRF delay}
+If using fMRI data please specify the delay of the hemodynamic response function (HRF). This will be used to calculate the overlap between events. Leave as 0 for other modalities (other than fMRI).
+
+
+\section{Review}
+Choose 'Yes' if you would like to review your data and design in a separate window.
+

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cv_opt_param</title>
+  <meta name="keywords" content="prt_cv_opt_param">
+  <meta name="description" content="Function to pass optional (advanced) parameters into the classifier.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_cv_opt_param.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cv_opt_param
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to pass optional (advanced) parameters into the classifier.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function param = prt_cv_opt_param(PRT,ID,model_id) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to pass optional (advanced) parameters into the classifier. 
+
+ This is primarily used for prediction methods that need to know something
+ about the experimental design that is normally not accessible to ordinary
+ (i.e. generic) prediction functions (e.g. task onsets or TR). Examples of
+ this kind of method include multi-class classifier using kernel
+ regression (MCKR) and the machine that implements nested cross-validation
+
+ Inputs:
+ -------
+ PRT:      data structure
+ ID:       id matrix for the current cross-validation fold
+ model_id: which model are we working on?
+
+ Outputs:
+ --------
+ param.id_fold:   the id matrix for this fold
+ param.model_id:  id for the model being computed
+ param.PRT:       PRT data structure
+
+ Notes:
+ --------
+ The outputs (param.xxx) are provided for use by the classifier
+ 
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>	Function to run a single cross-validation fold</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function param = prt_cv_opt_param(PRT,ID,model_id)</a>
+0002 <span class="comment">% Function to pass optional (advanced) parameters into the classifier.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This is primarily used for prediction methods that need to know something</span>
+0005 <span class="comment">% about the experimental design that is normally not accessible to ordinary</span>
+0006 <span class="comment">% (i.e. generic) prediction functions (e.g. task onsets or TR). Examples of</span>
+0007 <span class="comment">% this kind of method include multi-class classifier using kernel</span>
+0008 <span class="comment">% regression (MCKR) and the machine that implements nested cross-validation</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">% -------</span>
+0012 <span class="comment">% PRT:      data structure</span>
+0013 <span class="comment">% ID:       id matrix for the current cross-validation fold</span>
+0014 <span class="comment">% model_id: which model are we working on?</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">% --------</span>
+0018 <span class="comment">% param.id_fold:   the id matrix for this fold</span>
+0019 <span class="comment">% param.model_id:  id for the model being computed</span>
+0020 <span class="comment">% param.PRT:       PRT data structure</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Notes:</span>
+0023 <span class="comment">% --------</span>
+0024 <span class="comment">% The outputs (param.xxx) are provided for use by the classifier</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%__________________________________________________________________________</span>
+0027 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0028 
+0029 <span class="comment">% Written by A Marquand</span>
+0030 <span class="comment">% $Id$</span>
+0031 
+0032 param.id_fold  = ID;
+0033 param.model_id = model_id;
+0034 param.PRT      = PRT;
+0035 
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

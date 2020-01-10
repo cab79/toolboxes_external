@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_ui_stats</title>
+  <meta name="keywords" content="prt_ui_stats">
+  <meta name="description" content="PRT_UI_STATS MATLAB code for prt_ui_stats.fig">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_ui_stats.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_ui_stats
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>PRT_UI_STATS MATLAB code for prt_ui_stats.fig</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = prt_ui_stats(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PRT_UI_STATS MATLAB code for prt_ui_stats.fig
+
+ PRT_UI_STATS, by itself, creates a new PRT_UI_STATS or raises the
+ existing singleton*.
+
+ H = PRT_UI_STATS returns the handle to a new PRT_UI_STATS or the handle
+ to the existing singleton*.
+
+ PRT_UI_STATS('CALLBACK',hObject,eventData,handles,...) calls the local
+ function named CALLBACK in PRT_UI_STATS.M with the given input arguments.
+
+ PRT_UI_STATS('Property','Value',...) creates a new PRT_UI_STATS or raises
+ the existing singleton*.  Starting from the left, property value pairs
+ are applied to the GUI before prt_ui_stats_OpeningFcn gets called.  An
+ unrecognized property name or invalid value makes property application
+ stop.  All inputs are passed to prt_ui_stats_OpeningFcn via varargin.
+
+ *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one
+ instance to run (singleton)&quot;.
+
+ See also: GUIDE, GUIDATA, GUIHANDLES
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>	Get/set the defaults values associated with an identifier</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function prt_ui_stats_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = prt_ui_stats_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function savemenu_Callback(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = prt_ui_stats(varargin)</a>
+0002 <span class="comment">% PRT_UI_STATS MATLAB code for prt_ui_stats.fig</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% PRT_UI_STATS, by itself, creates a new PRT_UI_STATS or raises the</span>
+0005 <span class="comment">% existing singleton*.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% H = PRT_UI_STATS returns the handle to a new PRT_UI_STATS or the handle</span>
+0008 <span class="comment">% to the existing singleton*.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% PRT_UI_STATS('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+0011 <span class="comment">% function named CALLBACK in PRT_UI_STATS.M with the given input arguments.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% PRT_UI_STATS('Property','Value',...) creates a new PRT_UI_STATS or raises</span>
+0014 <span class="comment">% the existing singleton*.  Starting from the left, property value pairs</span>
+0015 <span class="comment">% are applied to the GUI before prt_ui_stats_OpeningFcn gets called.  An</span>
+0016 <span class="comment">% unrecognized property name or invalid value makes property application</span>
+0017 <span class="comment">% stop.  All inputs are passed to prt_ui_stats_OpeningFcn via varargin.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one</span>
+0020 <span class="comment">% instance to run (singleton)&quot;.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+0023 <span class="comment">%__________________________________________________________________________</span>
+0024 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0025 
+0026 <span class="comment">% Written by M. J. Rosa</span>
+0027 <span class="comment">% $Id$</span>
+0028 
+0029 <span class="comment">% Edit the above text to modify the response to help prt_ui_stats</span>
+0030 
+0031 <span class="comment">% Last Modified by GUIDE v2.5 29-Mar-2012 11:29:32</span>
+0032 
+0033 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0034 gui_Singleton = 1;
+0035 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0036     <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0037     <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction prt_ui_stats_OpeningFcn(hObject, eventdata, handles, varargin)">prt_ui_stats_OpeningFcn</a>, <span class="keyword">...</span>
+0038     <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = prt_ui_stats_OutputFcn(hObject, eventdata, handles)">prt_ui_stats_OutputFcn</a>, <span class="keyword">...</span>
+0039     <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0040     <span class="string">'gui_Callback'</span>,   []);
+0041 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0042     gui_State.gui_Callback = str2func(varargin{1});
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">if</span> nargout
+0046     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0047 <span class="keyword">else</span>
+0048     gui_mainfcn(gui_State, varargin{:});
+0049 <span class="keyword">end</span>
+0050 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0051 
+0052 
+0053 <span class="comment">% --- Executes just before prt_ui_stats is made visible.</span>
+0054 <a name="_sub1" href="#_subfunctions" class="code">function prt_ui_stats_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0055 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0056 <span class="comment">% hObject    handle to figure</span>
+0057 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0058 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0059 <span class="comment">% varargin   command line arguments to prt_ui_stats (see VARARGIN)</span>
+0060 
+0061 <span class="comment">%if window already exists, just put it as the current figure</span>
+0062 Tag=<span class="string">'stats'</span>;
+0063 F = findall(allchild(0),<span class="string">'Flat'</span>,<span class="string">'Tag'</span>,Tag);
+0064 <span class="keyword">if</span> length(F) &gt; 1
+0065     <span class="comment">% Multiple Graphics windows - close all but most recent</span>
+0066     close(F(2:end))
+0067     F = F(1);
+0068     uistack(F,<span class="string">'top'</span>)
+0069 <span class="keyword">elseif</span> length(F)==1
+0070     uistack(F,<span class="string">'top'</span>)
+0071 <span class="keyword">else</span>
+0072     set(handles.figure1,<span class="string">'Tag'</span>,Tag)
+0073     <span class="comment">% set(handles.figure1,'Name','PRoNTo :: Stats table)</span>
+0074     <span class="comment">%set size of the window, taking screen resolution and platform into account</span>
+0075     S0= spm(<span class="string">'WinSize'</span>,<span class="string">'0'</span>,1);   <span class="comment">%-Screen size (of the current monitor)</span>
+0076     <span class="keyword">if</span> ispc
+0077         PF=<span class="string">'MS Sans Serif'</span>;
+0078     <span class="keyword">else</span>
+0079         PF= spm_platform(<span class="string">'fonts'</span>);     <span class="comment">%-Font names (for this platform)</span>
+0080         PF=PF.helvetica;
+0081     <span class="keyword">end</span>
+0082     tmp  = [S0(3)/1280 (S0(4))/800];
+0083     ratio=min(tmp)*[1 1 1 1];
+0084     FS = 1 + 0.85*(min(ratio)-1);  <span class="comment">%factor to scale the fonts</span>
+0085     x=get(handles.figure1,<span class="string">'Position'</span>);
+0086     set(handles.figure1,<span class="string">'DefaultTextFontSize'</span>,FS*12,<span class="keyword">...</span>
+0087         <span class="string">'DefaultUicontrolFontSize'</span>,FS*12,<span class="keyword">...</span>
+0088         <span class="string">'DefaultTextFontName'</span>,PF,<span class="keyword">...</span>
+0089         <span class="string">'DefaultAxesFontName'</span>,PF,<span class="keyword">...</span>
+0090         <span class="string">'DefaultUicontrolFontName'</span>,PF)
+0091     set(handles.figure1,<span class="string">'Position'</span>,ratio.*x)
+0092     set(handles.figure1,<span class="string">'Resize'</span>,<span class="string">'on'</span>)
+0093     
+0094     rotate3d off
+0095     color=<a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>(<span class="string">'color'</span>);
+0096     set(handles.figure1,<span class="string">'Color'</span>,color.bg1)
+0097     aa=get(handles.figure1,<span class="string">'children'</span>);
+0098     <span class="keyword">for</span> i=1:length(aa)
+0099         <span class="keyword">if</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0100             set(aa(i),<span class="string">'BackgroundColor'</span>,color.bg2)
+0101             bb=get(aa(i),<span class="string">'children'</span>);
+0102             <span class="keyword">if</span> ~isempty(bb)
+0103                 <span class="keyword">for</span> j=1:length(bb)
+0104                     <span class="keyword">if</span> strcmpi(get(bb(j),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0105                         set(bb(j),<span class="string">'BackgroundColor'</span>,color.bg2)
+0106                         cc=get(bb(j),<span class="string">'children'</span>);
+0107                         <span class="keyword">for</span> k=1:length(cc)
+0108                             <span class="keyword">if</span> strcmpi(get(cc(k),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>) &amp;&amp; <span class="keyword">...</span>
+0109                                     ~isempty(find(strcmpi(get(cc(k),<span class="string">'Style'</span>),{<span class="string">'text'</span>,<span class="keyword">...</span>
+0110                                     <span class="string">'radiobutton'</span>,<span class="string">'checkbox'</span>})))
+0111                                 set(cc(k),<span class="string">'BackgroundColor'</span>,color.bg2)
+0112                             <span class="keyword">elseif</span> strcmpi(get(cc(k),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>) &amp;&amp; <span class="keyword">...</span>
+0113                                     ~isempty(find(strcmpi(get(cc(k),<span class="string">'Style'</span>),<span class="string">'pushbutton'</span>)))
+0114                                 set(cc(k),<span class="string">'BackgroundColor'</span>,color.fr)
+0115                             <span class="keyword">end</span>
+0116                             set(cc(k),<span class="string">'FontUnits'</span>,<span class="string">'pixel'</span>)
+0117                             xf=get(cc(k),<span class="string">'FontSize'</span>);
+0118                             set(cc(k),<span class="string">'FontSize'</span>,ceil(FS*xf),<span class="string">'FontName'</span>,PF,<span class="keyword">...</span>
+0119                                 <span class="string">'FontUnits'</span>,<span class="string">'normalized'</span>,<span class="string">'Units'</span>,<span class="string">'normalized'</span>)
+0120                         <span class="keyword">end</span>
+0121                     <span class="keyword">elseif</span> strcmpi(get(bb(j),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>) &amp;&amp; <span class="keyword">...</span>
+0122                             ~isempty(find(strcmpi(get(bb(j),<span class="string">'Style'</span>),{<span class="string">'text'</span>,<span class="keyword">...</span>
+0123                             <span class="string">'radiobutton'</span>,<span class="string">'checkbox'</span>})))
+0124                         set(bb(j),<span class="string">'BackgroundColor'</span>,color.bg2)
+0125                     <span class="keyword">elseif</span> strcmpi(get(bb(j),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>) &amp;&amp; <span class="keyword">...</span>
+0126                             ~isempty(find(strcmpi(get(bb(j),<span class="string">'Style'</span>),<span class="string">'pushbutton'</span>)))
+0127                         set(bb(j),<span class="string">'BackgroundColor'</span>,color.fr)
+0128                     <span class="keyword">end</span>
+0129                     set(bb(j),<span class="string">'FontUnits'</span>,<span class="string">'pixel'</span>)
+0130                     xf=get(bb(j),<span class="string">'FontSize'</span>);
+0131                     set(bb(j),<span class="string">'FontSize'</span>,ceil(FS*xf),<span class="string">'FontName'</span>,PF,<span class="keyword">...</span>
+0132                         <span class="string">'FontUnits'</span>,<span class="string">'normalized'</span>,<span class="string">'Units'</span>,<span class="string">'normalized'</span>)
+0133                 <span class="keyword">end</span>
+0134             <span class="keyword">end</span>
+0135         <span class="keyword">elseif</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>)
+0136             <span class="keyword">if</span> ~isempty(find(strcmpi(get(aa(i),<span class="string">'Style'</span>),{<span class="string">'text'</span>,<span class="keyword">...</span>
+0137                     <span class="string">'radiobutton'</span>,<span class="string">'checkbox'</span>})))
+0138                 set(aa(i),<span class="string">'BackgroundColor'</span>,color.bg1)
+0139             <span class="keyword">elseif</span> ~isempty(find(strcmpi(get(aa(i),<span class="string">'Style'</span>),<span class="string">'pushbutton'</span>)))
+0140                 set(aa(i),<span class="string">'BackgroundColor'</span>,color.fr)
+0141             <span class="keyword">end</span>
+0142         <span class="keyword">end</span>
+0143         <span class="keyword">if</span> ~strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uimenu'</span>)
+0144             set(aa(i),<span class="string">'FontUnits'</span>,<span class="string">'pixel'</span>)
+0145             xf=get(aa(i),<span class="string">'FontSize'</span>);
+0146             set(aa(i),<span class="string">'FontSize'</span>,ceil(FS*xf),<span class="string">'FontName'</span>,PF,<span class="keyword">...</span>
+0147                 <span class="string">'Units'</span>,<span class="string">'normalized'</span>)
+0148         <span class="keyword">end</span>
+0149     <span class="keyword">end</span>
+0150 <span class="keyword">end</span>
+0151 
+0152 <span class="keyword">if</span> ~isempty(varargin)
+0153     
+0154     stats = varargin{1};
+0155     
+0156     <span class="keyword">switch</span> stats.type
+0157         
+0158         
+0159         <span class="keyword">case</span> <span class="string">'class'</span>
+0160             
+0161             set(handles.corrtext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0162             set(handles.corrvaltext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0163             
+0164             set(handles.r2text,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0165             set(handles.r2valtext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0166             
+0167             set(handles.msetext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0168             set(handles.msevaltext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0169             
+0170             set(handles.nmsetext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0171             set(handles.nmsevaltext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0172             
+0173             set(handles.pcorr,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0174             set(handles.pr2,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0175             set(handles.pmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0176             set(handles.pnmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0177             
+0178             set(handles.accuracytext,<span class="string">'String'</span>,<span class="string">'Accuracy (acc):'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0179             set(handles.baccuracytext,<span class="string">'String'</span>,<span class="string">'Balanced acc:'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0180             set(handles.classaccuracytext,<span class="string">'String'</span>,<span class="string">'Class acc (%):'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0181             set(handles.ppvtext,<span class="string">'String'</span>,<span class="string">'Class pv (%): '</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0182             set(handles.cpvval,<span class="string">'String'</span>,sprintf(<span class="string">' %3.1f '</span>,<span class="keyword">...</span>
+0183                 stats.mcpv*100),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0184             set(handles.npvtext,<span class="string">'String'</span>,<span class="string">'NPV: not yet available'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0185             
+0186             set(handles.acctext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.1f %%'</span>,stats.macc*100),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0187             set(handles.bacctext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.1f %%'</span>,stats.mbacc*100),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0188             
+0189             set(handles.cacctext,<span class="string">'String'</span>,sprintf(<span class="string">' %3.1f'</span>,stats.mcacc*100),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0190             
+0191             set(handles.pcorr, <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0192             set(handles.pr2, <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0193             set(handles.pmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0194             set(handles.pnmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0195             set(handles.pbacc,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0196             set(handles.pcacc,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0197             
+0198             
+0199             <span class="keyword">if</span> isfield(stats,<span class="string">'show_perm'</span>)
+0200                 
+0201                 <span class="keyword">if</span> stats.show_perm
+0202                     
+0203                     beep;
+0204                     disp(<span class="string">'...'</span>)
+0205                     disp(<span class="string">'Permutations results:'</span>)
+0206                     disp(sprintf(<span class="string">'Balanced accuracy p-value: %3.4f'</span>,stats.perm.pvalue_b_acc));
+0207                     disp(sprintf(<span class="string">'Class accuracy p-value:'</span>));
+0208                     disp(sprintf(<span class="string">' %3.4f'</span>,stats.perm.pvalue_c_acc));
+0209                     
+0210                 <span class="keyword">end</span>
+0211                 
+0212             <span class="keyword">end</span>
+0213             
+0214         <span class="keyword">case</span> <span class="string">'reg'</span>
+0215             
+0216             set(handles.accuracytext,<span class="string">'String'</span>,<span class="string">'Accuracy (acc):'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0217             set(handles.baccuracytext,<span class="string">'String'</span>,<span class="string">'Balanced acc:'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0218             set(handles.classaccuracytext,<span class="string">'String'</span>,<span class="string">'Class acc:'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0219             set(handles.pbacc, <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0220             set(handles.pcacc,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0221             
+0222             set(handles.acctext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0223             set(handles.bacctext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0224             set(handles.cacctext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0225             
+0226             set(handles.ppvtext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0227             set(handles.npvtext,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0228             
+0229             set(handles.corrtext,<span class="string">'String'</span>,<span class="string">'Correlation:'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0230             set(handles.corrvaltext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.2f'</span>,stats.corr),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0231             
+0232             <span class="keyword">if</span> isfield(stats,<span class="string">'r2'</span>)
+0233                 set(handles.r2text,<span class="string">'String'</span>,<span class="string">'Coefficient of determination:'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0234                 set(handles.r2valtext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.2f'</span>,stats.r2),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0235             <span class="keyword">end</span>
+0236             
+0237             set(handles.msetext,<span class="string">'String'</span>,<span class="string">'MSE:'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0238             set(handles.msevaltext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.2f'</span>,stats.mse),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0239             
+0240             <span class="keyword">if</span> isfield(stats,<span class="string">'nmse'</span>)
+0241                 set(handles.nmsetext,<span class="string">'String'</span>,<span class="string">'Normalised MSE:'</span>,<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0242                 set(handles.nmsevaltext,<span class="string">'String'</span>,sprintf(<span class="string">'%3.2f'</span>,stats.nmse),<span class="string">'Visible'</span>,<span class="string">'on'</span>);
+0243             <span class="keyword">end</span>
+0244             
+0245             set(handles.pbacc, <span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0246             set(handles.pcacc,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0247             set(handles.pcorr,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0248             set(handles.pr2,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0249             set(handles.pmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0250             set(handles.pnmse,<span class="string">'Visible'</span>,<span class="string">'off'</span>);
+0251             
+0252             <span class="keyword">if</span> isfield(stats,<span class="string">'show_perm'</span>)
+0253                 
+0254                 <span class="keyword">if</span> stats.show_perm
+0255                     
+0256                     beep;
+0257                     disp(<span class="string">'...'</span>)
+0258                     disp(<span class="string">'Permutations results:'</span>)
+0259                     disp(sprintf(<span class="string">'Correlation p-value: %3.4f'</span>,stats.perm.pval_corr));
+0260                     <span class="keyword">if</span> isfield(stats.perm,<span class="string">'pval_r2'</span>), disp(sprintf(<span class="string">'Coefficient of determination p-value: %3.4f'</span>,stats.perm.pval_r2)); <span class="keyword">end</span>
+0261                     disp(sprintf(<span class="string">'Mean squared-error p-value: %3.4f'</span>,stats.perm.pval_mse));
+0262                     <span class="keyword">if</span> isfield(stats.perm,<span class="string">'pval_nmse'</span>), disp(sprintf(<span class="string">'Normalised mean squared-error p-value: %3.4f'</span>,stats.perm.pval_nmse)); <span class="keyword">end</span>
+0263                     
+0264                 <span class="keyword">end</span>
+0265             <span class="keyword">end</span>
+0266     <span class="keyword">end</span>
+0267     handles.prtdir=varargin{2};
+0268     
+0269 <span class="keyword">end</span>
+0270 
+0271 rotate3d off
+0272 <span class="comment">% Choose default command line output for prt_ui_stats</span>
+0273 handles.output = hObject;
+0274 
+0275 <span class="comment">% Update handles structure</span>
+0276 guidata(hObject, handles);
+0277 
+0278 <span class="comment">% UIWAIT makes prt_ui_stats wait for user response (see UIRESUME)</span>
+0279 <span class="comment">% uiwait(handles.figure1);</span>
+0280 
+0281 
+0282 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0283 <a name="_sub2" href="#_subfunctions" class="code">function varargout = prt_ui_stats_OutputFcn(hObject, eventdata, handles)</a>
+0284 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0285 <span class="comment">% hObject    handle to figure</span>
+0286 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0287 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0288 
+0289 <span class="comment">% Get default command line output from handles structure</span>
+0290 varargout{1} = handles.output;
+0291 
+0292 
+0293 
+0294 
+0295 <span class="comment">% --------------------------------------------------------------------</span>
+0296 <a name="_sub3" href="#_subfunctions" class="code">function savemenu_Callback(hObject, eventdata, handles)</a>
+0297 <span class="comment">% hObject    handle to savemenu (see GCBO)</span>
+0298 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0299 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0300 
+0301 wd=cd;
+0302 cd(handles.prtdir)
+0303 [filename, pathname] = uiputfile( <span class="keyword">...</span>
+0304     {<span class="string">'*.png'</span>,<span class="string">'Portable Network Graphics (*.png)'</span>;<span class="keyword">...</span>
+0305     <span class="string">'*.jpeg'</span>,<span class="string">'JPEG figure (*.jpeg)'</span>;<span class="keyword">...</span>
+0306     <span class="string">'*.tiff'</span>,<span class="string">'Compressed TIFF figure (*.tiff)'</span>;<span class="keyword">...</span>
+0307     <span class="string">'*.fig'</span>,<span class="string">'Matlab figure (*.fig)'</span>;<span class="keyword">...</span>
+0308     <span class="string">'*.pdf'</span>,<span class="string">'Color PDF file (*.pdf)'</span>;<span class="keyword">...</span>
+0309     <span class="string">'*.epsc'</span>,  <span class="string">'Encapsulated PostScript (*.eps)'</span>},<span class="keyword">...</span>
+0310     <span class="string">'Save figure as'</span>,<span class="string">'Stats_table.png'</span>);
+0311 [a,b,c]=fileparts(filename);
+0312 ext=[<span class="string">'-d'</span>,c(2:end)];
+0313 
+0314 <span class="comment">% Set the color of the different backgrounds and figure parameters to white</span>
+0315 cf=get(handles.figure1,<span class="string">'Color'</span>);
+0316 set(handles.figure1,<span class="string">'Color'</span>,[1,1,1])
+0317 aa=get(handles.figure1,<span class="string">'children'</span>);
+0318 xc=[];
+0319 <span class="keyword">for</span> i=1:length(aa)
+0320     <span class="keyword">if</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0321         <span class="keyword">try</span>
+0322             xc=[xc;get(aa(i),<span class="string">'BackgroundColor'</span>)];
+0323             set(aa(i),<span class="string">'BackgroundColor'</span>,[1 1 1])
+0324         <span class="keyword">end</span>
+0325         bb=get(aa(i),<span class="string">'children'</span>);
+0326         <span class="keyword">if</span> ~isempty(bb)
+0327             <span class="keyword">for</span> j=1:length(bb)
+0328                 <span class="keyword">try</span>
+0329                     xc=[xc;get(bb(j),<span class="string">'BackgroundColor'</span>)];
+0330                     set(bb(j),<span class="string">'BackgroundColor'</span>,[1 1 1])
+0331                 <span class="keyword">end</span>
+0332                 <span class="keyword">if</span> strcmpi(get(bb(j),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0333                     cc=get(bb(j),<span class="string">'children'</span>);
+0334                     <span class="keyword">if</span> ~isempty(cc)
+0335                         <span class="keyword">for</span> k=1:length(cc)
+0336                             <span class="keyword">try</span>
+0337                                 xc=[xc;get(cc(k),<span class="string">'BackgroundColor'</span>)];
+0338                                 set(cc(k),<span class="string">'BackgroundColor'</span>,[1 1 1])
+0339                             <span class="keyword">end</span>
+0340                             <span class="keyword">if</span> strcmpi(get(cc(k),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0341                                 dd=get(cc(k),<span class="string">'children'</span>);
+0342                                 <span class="keyword">if</span> ~isempty(dd)
+0343                                     <span class="keyword">for</span> l=1:length(dd)
+0344                                         <span class="keyword">try</span>
+0345                                             xc=[xc;get(dd(l),<span class="string">'BackgroundColor'</span>)];
+0346                                             set(dd(l),<span class="string">'BackgroundColor'</span>,[1 1 1])
+0347                                         <span class="keyword">end</span>
+0348                                     <span class="keyword">end</span>
+0349                                 <span class="keyword">end</span>
+0350                             <span class="keyword">end</span>
+0351                         <span class="keyword">end</span>
+0352                     <span class="keyword">end</span>
+0353                 <span class="keyword">end</span>
+0354             <span class="keyword">end</span>
+0355         <span class="keyword">end</span>
+0356     <span class="keyword">end</span>
+0357     <span class="keyword">if</span> ~strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uimenu'</span>)
+0358         <span class="keyword">try</span>
+0359             xc=[xc;get(aa(i),<span class="string">'BackgroundColor'</span>)];
+0360             set(aa(i),<span class="string">'BackgroundColor'</span>,[1 1 1])
+0361         <span class="keyword">end</span>
+0362     <span class="keyword">end</span>
+0363 <span class="keyword">end</span>
+0364 
+0365 print(handles.figure1,ext,[pathname,filesep,b],<span class="string">'-r500'</span>)
+0366 
+0367 <span class="comment">% Set the color of the different backgrounds and figure parameters to white</span>
+0368 set(handles.figure1,<span class="string">'Color'</span>,cf)
+0369 scount=1;
+0370 <span class="keyword">for</span> i=1:length(aa)
+0371     <span class="keyword">if</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0372         <span class="keyword">try</span>
+0373             set(aa(i),<span class="string">'BackgroundColor'</span>,xc(scount,:))
+0374             scount=scount+1;
+0375         <span class="keyword">end</span>
+0376         bb=get(aa(i),<span class="string">'children'</span>);
+0377         <span class="keyword">if</span> ~isempty(bb)
+0378             <span class="keyword">for</span> j=1:length(bb)
+0379                 <span class="keyword">try</span>
+0380                     set(bb(j),<span class="string">'BackgroundColor'</span>,xc(scount,:))
+0381                     scount=scount+1;
+0382                 <span class="keyword">end</span>
+0383                 <span class="keyword">if</span> strcmpi(get(bb(j),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0384                     cc=get(bb(j),<span class="string">'children'</span>);
+0385                     <span class="keyword">if</span> ~isempty(cc)
+0386                         <span class="keyword">for</span> k=1:length(cc)
+0387                             <span class="keyword">try</span>
+0388                                 set(cc(k),<span class="string">'BackgroundColor'</span>,xc(scount,:))
+0389                                 scount=scount+1;
+0390                             <span class="keyword">end</span>
+0391                             <span class="keyword">if</span> strcmpi(get(cc(k),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0392                                 dd=get(cc(k),<span class="string">'children'</span>);
+0393                                 <span class="keyword">if</span> ~isempty(dd)
+0394                                     <span class="keyword">for</span> l=1:length(dd)
+0395                                         <span class="keyword">try</span>
+0396                                             set(dd(l),<span class="string">'BackgroundColor'</span>,xc(scount,:))
+0397                                             scount=scount+1;
+0398                                         <span class="keyword">end</span>
+0399                                     <span class="keyword">end</span>
+0400                                 <span class="keyword">end</span>
+0401                             <span class="keyword">end</span>
+0402                         <span class="keyword">end</span>
+0403                     <span class="keyword">end</span>
+0404                 <span class="keyword">end</span>
+0405             <span class="keyword">end</span>
+0406         <span class="keyword">end</span>
+0407     <span class="keyword">elseif</span> ~strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uimenu'</span>)
+0408         <span class="keyword">try</span>
+0409             set(aa(i),<span class="string">'BackgroundColor'</span>,xc(scount,:))
+0410             scount=scount+1;
+0411         <span class="keyword">end</span>
+0412     <span class="keyword">end</span>
+0413 <span class="keyword">end</span>
+0414 
+0415 cd(wd)</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

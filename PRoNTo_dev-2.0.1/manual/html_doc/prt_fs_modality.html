@@ -1,0 +1,354 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_fs_modality</title>
+  <meta name="keywords" content="prt_fs_modality">
+  <meta name="description" content="Function to build file arrays containing the (linearly detrended) data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_fs_modality.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_fs_modality
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to build file arrays containing the (linearly detrended) data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to build file arrays containing the (linearly detrended) data
+ and compute a linear (dot product) kernel from them
+
+ Inputs:
+ -------
+ in.fname:      filename for the PRT.mat (string)
+ in.fs_name:    name of fs and relative path filename for the kernel matrix
+
+ in.mod(m).mod_name:  name of modality to include in this kernel (string)
+ in.mod(m).detrend:   detrend (scalar: 0 = none, 1 = linear)
+ in.mod(m).param_dt:  parameters for the kernel detrend (e.g. DCT bases)
+ in.mod(m).mode:      'all_cond' or 'all_scans' (string)
+ in.mod(m).mask:      mask file used to create the kernel
+ in.mod(m).normalise: 0 = none, 1 = normalise_kernel, 2 = scale modality
+ in.mod(m).matnorm:   filename for scaling matrix
+
+ in.fid:      index of feature set to create
+ in.tocomp:   vector of booleans indicating whether to build the feature set
+ in.precmask: cell array containing the names of the second-level mask for
+           each modality to build
+
+ flag:     set to 1 to compute one kernel per region as labelled in atlas
+ addin:    additional inputs for this operation to optimize computation
+
+ Outputs:
+ --------
+ Writes the kernel matrix to the path indicated by in.fs_name and the
+ feature set in a file array if it needs to be computed
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>	Get/set the defaults values associated with an identifier</li><li><a href="prt_load_blocks.html" class="code" title="function block = prt_load_blocks(filenames, bs, br)">prt_load_blocks</a>	Load one or more blocks of data.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_fs.html" class="code" title="function [outfile] = prt_fs(PRT,in)">prt_fs</a>	Function to build file arrays containing the (linearly detrended) data</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function c = poly_regressor(n,order)</a></li><li><a href="#_sub2" class="code">function c=dct_regressor(n,cut_off,TR)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)</a>
+0002 <span class="comment">% Function to build file arrays containing the (linearly detrended) data</span>
+0003 <span class="comment">% and compute a linear (dot product) kernel from them</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">% -------</span>
+0007 <span class="comment">% in.fname:      filename for the PRT.mat (string)</span>
+0008 <span class="comment">% in.fs_name:    name of fs and relative path filename for the kernel matrix</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% in.mod(m).mod_name:  name of modality to include in this kernel (string)</span>
+0011 <span class="comment">% in.mod(m).detrend:   detrend (scalar: 0 = none, 1 = linear)</span>
+0012 <span class="comment">% in.mod(m).param_dt:  parameters for the kernel detrend (e.g. DCT bases)</span>
+0013 <span class="comment">% in.mod(m).mode:      'all_cond' or 'all_scans' (string)</span>
+0014 <span class="comment">% in.mod(m).mask:      mask file used to create the kernel</span>
+0015 <span class="comment">% in.mod(m).normalise: 0 = none, 1 = normalise_kernel, 2 = scale modality</span>
+0016 <span class="comment">% in.mod(m).matnorm:   filename for scaling matrix</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% in.fid:      index of feature set to create</span>
+0019 <span class="comment">% in.tocomp:   vector of booleans indicating whether to build the feature set</span>
+0020 <span class="comment">% in.precmask: cell array containing the names of the second-level mask for</span>
+0021 <span class="comment">%           each modality to build</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% flag:     set to 1 to compute one kernel per region as labelled in atlas</span>
+0024 <span class="comment">% addin:    additional inputs for this operation to optimize computation</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Outputs:</span>
+0027 <span class="comment">% --------</span>
+0028 <span class="comment">% Writes the kernel matrix to the path indicated by in.fs_name and the</span>
+0029 <span class="comment">% feature set in a file array if it needs to be computed</span>
+0030 <span class="comment">%__________________________________________________________________________</span>
+0031 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0032 
+0033 <span class="comment">% Written by A. Marquand and J. Schrouff</span>
+0034 <span class="comment">% $Id: prt_fs.m 650 2013-02-20 13:36:58Z amarquan $</span>
+0035 
+0036 <span class="comment">% Configure some variables and get defaults</span>
+0037 <span class="comment">% -------------------------------------------------------------------------</span>
+0038 prt_dir  = regexprep(in.fname,<span class="string">'PRT.mat'</span>, <span class="string">''</span>); <span class="comment">% or: fileparts(fname);</span>
+0039 def=<a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>(<span class="string">'fs'</span>);
+0040 fid = in.fid;
+0041 
+0042 <span class="comment">% get the indexes of the samples and of the features to use if flag is set</span>
+0043 <span class="comment">% to 1</span>
+0044 <span class="keyword">if</span> nargin&gt;=3 &amp;&amp; flag
+0045     <span class="keyword">if</span> ~isfield(addin,<span class="string">'ID'</span>)
+0046         ID= PRT.fs(fid).id_mat;
+0047         n_mods=length(in.mod);
+0048         mids=[];
+0049         <span class="keyword">for</span> i=1:n_mods
+0050             <span class="keyword">if</span> ~isempty(in.mod(i).mod_name)
+0051                 mids = [mids, i];
+0052             <span class="keyword">end</span>
+0053         <span class="keyword">end</span>
+0054     <span class="keyword">else</span>
+0055         ID = addin.ID;
+0056         mids = unique(ID(:,3));
+0057     <span class="keyword">end</span>
+0058     n_mods=length(mids);
+0059     <span class="keyword">if</span> isfield(addin,<span class="string">'idvox_fas'</span>)
+0060         idvox = addin.idvox_fas;
+0061     <span class="keyword">else</span>
+0062         <span class="keyword">if</span> in.tocomp(mids(1)) <span class="comment">% build everything</span>
+0063             idvox = 1:PRT.fas(mids(1)).dat.dim(2); <span class="comment">%n_vox has to be the same for all concatenated modalities (version 1.1)</span>
+0064         <span class="keyword">else</span>
+0065             <span class="keyword">if</span> ~isempty(PRT.fs(fid).modality(mids(1)).idfeat_fas)
+0066                 idvox = PRT.fs(fid).modality(mids(1)).idfeat_fas;
+0067             <span class="keyword">else</span>
+0068                 idvox = 1:PRT.fas(mids(1)).dat.dim(2);
+0069             <span class="keyword">end</span>
+0070         <span class="keyword">end</span>
+0071     <span class="keyword">end</span>
+0072     n_vox = numel(idvox);
+0073     nfa = 0;    
+0074 <span class="keyword">else</span>
+0075     <span class="comment">% get the index of the modalities for which the user wants a kernel/data</span>
+0076     n_mods=length(in.mod);
+0077     mids=[];
+0078     <span class="keyword">for</span> i=1:n_mods
+0079         <span class="keyword">if</span> ~isempty(in.mod(i).mod_name)
+0080             mids = [mids, i];
+0081         <span class="keyword">end</span>
+0082     <span class="keyword">end</span>
+0083     n_mods=length(mids);
+0084     ID= PRT.fs(fid).id_mat;
+0085     nfa = [];
+0086     <span class="keyword">for</span> m = 1:n_mods
+0087         nfa   = [nfa, PRT.fas(mids(m)).dat.dim(1)];
+0088         <span class="keyword">if</span> in.tocomp(mids(m))
+0089             n_vox = PRT.fas(mids(m)).dat.dim(2); <span class="comment">%n_vox has to be the same for all concatenated modalities (version 1.1)</span>
+0090         <span class="keyword">else</span>
+0091             <span class="keyword">if</span> ~isempty(PRT.fs(fid).modality(m).idfeat_fas)
+0092                 idvox = PRT.fs(fid).modality(m).idfeat_fas;
+0093             <span class="keyword">else</span>
+0094                 idvox = 1:PRT.fas(mids(m)).dat.dim(2);
+0095             <span class="keyword">end</span>
+0096             n_vox = numel(idvox);
+0097         <span class="keyword">end</span>
+0098     <span class="keyword">end</span>
+0099 <span class="keyword">end</span>
+0100 
+0101 
+0102 
+0103 <span class="comment">% -------------------------------------------------------------------------</span>
+0104 <span class="comment">% ---------------------Build file arrays and kernel------------------------</span>
+0105 <span class="comment">% -------------------------------------------------------------------------</span>
+0106 n   = size(ID,1);
+0107 Phi = zeros(n);
+0108 <span class="comment">% set memory limit</span>
+0109 mem         = def.mem_limit;
+0110 block_size  = floor(mem/(8*3)/max([nfa, n])); <span class="comment">% Block size (double = 8 bytes)</span>
+0111 n_block     = ceil(n_vox/block_size);
+0112 
+0113 bstart = 1; bend = min(block_size,n_vox);
+0114 <span class="keyword">if</span> nargin&lt;3 || ~flag
+0115     h = waitbar(0,<span class="string">'Please wait while preparing feature set'</span>);
+0116     step=1;
+0117 <span class="keyword">end</span>
+0118 <span class="keyword">for</span> b = 1:n_block
+0119     <span class="keyword">if</span> nargin&lt;3 || ~flag
+0120         disp ([<span class="string">' &gt; preparing block: '</span>, num2str(b),<span class="string">' of '</span>,num2str(n_block),<span class="string">' ...'</span>])
+0121     <span class="keyword">end</span>
+0122     vox_range  = bstart:bend;
+0123     block_size = length(vox_range);
+0124     kern_vols  = zeros(block_size,n);
+0125     <span class="keyword">for</span> m=1:n_mods
+0126         mid=mids(m);
+0127         <span class="comment">%Parameters for the masks and indexes of the voxels</span>
+0128         <span class="comment">%-------------------------------------------------------------------</span>
+0129         <span class="comment">% get the indices of the voxels within the file array mask (data &amp;</span>
+0130         <span class="comment">% design step)</span>
+0131         ind_ddmask = PRT.fas(mid).idfeat_img(vox_range);
+0132         
+0133         <span class="comment">%load the mask for that modality if another one was specified</span>
+0134         <span class="keyword">if</span> ~isempty(in.precmask{m})
+0135             prec_mask = <a href="prt_load_blocks.html" class="code" title="function block = prt_load_blocks(filenames, bs, br)">prt_load_blocks</a>(in.precmask{m},ind_ddmask);
+0136         <span class="keyword">else</span>
+0137             prec_mask = ones(block_size,1);
+0138         <span class="keyword">end</span>
+0139         <span class="comment">%indexes to access the file array</span>
+0140         indm = find(PRT.fs(fid).fas.im==mid);
+0141         ifa  = PRT.fs(fid).fas.ifa(indm);
+0142         indm = find(ID(:,3) == mid);
+0143         <span class="comment">%get the data from each subject of each group and save its linear</span>
+0144         <span class="comment">%detrended version in a file array</span>
+0145         <span class="comment">%-------------------------------------------------------------------</span>
+0146         <span class="keyword">if</span> in.tocomp(mid)  <span class="comment">%need to build the file array corresponding to that modality</span>
+0147             n_groups = length(PRT.group);
+0148             sample_range=0;
+0149             nfa=PRT.fas(mid).dat.dim(1);
+0150             datapr=zeros(block_size,nfa);
+0151             
+0152             <span class="comment">%get the data for each subject of each group</span>
+0153             <span class="keyword">for</span> gid = 1:n_groups
+0154                 <span class="keyword">for</span> sid = 1:length(PRT.group(gid).subject)
+0155                     n_vols_s = size(PRT.group(gid).subject(sid).modality(mid).scans,1);
+0156                     sample_range = (1:n_vols_s)+max(sample_range);
+0157                     fname = PRT.group(gid).subject(sid).modality(mid).scans;
+0158                     datapr(:,sample_range) = <a href="prt_load_blocks.html" class="code" title="function block = prt_load_blocks(filenames, bs, br)">prt_load_blocks</a>(fname,ind_ddmask);
+0159                     <span class="comment">%check for NaNs, in case of beta maps</span>
+0160                     [inan,jnan] = find(isnan(datapr(:,sample_range)));
+0161                     <span class="keyword">if</span> ~isempty(inan)
+0162                         disp(<span class="string">'Warning: NaNs found in loaded data'</span>)
+0163                         disp(<span class="string">'Consider updating 1st level mask for better performance'</span>)
+0164                         <span class="keyword">for</span> inn=1:length(inan)
+0165                             datapr(inan(inn),sample_range(jnan(inn))) = 0;
+0166                         <span class="keyword">end</span>
+0167                     <span class="keyword">end</span>
+0168                     
+0169                     <span class="comment">%detrend if necessary</span>
+0170                     <span class="keyword">if</span> in.mod(mid).detrend ~= 0
+0171                         <span class="keyword">if</span>  isfield(PRT.group(gid).subject(sid).modality(mid).design,<span class="string">'TR'</span>)
+0172                             TR = PRT.group(gid).subject(sid).modality(mid).design.TR;
+0173                         <span class="keyword">else</span>
+0174                             <span class="keyword">try</span>
+0175                                 TR = PRT.group(gid).subject(sid).modality(mid).TR;
+0176                             <span class="keyword">catch</span>
+0177                                 error(<span class="string">'detrend:TRnotfound'</span>,<span class="string">'No TR in data, suggesting that detrend is not necessary'</span>)
+0178                             <span class="keyword">end</span>
+0179                         <span class="keyword">end</span>
+0180                         <span class="keyword">switch</span> in.mod(mid).detrend
+0181                             <span class="keyword">case</span> 1
+0182                                 C = <a href="#_sub1" class="code" title="subfunction c = poly_regressor(n,order)">poly_regressor</a>(length(sample_range), <span class="keyword">...</span>
+0183                                         in.mod(mid).param_dt);
+0184                             <span class="keyword">case</span> 2
+0185                                 C = <a href="#_sub2" class="code" title="subfunction c=dct_regressor(n,cut_off,TR)">dct_regressor</a>(length(sample_range), <span class="keyword">...</span>
+0186                                         in.mod(mid).param_dt,TR);
+0187                         <span class="keyword">end</span>
+0188                         R = eye(length(sample_range)) - C*pinv(C);
+0189                         datapr(:,sample_range) = datapr(:,sample_range)*R';
+0190                     <span class="keyword">end</span>
+0191                 <span class="keyword">end</span>
+0192             <span class="keyword">end</span>
+0193             
+0194             <span class="keyword">if</span> b==1
+0195                 <span class="comment">% Write the detrended data into the file array .dat</span>
+0196                 namedat=[<span class="string">'Feature_set_'</span>,char(in.mod(mid).mod_name),<span class="string">'.dat'</span>];
+0197                 fpd_clean(m) = fopen(fullfile(prt_dir,namedat), <span class="string">'w'</span>,<span class="string">'ieee-le'</span>); <span class="comment">%#ok&lt;AGROW&gt; % 'a' append</span>
+0198                 fwrite(fpd_clean(m), datapr', <span class="string">'float32'</span>,0,<span class="string">'ieee-le'</span>);
+0199             <span class="keyword">else</span>
+0200                 <span class="comment">% Append the data in file .dat</span>
+0201                 fwrite(fpd_clean(m), datapr', <span class="string">'float32'</span>,0,<span class="string">'ieee-le'</span>);
+0202             <span class="keyword">end</span>
+0203             
+0204             <span class="comment">% get the data to build the kernel</span>
+0205             kern_vols(:,indm) = datapr(:,ifa).* <span class="keyword">...</span>
+0206                 repmat(prec_mask~=0,1,length(ifa));
+0207             <span class="comment">% if a scaling was entered, apply it now</span>
+0208             <span class="keyword">if</span> ~isempty(PRT.fs(fid).modality(m).normalise.scaling)
+0209                 kern_vols(:,indm) = kern_vols(:,indm)./ <span class="keyword">...</span>
+0210                     repmat(PRT.fs(fid).modality(m).normalise.scaling,block_size,1);
+0211             <span class="keyword">end</span>
+0212             clear datapr
+0213         <span class="keyword">else</span>
+0214             kern_vols(:,indm) = (PRT.fas(mid).dat(ifa,idvox(vox_range)))';
+0215             <span class="comment">% if a scaling was entered, apply it now</span>
+0216             <span class="keyword">if</span> ~isempty(PRT.fs(fid).modality(m).normalise.scaling)
+0217                 kern_vols(:,indm) = kern_vols(:,indm)./ <span class="keyword">...</span>
+0218                     repmat(PRT.fs(fid).modality(m).normalise.scaling,block_size,1);
+0219             <span class="keyword">end</span>
+0220             
+0221         <span class="keyword">end</span>
+0222         <span class="keyword">if</span> nargin&lt;3 || ~flag
+0223             waitbar(step/ (n_block*n_mods),h);
+0224             step=step+1;
+0225         <span class="keyword">end</span>
+0226     <span class="keyword">end</span>
+0227     <span class="keyword">if</span> size(kern_vols,2)&gt;6e3
+0228         <span class="comment">% Slower way of estimating kernel but using less memory.</span>
+0229         <span class="comment">% size limit setup such that no more than ~1Gb of mem is required:</span>
+0230         <span class="comment">% 1Gb/3(nr of matrices)/8(double)= ~40e6 -&gt; sqrt -&gt; 6e3 element</span>
+0231         <span class="keyword">for</span> ic=1:size(kern_vols,2)
+0232             Phi(:,ic) = Phi(:,ic) + kern_vols' * kern_vols(:,ic);
+0233         <span class="keyword">end</span>
+0234     <span class="keyword">else</span>
+0235         Phi = Phi + (kern_vols' * kern_vols);
+0236     <span class="keyword">end</span>
+0237     bstart = bend+1; bend = min(bstart+block_size-1,n_vox);
+0238     clear block_mask kern_vols
+0239 <span class="keyword">end</span>
+0240 <span class="keyword">if</span> nargin&lt;3 || ~flag
+0241     close(h)
+0242 <span class="keyword">end</span>
+0243 
+0244 <span class="comment">% closing feature file(s)</span>
+0245 <span class="keyword">if</span> exist(<span class="string">'fpd_clean'</span>,<span class="string">'var'</span>)
+0246     <span class="keyword">for</span> ii=1:numel(fpd_clean)
+0247         fclose(fpd_clean(ii));
+0248     <span class="keyword">end</span>
+0249 <span class="keyword">end</span>
+0250 
+0251 
+0252 <span class="comment">% -------------------------------------------------------------------------</span>
+0253 <span class="comment">% Private functions</span>
+0254 <span class="comment">% -------------------------------------------------------------------------</span>
+0255 <a name="_sub1" href="#_subfunctions" class="code">function c = poly_regressor(n,order)</a>
+0256 <span class="comment">% n:     length of the series</span>
+0257 <span class="comment">% order: the order of polynomial function to fit the tend</span>
+0258 
+0259 basis = repmat([1:n]',[1 order]);
+0260 o = repmat([1:order],[n 1]);
+0261 c = [ones(n,1) basis.^o];
+0262 <span class="keyword">return</span>
+0263 
+0264 <a name="_sub2" href="#_subfunctions" class="code">function c=dct_regressor(n,cut_off,TR)</a>
+0265 <span class="comment">% n:       length of the series</span>
+0266 <span class="comment">% cut_off: the cut off perioed in second (1/ cut off frequency)</span>
+0267 <span class="comment">% TR:      TR</span>
+0268 
+0269 <span class="keyword">if</span> cut_off&lt;0
+0270     error(<span class="string">'cut off cannot be negative'</span>)
+0271 <span class="keyword">end</span>
+0272 
+0273 T = n*TR;
+0274 order = floor((T/cut_off)*2)+1;
+0275 c = spm_dctmtx(n,order);
+0276 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

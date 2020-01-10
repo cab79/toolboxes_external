@@ -1,0 +1,466 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_machine_gpclap</title>
+  <meta name="keywords" content="prt_machine_gpclap">
+  <meta name="description" content="Run multiclass Gaussian process classification (Laplace approximation)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_machine_gpclap.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_machine_gpclap
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run multiclass Gaussian process classification (Laplace approximation)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function output = prt_machine_gpclap(d,args) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run multiclass Gaussian process classification (Laplace approximation)
+ FORMAT output = prt_machine_gpclap(d,args)
+ Inputs:
+   d         - structure with data information, with mandatory fields:
+     .train      - training data (cell array of matrices of row vectors,
+                   each [Ntr x D]). each matrix contains one representation
+                   of the data. This is useful for approaches such as
+                   multiple kernel learning.
+     .test       - testing data  (cell array of matrices row vectors, each
+                   [Nte x D])
+     .testcov    - testing covariance (cell array of matrices row vectors,
+                   each [Nte x Nte])
+     .tr_targets - training labels (for classification) or values (for
+                   regression) (column vector, [Ntr x 1])
+     .use_kernel - flag, is data in form of kernel matrices (true) or in 
+                   form of features (false)
+    args     - argument string, where
+       -h         - optimise hyperparameters (otherwise don't)
+       -c covfun  - covariance function:
+                       'covLINkcell' - simple dot product
+                       'covLINglm'   - construct a GLM
+    experimental args (use at your own risk):
+       -p         - use priors for the hyperparameters. If specified, this
+                    indicates that a maximum a posteriori (MAP) approach
+                    will be used to set covariance function
+                    hyperparameters. The priors are obtained 
+                    by calling prt_gp_priors('covFuncName')
+
+       N.B.: for the arguments specifying functions, pass in a string, not
+       a function handle. This script will generate a function handle
+ 
+ Output:
+    output  - output of machine (struct).
+     * Mandatory fields:
+      .predictions - predictions of classification or regression [Nte x D]
+     * Optional fields:
+      .type     - which type of machine this is (here, 'classifier')
+      .func_val - predictive probabilties
+      .loghyper - log hyperparameters
+      .nlml     - negative log marginal likelihood
+      .mu       - test latent means
+      .s2       - test latent variances
+      .alpha    - GP weighting coefficients
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_machine_gpml.html" class="code" title="function output = prt_machine_gpml(d,args)">prt_machine_gpml</a>	Run Gaussian process model - wrapper for gpml toolbox</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function E = gp_objfun(logtheta,t,X,covfunc)</a></li><li><a href="#_sub2" class="code">function E = gp_objfun_map(logtheta,t,X,covfunc)</a></li><li><a href="#_sub3" class="code">function [f,F,a] = gp_lap_multiclass(logtheta,covfunc,X,t,f)</a></li><li><a href="#_sub4" class="code">function [p Mu SS] = gp_pred_lap_multiclass(logtheta,X,t,covfunc,Xs,Xss,f)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = prt_machine_gpclap(d,args)</a>
+0002 <span class="comment">% Run multiclass Gaussian process classification (Laplace approximation)</span>
+0003 <span class="comment">% FORMAT output = prt_machine_gpclap(d,args)</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%   d         - structure with data information, with mandatory fields:</span>
+0006 <span class="comment">%     .train      - training data (cell array of matrices of row vectors,</span>
+0007 <span class="comment">%                   each [Ntr x D]). each matrix contains one representation</span>
+0008 <span class="comment">%                   of the data. This is useful for approaches such as</span>
+0009 <span class="comment">%                   multiple kernel learning.</span>
+0010 <span class="comment">%     .test       - testing data  (cell array of matrices row vectors, each</span>
+0011 <span class="comment">%                   [Nte x D])</span>
+0012 <span class="comment">%     .testcov    - testing covariance (cell array of matrices row vectors,</span>
+0013 <span class="comment">%                   each [Nte x Nte])</span>
+0014 <span class="comment">%     .tr_targets - training labels (for classification) or values (for</span>
+0015 <span class="comment">%                   regression) (column vector, [Ntr x 1])</span>
+0016 <span class="comment">%     .use_kernel - flag, is data in form of kernel matrices (true) or in</span>
+0017 <span class="comment">%                   form of features (false)</span>
+0018 <span class="comment">%    args     - argument string, where</span>
+0019 <span class="comment">%       -h         - optimise hyperparameters (otherwise don't)</span>
+0020 <span class="comment">%       -c covfun  - covariance function:</span>
+0021 <span class="comment">%                       'covLINkcell' - simple dot product</span>
+0022 <span class="comment">%                       'covLINglm'   - construct a GLM</span>
+0023 <span class="comment">%    experimental args (use at your own risk):</span>
+0024 <span class="comment">%       -p         - use priors for the hyperparameters. If specified, this</span>
+0025 <span class="comment">%                    indicates that a maximum a posteriori (MAP) approach</span>
+0026 <span class="comment">%                    will be used to set covariance function</span>
+0027 <span class="comment">%                    hyperparameters. The priors are obtained</span>
+0028 <span class="comment">%                    by calling prt_gp_priors('covFuncName')</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">%       N.B.: for the arguments specifying functions, pass in a string, not</span>
+0031 <span class="comment">%       a function handle. This script will generate a function handle</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% Output:</span>
+0034 <span class="comment">%    output  - output of machine (struct).</span>
+0035 <span class="comment">%     * Mandatory fields:</span>
+0036 <span class="comment">%      .predictions - predictions of classification or regression [Nte x D]</span>
+0037 <span class="comment">%     * Optional fields:</span>
+0038 <span class="comment">%      .type     - which type of machine this is (here, 'classifier')</span>
+0039 <span class="comment">%      .func_val - predictive probabilties</span>
+0040 <span class="comment">%      .loghyper - log hyperparameters</span>
+0041 <span class="comment">%      .nlml     - negative log marginal likelihood</span>
+0042 <span class="comment">%      .mu       - test latent means</span>
+0043 <span class="comment">%      .s2       - test latent variances</span>
+0044 <span class="comment">%      .alpha    - GP weighting coefficients</span>
+0045 <span class="comment">%__________________________________________________________________________</span>
+0046 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0047 
+0048 <span class="comment">% Written by J Ashburner and A Marquand</span>
+0049 <span class="comment">% $Id$</span>
+0050 
+0051 <span class="comment">% Error checks</span>
+0052 <span class="comment">% -------------------------------------------------------------------------</span>
+0053 SANITYCHECK=true; <span class="comment">% can turn off for &quot;speed&quot;. Expert only.</span>
+0054 
+0055 <span class="keyword">if</span> SANITYCHECK==true
+0056     <span class="comment">% args should be a string (empty or otherwise)</span>
+0057     <span class="keyword">if</span> ~ischar(args)
+0058         error(<span class="string">'prt_machine_gpclap:libSVMargsNotString'</span>,[<span class="string">'Error: gpml'</span><span class="keyword">...</span>
+0059             <span class="string">' args should be a string. '</span> <span class="keyword">...</span>
+0060             <span class="string">' SOLUTION: Please do XXX'</span>]);
+0061     <span class="keyword">end</span>
+0062     <span class="comment">% are we using a kernel ?</span>
+0063     <span class="keyword">if</span> ~d.use_kernel
+0064         error(<span class="string">'prt_machine_gpclap:useKernelIsFalse'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0065             <span class="string">' This machine is currently only implemented for kernel data '</span> <span class="keyword">...</span>
+0066             <span class="string">'SOLUTION: Please set use_kernel to true'</span>]);
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">% configure default parameters for GP optimisation</span>
+0071 covfunc   = @covLINkcell;
+0072 mode      = <span class="string">'classifier'</span>;
+0073 
+0074 <span class="comment">% parse input arguments</span>
+0075 <span class="comment">% -------------------------------------------------------------------------</span>
+0076 <span class="comment">% hyperparameters</span>
+0077 <span class="keyword">if</span> ~isempty(regexp(args,<span class="string">'-h'</span>,<span class="string">'once'</span>))
+0078     optimise_theta = true;
+0079     eargs = regexp(args,<span class="string">'-f\s+[0-9]*'</span>,<span class="string">'match'</span>);
+0080     <span class="keyword">if</span> ~isempty(eargs)
+0081         eargs = regexp(cell2mat(eargs),<span class="string">'-f\s+'</span>,<span class="string">'split'</span>);
+0082         maxeval  = str2num([<span class="string">'-'</span>,cell2mat(eargs(2))]);
+0083     <span class="keyword">end</span>
+0084 <span class="keyword">else</span>
+0085     optimise_theta = false;
+0086 <span class="keyword">end</span>
+0087 <span class="comment">% covariance function</span>
+0088 cargs = regexp(args,<span class="string">'-c\s+[a-zA-Z0-9_]*'</span>,<span class="string">'match'</span>);
+0089 <span class="keyword">if</span> ~isempty(cargs)
+0090     cargs = regexp(cell2mat(cargs),<span class="string">'-c\s+'</span>,<span class="string">'split'</span>);
+0091     covfunc = str2func(cell2mat(cargs(2)));
+0092 <span class="keyword">end</span>
+0093 <span class="comment">% priors</span>
+0094 <span class="keyword">if</span> ~isempty(regexp(args,<span class="string">'-p'</span>,<span class="string">'once'</span>))
+0095     disp(<span class="string">'Empirical priors specified. Using MAP for hyperparameters'</span>)
+0096     priors = prt_gp_priors(func2str(covfunc));
+0097     map = true;
+0098 <span class="keyword">else</span>
+0099     map = false;
+0100 <span class="keyword">end</span>
+0101 
+0102 <span class="comment">% Set default hyperparameters and objective function</span>
+0103 <span class="comment">% -------------------------------------------------------------------------</span>
+0104 nhyp = str2num(feval(covfunc));
+0105 <span class="keyword">if</span> nhyp(1) &gt; 0
+0106     hyp = zeros(nhyp(1),1);
+0107 <span class="keyword">end</span>
+0108 <span class="keyword">if</span> map
+0109     objfunc = @<a href="#_sub2" class="code" title="subfunction E = gp_objfun_map(logtheta,t,X,covfunc)">gp_objfun_map</a>;
+0110 <span class="keyword">else</span>
+0111     objfunc = @<a href="#_sub1" class="code" title="subfunction E = gp_objfun(logtheta,t,X,covfunc)">gp_objfun</a>;
+0112 <span class="keyword">end</span>
+0113 
+0114 <span class="comment">% Assemble data matrices</span>
+0115 <span class="comment">% -------------------------------------------------------------------------</span>
+0116 <span class="comment">% handle the glm as a special case (for now)</span>
+0117 <span class="keyword">if</span> strcmpi(func2str(covfunc),<span class="string">'covLINglm'</span>) || strcmpi(func2str(covfunc),<span class="string">'covLINglm_2class'</span>)
+0118     <span class="comment">% configure covariances</span>
+0119     K   = [d.train(:)'   {d.tr_param}];
+0120     Ks  = [d.test(:)'    {d.te_param}];
+0121     Kss = [d.testcov(:)' {d.te_param}];
+0122     
+0123     <span class="comment">% get default hyperparamter values</span>
+0124     hyp = log(prt_glm_design);
+0125     
+0126     [tmp1 tmp2 tmp3 tr_lbs] = prt_glm_design(hyp, d.tr_param);
+0127     [tmp1 tmp2 tmp3 te_lbs] = prt_glm_design(hyp, d.te_param);    
+0128 <span class="keyword">else</span>
+0129     <span class="comment">% configure covariances</span>
+0130     K   = d.train;
+0131     Ks  = d.test;
+0132     Kss = d.testcov;
+0133     
+0134     tr_lbs = d.tr_targets;
+0135     te_lbs = d.te_targets;
+0136 <span class="keyword">end</span> 
+0137 
+0138 <span class="comment">% create one-of-k labels</span>
+0139 k = max(unique(tr_lbs));
+0140 n = length(tr_lbs);
+0141 Y = zeros(n,k);
+0142 <span class="keyword">for</span> j = 1:n 
+0143     Y(j,tr_lbs(j)) = 1;
+0144 <span class="keyword">end</span>
+0145 
+0146 <span class="comment">% Train and test GP model</span>
+0147 <span class="comment">% -------------------------------------------------------------------------</span>
+0148 <span class="comment">% train</span>
+0149 <span class="keyword">if</span> optimise_theta
+0150     nh = numel(hyp);
+0151     <span class="keyword">if</span> map
+0152         objfunc = @<a href="#_sub2" class="code" title="subfunction E = gp_objfun_map(logtheta,t,X,covfunc)">gp_objfun_map</a>;
+0153     <span class="keyword">end</span>
+0154     hyp = spm_powell(hyp,eye(nh),ones(nh,1)*0.05,objfunc,Y,K,covfunc); 
+0155 <span class="keyword">end</span>
+0156 <span class="comment">% compute marginal likelihood and posterior parameters</span>
+0157 [f lml alpha] = <a href="#_sub3" class="code" title="subfunction [f,F,a] = gp_lap_multiclass(logtheta,covfunc,X,t,f)">gp_lap_multiclass</a>(hyp,covfunc,K,Y);
+0158 
+0159 <span class="comment">% make predictions</span>
+0160 [p mu sigma]  = <a href="#_sub4" class="code" title="subfunction [p Mu SS] = gp_pred_lap_multiclass(logtheta,X,t,covfunc,Xs,Xss,f)">gp_pred_lap_multiclass</a>(hyp,K,Y,covfunc,Ks,Kss);
+0161 [maxp pred]   = max(p,[],2);
+0162 
+0163 <span class="comment">% Outputs</span>
+0164 <span class="comment">% -------------------------------------------------------------------------</span>
+0165 output.predictions = pred;
+0166 output.type        = mode;
+0167 output.func_val    = p;
+0168 output.tr_targets  = tr_lbs;
+0169 output.te_targets  = te_lbs; 
+0170 output.mu          = mu;
+0171 output.sigma       = sigma;
+0172 output.loghyper    = hyp;
+0173 output.nlml        = -lml;
+0174 output.alpha       = alpha;
+0175 <span class="keyword">end</span>
+0176 
+0177 <span class="comment">% -------------------------------------------------------------------------</span>
+0178 <span class="comment">% Private functions</span>
+0179 <span class="comment">% -------------------------------------------------------------------------</span>
+0180 
+0181 <a name="_sub1" href="#_subfunctions" class="code">function E = gp_objfun(logtheta,t,X,covfunc)</a>
+0182 <span class="comment">% Objective function to minimise</span>
+0183 
+0184 [f,F]   = <a href="#_sub3" class="code" title="subfunction [f,F,a] = gp_lap_multiclass(logtheta,covfunc,X,t,f)">gp_lap_multiclass</a>(logtheta,covfunc,X,t);
+0185 E = -F; <span class="comment">%+ 1e-6*(logtheta'*logtheta);</span>
+0186 <span class="keyword">end</span>
+0187 
+0188 <span class="comment">% -------------------------------------------------------------------------</span>
+0189 <a name="_sub2" href="#_subfunctions" class="code">function E = gp_objfun_map(logtheta,t,X,covfunc)</a>
+0190 <span class="comment">% Objective function to minimise in a MAP setting</span>
+0191 
+0192 E = <a href="#_sub1" class="code" title="subfunction E = gp_objfun(logtheta,t,X,covfunc)">gp_objfun</a>(logtheta,t,X,covfunc);
+0193 
+0194 <span class="comment">% priors</span>
+0195 priors = prt_gp_priors(func2str(covfunc));
+0196 
+0197 <span class="keyword">if</span> iscell(covfunc)
+0198     d = str2double(feval(covfunc{:}));
+0199 <span class="keyword">else</span>
+0200     d = str2double(feval(covfunc));
+0201 <span class="keyword">end</span>
+0202 <span class="comment">% compute priors</span>
+0203 theta = exp(logtheta);
+0204 lP  = zeros(d,1);
+0205 <span class="comment">%dlP = zeros(d,1);</span>
+0206 <span class="keyword">for</span> i = 1:d
+0207     <span class="keyword">switch</span> priors(i).type
+0208         <span class="keyword">case</span> <span class="string">'gauss'</span>
+0209             mu = priors(i).param(1);
+0210             s2 = priors(i).param(2);
+0211             
+0212             lP(i)  = ( -0.5*log(2*pi) - 0.5*log(s2) - 0.5*(theta(i)-mu)^2/s2);
+0213             <span class="comment">%dlP(i) = (-(theta(i)-mu) / s2);</span>
+0214             
+0215         <span class="keyword">case</span> <span class="string">'gamma'</span>
+0216             a = priors(i).param(1)*priors(i).param(2) + 1;
+0217             b = priors(i).param(2);
+0218             
+0219             lP(i) = (a*log(b) - gammaln(a) + (a - 1)*log(theta(i)) - b*theta(i));
+0220             <span class="comment">%%lP(i)  = log(gampdf(theta(i), a, 1/b));</span>
+0221             <span class="comment">%dlP(i) =  ((a - 1) / theta(i) - b);</span>
+0222             
+0223         <span class="keyword">otherwise</span>
+0224             error([<span class="string">'Unknown prior type: '</span>, priors(i).type]);
+0225     <span class="keyword">end</span>
+0226 <span class="keyword">end</span>
+0227 
+0228 <span class="comment">% outputs</span>
+0229 nlP = -sum(lP);
+0230 <span class="comment">%pnlZ  = nlZ + nlP;</span>
+0231 
+0232 E = E + nlP;
+0233 <span class="keyword">end</span>
+0234 
+0235 <span class="comment">% -------------------------------------------------------------------------</span>
+0236 <a name="_sub3" href="#_subfunctions" class="code">function [f,F,a] = gp_lap_multiclass(logtheta,covfunc,X,t,f)</a>
+0237 <span class="comment">% Find mode for Laplace approximation for multi-class classification.</span>
+0238 <span class="comment">% Derived mostly from Rasmussen &amp; Williams</span>
+0239 <span class="comment">% Algorithm 3.3 (page 50).</span>
+0240 [N,C] = size(t);
+0241 <span class="keyword">if</span> nargin&lt;5, f = zeros(N,C); <span class="keyword">end</span>;
+0242 <span class="comment">%if norm(K)&gt;1e8, F=-1e10; return; end</span>
+0243 
+0244 K = covfunc(logtheta,X);
+0245 
+0246 <span class="keyword">for</span> i=1:32,
+0247     f   = f - repmat(max(f,[],2),1,size(f,2));
+0248     sig = exp(f)+eps;
+0249     sig = sig./repmat(sum(sig,2),1,C);
+0250     E   = zeros(N,N,C);
+0251     <span class="keyword">for</span> c1=1:C
+0252         D         = sig(:,c1);
+0253         sD        = sqrt(D);
+0254         L         = chol(eye(N) + K.*(sD*sD'));
+0255         E(:,:,c1) = diag(sD)*(L\(L'\diag(sD)));
+0256        <span class="comment">%z(c1)     = sum(log(diag(L)));</span>
+0257     <span class="keyword">end</span>
+0258     M = chol(sum(E,3));
+0259 
+0260     b = t-sig+sig.*f;
+0261     <span class="keyword">for</span> c1=1:C,
+0262         <span class="keyword">for</span> c2=1:C,
+0263             b(:,c1) = b(:,c1) - sig(:,c1).*sig(:,c2).*f(:,c2);
+0264         <span class="keyword">end</span>
+0265     <span class="keyword">end</span>
+0266 
+0267     c   = zeros(size(t));
+0268     <span class="keyword">for</span> c1=1:C,
+0269         c(:,c1) = E(:,:,c1)*K*b(:,c1);
+0270     <span class="keyword">end</span>
+0271     tmp = M\(M'\sum(c,2));
+0272     a   = b-c;
+0273     <span class="keyword">for</span> c1=1:C,
+0274         a(:,c1) = a(:,c1) + E(:,:,c1)*tmp;
+0275     <span class="keyword">end</span>
+0276     of = f;
+0277     f  = K*a;
+0278    
+0279     <span class="comment">%fprintf('%d -&gt; %g %g %g\n', i,-0.5*a(:)'*f(:), t(:)'*f(:), -sum(log(sum(exp(f),2)),1));</span>
+0280     <span class="keyword">if</span> sum((f(:)-of(:)).^2)&lt;(20*eps)^2*numel(f), <span class="keyword">break</span>; <span class="keyword">end</span>
+0281 <span class="keyword">end</span>
+0282 <span class="keyword">if</span> nargout&gt;1
+0283     <span class="comment">% Really not sure about sum(z) as being the determinant.</span>
+0284     <span class="comment">% hlogdet = sum(z);</span>
+0285 
+0286     R  = null(ones(1,C));
+0287     sW = sparse([],[],[],N*(C-1),N*(C-1));
+0288     <span class="keyword">for</span> i=1:N,
+0289         ind         = (0:(C-2))*N+i;
+0290         P           = sig(i,:)';
+0291         D           = diag(P);
+0292         sW(ind,ind) = sqrtm(R'*(D-P*P')*R);
+0293     <span class="keyword">end</span>
+0294     hlogdet = sum(log(diag(chol(speye(N*(C-1))+sW*kron(eye(C-1),K)*sW))));
+0295     F       = -0.5*a(:)'*f(:) + t(:)'*f(:) - sum(log(sum(exp(f),2)),1) - hlogdet;
+0296     <span class="comment">%fprintf('%g %g %g\n', -0.5*a(:)'*f(:) + t(:)'*f(:) - sum(log(sum(exp(f),2)),1), -hlogdet, F);</span>
+0297 <span class="keyword">end</span>
+0298 <span class="keyword">end</span>
+0299 
+0300 <span class="comment">% -------------------------------------------------------------------------</span>
+0301 <a name="_sub4" href="#_subfunctions" class="code">function [p Mu SS] = gp_pred_lap_multiclass(logtheta,X,t,covfunc,Xs,Xss,f)</a>
+0302 <span class="comment">% Predictions for Laplace approximation to multi-class classification.</span>
+0303 <span class="comment">% Derived mostly from Rasmussen &amp; Williams</span>
+0304 <span class="comment">% Algorithm 3.4 (page 51).</span>
+0305 
+0306 [N,C] = size(t);
+0307 
+0308 K   = covfunc(logtheta,X);
+0309 Ks  = covfunc(logtheta,X,Xs);
+0310 kss = covfunc(logtheta,Xss,<span class="string">'diag'</span>);
+0311 
+0312 <span class="keyword">if</span> nargin&lt;7,
+0313     f = <a href="#_sub3" class="code" title="subfunction [f,F,a] = gp_lap_multiclass(logtheta,covfunc,X,t,f)">gp_lap_multiclass</a>(logtheta,covfunc,X,t);
+0314 <span class="keyword">end</span>
+0315 
+0316 sig = exp(f);
+0317 sig = sig./repmat(sum(sig,2)+eps,1,C);
+0318 E   = zeros(N,N,C);
+0319 <span class="keyword">for</span> c1=1:C   
+0320     D         = sig(:,c1);
+0321     sD        = sqrt(D);
+0322     L         = chol(eye(N) + K.*(sD*sD'));
+0323     E(:,:,c1) = diag(sD)*(L\(L'\diag(sD) ));
+0324 <span class="keyword">end</span> 
+0325 M   = chol(sum(E,3));
+0326 <span class="keyword">try</span>
+0327     os  = RandStream.getGlobalStream;
+0328 <span class="keyword">catch</span>
+0329     os  = RandStream.getDefaultStream;
+0330 <span class="keyword">end</span>
+0331 p   = zeros(size(Ks,2),C);
+0332 j   = 0;
+0333 Mu = zeros(size(Ks,2),C); SS = zeros(C,C,size(Ks,2));
+0334 <span class="keyword">for</span> i=1:size(Ks,2),
+0335     j = j + 1;
+0336 
+0337     mu = zeros(C,1);
+0338     S  = zeros(C,C);
+0339     <span class="keyword">for</span> c1=1:C,
+0340         mu(c1) = (t(:,c1)-sig(:,c1))'*Ks(:,i);
+0341         b      = E(:,:,c1)*Ks(:,i);
+0342         c      = (M\(M'\b));
+0343         <span class="keyword">for</span> c2=1:C,
+0344             S(c1,c2) = Ks(:,i)'*E(:,:,c2)*c;
+0345         <span class="keyword">end</span>
+0346         S(c1,c1) = S(c1,c1) - b'*Ks(:,i) + kss(i);
+0347     <span class="keyword">end</span>
+0348     
+0349     <span class="comment">% collect latent means and variances</span>
+0350     Mu(i,:)   = mu';
+0351     SS(:,:,i) = S;
+0352     
+0353     s = RandStream.create(<span class="string">'mt19937ar'</span>,<span class="string">'seed'</span>,0);
+0354     <span class="keyword">try</span>
+0355         RandStream.setGlobalStream(s);
+0356     <span class="keyword">catch</span>
+0357         RandStream.setDefaultStream(s);
+0358     <span class="keyword">end</span>
+0359     nsamp  = 10000;
+0360     r      = sqrtm(S)*randn(C,nsamp) + repmat(mu,1,nsamp);
+0361     <span class="comment">%r      = chol(S)'*randn(C,nsamp) + repmat(mu,1,nsamp);</span>
+0362     <span class="comment">% subtract a constant to avoid numerical overflow</span>
+0363     r      = bsxfun(@minus, r, max(r, [], 1));
+0364     r      = exp(r);
+0365     p(j,:) = mean(r./repmat(sum(r,1),C,1),2)';
+0366 <span class="keyword">end</span>
+0367 <span class="keyword">try</span>
+0368     RandStream.setGlobalStream(os);
+0369 <span class="keyword">catch</span>
+0370     RandStream.setDefaultStream(os);
+0371 <span class="keyword">end</span>
+0372 <span class="keyword">end</span>
+0373</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

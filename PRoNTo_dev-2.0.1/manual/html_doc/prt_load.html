@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_load</title>
+  <meta name="keywords" content="prt_load">
+  <meta name="description" content="Function to load the PRT.mat and check its integrity regarding the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_load.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_load
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to load the PRT.mat and check its integrity regarding the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function PRT = prt_load(fname,flag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to load the PRT.mat and check its integrity regarding the 
+ kernels and feature sets that it is supposed to contain. Updates the  set
+ feature name if needed.
+
+ input  : name of the PRT.mat, path included
+
+ output : PRT structure updated
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_struct.html" class="code" title="function [PRT,flag] = prt_struct(PRT,prtdir)">prt_struct</a>	% Function to load the PRT.mat and check its integrity regarding the</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_compute_weights.html" class="code" title="function varargout = prt_ui_compute_weights(varargin)">prt_ui_compute_weights</a>	PRT_UI_COMPUTE_WEIGHTS M-file for prt_ui_compute_weights.fig</li><li><a href="prt_ui_design.html" class="code" title="function varargout = prt_ui_design(varargin)">prt_ui_design</a>	PRT_UI_DESIGN M-file for prt_ui_design.fig</li><li><a href="prt_ui_model.html" class="code" title="function varargout = prt_ui_model(varargin)">prt_ui_model</a>	PRT_UI_KERNEL_CONSTRUCTION M-file for prt_ui_kernel_construction.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function PRT = prt_load(fname,flag)</a>
+0002 
+0003 <span class="comment">% Function to load the PRT.mat and check its integrity regarding the</span>
+0004 <span class="comment">% kernels and feature sets that it is supposed to contain. Updates the  set</span>
+0005 <span class="comment">% feature name if needed.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% input  : name of the PRT.mat, path included</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% output : PRT structure updated</span>
+0010 <span class="comment">%_______________________________________________________________________</span>
+0011 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0012 
+0013 <span class="comment">% Written by J. Schrouff</span>
+0014 <span class="comment">% $Id$</span>
+0015 
+0016 <span class="keyword">try</span>
+0017     load(fname)
+0018 <span class="keyword">catch</span>
+0019     beep
+0020     disp(<span class="string">'Could not load file'</span>)
+0021     PRT = [];
+0022     <span class="keyword">return</span>
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="keyword">if</span> nargin&lt;2
+0026     flag = 0;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% get path</span>
+0030 prtdir = fileparts(fname);
+0031 
+0032 <span class="comment">% for each feature set, check that the corresponding .dat is present in the</span>
+0033 <span class="comment">% same directory and update the name of the file array if needed</span>
+0034 <span class="keyword">if</span> isfield(PRT,<span class="string">'fas'</span>) &amp;&amp; ~isempty(PRT.fas)
+0035     ind = [];
+0036     <span class="keyword">for</span> i=1:length(PRT.fas)
+0037         <span class="comment">% get the name of the file array</span>
+0038         <span class="keyword">if</span> ~isempty(PRT.fas(i).dat)
+0039             fa_name=PRT.fas(i).dat.fname;
+0040             <span class="keyword">if</span> ~ispc
+0041                 fname = strrep(fname,<span class="string">'\'</span>,filesep); 
+0042             <span class="keyword">end</span> 
+0043             [fadir,fan,faext] = fileparts(fa_name);    
+0044             <span class="keyword">if</span> ~strcmpi(fadir,prtdir) <span class="comment">% directories of PRT and feature set are different</span>
+0045                 <span class="keyword">if</span> ~exist(fullfile(prtdir,[fan,faext]),<span class="string">'file'</span>)  <span class="comment">% no feature set found</span>
+0046                     beep
+0047                     disp([<span class="string">'No feature set named '</span>,fan,<span class="string">' found in the PRT directory'</span>])
+0048                     disp(<span class="string">'Information linked to that feature set is deleted'</span>)
+0049                     disp(<span class="string">'Computing the weights or using non-kernel methods using that feature set won''t be permitted'</span>)
+0050                 <span class="keyword">else</span>  <span class="comment">% file exists but under the new directory</span>
+0051                     PRT.fas(i).dat.fname = fullfile(prtdir,[fan,faext]);
+0052                     ind = [ind,i];
+0053                 <span class="keyword">end</span>
+0054             <span class="keyword">else</span>
+0055                 ind = [ind,i];
+0056             <span class="keyword">end</span>
+0057         <span class="keyword">elseif</span> isempty(PRT.fas(i).dat) &amp;&amp; ~isempty(PRT.fas(i).mod_name) <span class="comment">%modality there in data and design, but not built in feature set</span>
+0058             ind = [ind,i];
+0059         <span class="keyword">end</span>
+0060     <span class="keyword">end</span>
+0061     <span class="keyword">if</span> isempty(ind)
+0062         PRT = rmfield(PRT,<span class="string">'fas'</span>);
+0063         PRT = rmfield(PRT,<span class="string">'fs'</span>);
+0064     <span class="keyword">elseif</span> length(ind)~=i
+0065         <span class="comment">% When a model comports the modality of the deleted fas, get rid of</span>
+0066         <span class="comment">% the corresponding fs and model</span>
+0067         PRT.fas = PRT.fas(ind);
+0068     <span class="keyword">end</span>
+0069 <span class="keyword">end</span>
+0070 
+0071 <span class="comment">%Check integrity of all PRT fields, for backward compatibility</span>
+0072 <span class="keyword">if</span> flag==1
+0073     [PRT,flag] = <a href="prt_struct.html" class="code" title="function [PRT,flag] = prt_struct(PRT,prtdir)">prt_struct</a>(PRT,prtdir);
+0074     <span class="keyword">if</span> ~flag
+0075         error(<span class="string">'prt_load:EssentialFieldsMissing'</span>,[<span class="string">'Essentials fields are missing. '</span>,<span class="keyword">...</span>
+0076             <span class="string">'This PRT cannot be used. Data and Design should be started from scratch'</span>])
+0077     <span class="keyword">end</span>
+0078 <span class="keyword">end</span>
+0079 
+0080 
+0081 save([prtdir,filesep,<span class="string">'PRT.mat'</span>],<span class="string">'PRT'</span>)</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

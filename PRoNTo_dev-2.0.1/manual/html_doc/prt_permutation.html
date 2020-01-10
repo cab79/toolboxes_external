@@ -1,0 +1,374 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_permutation</title>
+  <meta name="keywords" content="prt_permutation">
+  <meta name="description" content="Function to compute permutation test">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_permutation.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_permutation
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to compute permutation test</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [] = prt_permutation(PRT, n_perm, modelid, path, flag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to compute permutation test
+
+ Inputs:
+ -------
+ PRT:     PRT structured including model
+ n_perm:  number of permutations
+ modelid: model ID
+ path:    path
+ flag:    boolean variable. set to 1 to save the weights for each
+          permutation. default: 0
+
+ Outputs:
+ --------
+
+ for classification
+ permutation.c_acc:        Permuted accuracy per class
+ permutation.b_acc:        Permuted balanced accuracy
+ permutation.pvalue_b_acc: p-value for c_acc
+ permutation.pvalue_c_acc: p-value for b_acc
+
+ for regression
+ permutation.corr: Permuted correlation
+ permutation.mse:  Permuted mean square error
+ permutation.pval_corr: p-value for corr
+ permutation.pval_r2: p-value for r2;
+ permutation.pval_mse:  p-value for mse
+ permutation.pval_nmse:  p-value for nmse
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>	Function to run a single cross-validation fold</li><li><a href="prt_getKernelModel.html" class="code" title="function [Phi_all,ID,fid] = prt_getKernelModel (PRT,prt_dir,mid)">prt_getKernelModel</a>	Function to load the kernels according to the samples considered in a</li><li><a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>	Get/set the defaults values associated with an identifier</li><li><a href="prt_nested_cv.html" class="code" title="function [out] = prt_nested_cv(PRT, in)">prt_nested_cv</a>	Function to perform the nested CV</li><li><a href="prt_stats.html" class="code" title="function stats = prt_stats(model, tte, nk)">prt_stats</a>	Function to compute predictions machine performance statistcs statistics</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [] = prt_permutation(PRT, n_perm, modelid, path, flag)</a>
+0002 <span class="comment">% Function to compute permutation test</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">% -------</span>
+0006 <span class="comment">% PRT:     PRT structured including model</span>
+0007 <span class="comment">% n_perm:  number of permutations</span>
+0008 <span class="comment">% modelid: model ID</span>
+0009 <span class="comment">% path:    path</span>
+0010 <span class="comment">% flag:    boolean variable. set to 1 to save the weights for each</span>
+0011 <span class="comment">%          permutation. default: 0</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Outputs:</span>
+0014 <span class="comment">% --------</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% for classification</span>
+0017 <span class="comment">% permutation.c_acc:        Permuted accuracy per class</span>
+0018 <span class="comment">% permutation.b_acc:        Permuted balanced accuracy</span>
+0019 <span class="comment">% permutation.pvalue_b_acc: p-value for c_acc</span>
+0020 <span class="comment">% permutation.pvalue_c_acc: p-value for b_acc</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% for regression</span>
+0023 <span class="comment">% permutation.corr: Permuted correlation</span>
+0024 <span class="comment">% permutation.mse:  Permuted mean square error</span>
+0025 <span class="comment">% permutation.pval_corr: p-value for corr</span>
+0026 <span class="comment">% permutation.pval_r2: p-value for r2;</span>
+0027 <span class="comment">% permutation.pval_mse:  p-value for mse</span>
+0028 <span class="comment">% permutation.pval_nmse:  p-value for nmse</span>
+0029 <span class="comment">%__________________________________________________________________________</span>
+0030 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0031 
+0032 <span class="comment">% Written by J. Mourao-Miranda</span>
+0033 <span class="comment">% $Id$</span>
+0034 
+0035 prt_dir = path;
+0036 def_par = <a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>(<span class="string">'paral'</span>);
+0037 <span class="keyword">if</span> nargin&lt;5
+0038     flag=0;
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% % prt_dir = char(regexprep(in.fname,'PRT.mat', ''));</span>
+0042 
+0043 <span class="keyword">if</span> ~isfield(PRT,<span class="string">'model'</span>)
+0044     beep
+0045     disp(<span class="string">'No model found in this PRT.mat'</span>);
+0046     <span class="keyword">return</span>
+0047 <span class="keyword">else</span>
+0048     <span class="keyword">if</span> ~isfield(PRT.model,<span class="string">'output'</span>)
+0049         beep
+0050         disp(<span class="string">'No model output found in this PRT.mat'</span>)
+0051         <span class="keyword">return</span>
+0052         
+0053     <span class="keyword">end</span>
+0054     
+0055     <span class="comment">% configure some variables</span>
+0056     CV       = PRT.model(modelid).input.cv_mat;     <span class="comment">% CV matrix</span>
+0057     n_folds  = size(CV,2);                      <span class="comment">% number of CV folds</span>
+0058     
+0059     <span class="comment">% parralel code?</span>
+0060     <span class="keyword">if</span> def_par.allow
+0061         <span class="keyword">try</span>
+0062             matlabpool(def_par.ncore)
+0063         <span class="keyword">catch</span>
+0064             warning(<span class="string">'Could not use pool of Matlab processes!'</span>)
+0065         <span class="keyword">end</span>
+0066     <span class="keyword">end</span>
+0067     
+0068     <span class="comment">% targets</span>
+0069     t = PRT.model(modelid).input.targets;
+0070     
+0071     <span class="comment">% load data files and configure ID matrix</span>
+0072     [Phi_all,ID,fid] = <a href="prt_getKernelModel.html" class="code" title="function [Phi_all,ID,fid] = prt_getKernelModel (PRT,prt_dir,mid)">prt_getKernelModel</a>(PRT,prt_dir,modelid);
+0073 
+0074     <span class="comment">%get number of classes</span>
+0075     <span class="keyword">if</span> strcmpi(PRT.model(modelid).input.type,<span class="string">'classification'</span>)
+0076         nc=max(unique(t));
+0077     <span class="keyword">else</span>
+0078         nc=[];
+0079     <span class="keyword">end</span>
+0080     fdata.nc = nc;
+0081     
+0082     <span class="comment">% Find chunks in the data (e.g. temporal correlated samples)</span>
+0083     <span class="comment">% -------------------------------------------------------------------------</span>
+0084     
+0085     ids = PRT.fs(fid).id_mat(PRT.model(modelid).input.samp_idx,:);
+0086     i=1;
+0087     samp_g=unique(ids(:,1));<span class="comment">%number of groups</span>
+0088     <span class="keyword">for</span> gid = 1: length(samp_g)
+0089         
+0090         samp_s=unique(ids(ids(:,1)==samp_g(gid),2)); <span class="comment">%number of subjects for specific group</span>
+0091         
+0092         <span class="keyword">for</span> sid = 1: length(samp_s)
+0093             
+0094             samp_m=unique(ids(ids(:,1)==samp_g(gid) &amp; ids(:,2)==samp_s(sid),3)); <span class="comment">%number of modality for specific group &amp; subject</span>
+0095             
+0096             <span class="keyword">for</span> mid = 1:length(samp_m)
+0097                 
+0098                 samp_c=unique(ids(ids(:,1)==samp_g(gid) &amp; ids(:,2)==samp_s(sid) &amp; ids(:,3)==samp_m(mid),4)); <span class="comment">%number of conditions for specific group &amp; subject &amp; modality</span>
+0099                 
+0100                 <span class="keyword">for</span> cid = 1:length(samp_c)
+0101                     
+0102                     samp_b=unique(ids(ids(:,1)==samp_g(gid) &amp; ids(:,2)==samp_s(sid) &amp; ids(:,3)==samp_m(mid) &amp; ids(:,4)==samp_c(cid),5));  <span class="comment">%number of blocks for specific group &amp; subject &amp; modality &amp; conditions</span>
+0103                     
+0104                     <span class="keyword">for</span> bid = 1:length(samp_b)
+0105                         
+0106                         rg = find((ids(:,1) == samp_g(gid)) &amp; <span class="keyword">...</span>
+0107                             (ids(:,2) == samp_s(sid)) &amp; <span class="keyword">...</span>
+0108                             (ids(:,3) == samp_m(mid)) &amp; <span class="keyword">...</span>
+0109                             (ids(:,4) == samp_c(cid)) &amp; <span class="keyword">...</span>
+0110                             (ids(:,5) == samp_b(bid)));
+0111                         
+0112                         chunks{i} = rg;
+0113                         
+0114                         i=i+1;
+0115                     <span class="keyword">end</span>
+0116                 <span class="keyword">end</span>
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">end</span>
+0119     <span class="keyword">end</span>
+0120     
+0121  
+0122     
+0123     <span class="comment">% Initialize counts</span>
+0124     <span class="comment">% -------------------------------------------------------------------------</span>
+0125     <span class="keyword">switch</span> PRT.model(modelid).output.fold(1).type
+0126         <span class="keyword">case</span> <span class="string">'classifier'</span>
+0127             n_class = length(PRT.model(modelid).output.fold(1).stats.c_acc);
+0128             total_greater_c_acc = zeros(n_class,1);
+0129             total_greater_b_acc = 0;
+0130             
+0131         <span class="keyword">case</span> <span class="string">'regression'</span>
+0132             total_greater_corr = 0;
+0133             total_greater_mse = 0;
+0134             total_greater_nmse = 0;
+0135             total_greater_r2 = 0;
+0136     <span class="keyword">end</span>
+0137     
+0138     <span class="comment">% Run model with permuted labels</span>
+0139     <span class="comment">% -------------------------------------------------------------------------</span>
+0140     <span class="keyword">if</span> ~isfield(PRT.model(modelid).output,<span class="string">'permutation'</span>) || <span class="keyword">...</span>
+0141         (isfield(PRT.model(modelid).output,<span class="string">'permutation'</span>) &amp;&amp; flag) <span class="comment">%Back to empty to save other perm param</span>
+0142         PRT.model(modelid).output.permutation=struct(<span class="string">'fold'</span>,[]);
+0143     <span class="keyword">end</span>
+0144     <span class="keyword">for</span> p=1:n_perm
+0145         
+0146         disp(sprintf(<span class="string">'Permutation %d out of %d &gt;&gt;&gt;&gt;&gt;&gt;'</span>,p,n_perm));
+0147         
+0148         <span class="comment">% permute</span>
+0149         chunkperm=randperm(length(chunks));
+0150         CVperm = zeros(size(CV));
+0151         t_perm = zeros(length(t),1);
+0152         <span class="keyword">for</span> i=1:length(chunks)
+0153             t_perm(chunks{i},1)= unique(PRT.model(modelid).input.targets(chunks{chunkperm(i)})); 
+0154             CVperm(chunks{i},:) = CV(chunks{chunkperm(i)},:);
+0155         <span class="keyword">end</span>
+0156                 
+0157         <span class="keyword">for</span> f = 1:n_folds
+0158             <span class="comment">% configure data structure for prt_cv_fold</span>
+0159             fdata.ID      = ID;
+0160             fdata.mid     = modelid;
+0161             fdata.CV      = CVperm(:,f);
+0162             fdata.Phi_all = Phi_all;
+0163             fdata.t       = t_perm;
+0164             
+0165             <span class="comment">% Nested CV for hyper-parameter optimisation or feature selection</span>
+0166             <span class="keyword">if</span> isfield(PRT.model(modelid).input,<span class="string">'use_nested_cv'</span>)
+0167                 <span class="keyword">if</span> PRT.model(modelid).input.use_nested_cv
+0168                     [out] = <a href="prt_nested_cv.html" class="code" title="function [out] = prt_nested_cv(PRT, in)">prt_nested_cv</a>(PRT, fdata);
+0169                     PRT.model(modelid).output.fold(f).param_effect = out;
+0170                     PRT.model(modelid).input.machine.args = out.opt_param;
+0171                 <span class="keyword">end</span>
+0172             <span class="keyword">end</span>
+0173             
+0174             [temp_model, targets] = <a href="prt_cv_fold.html" class="code" title="function [model, targets] = prt_cv_fold(PRT, in)">prt_cv_fold</a>(PRT,fdata);
+0175             
+0176             <span class="comment">% save the weights per fold to further compute ranking distance</span>
+0177             <span class="keyword">if</span> flag
+0178                 PRT.model(modelid).output.permutation(p).fold(f).alpha=temp_model.alpha;
+0179                 PRT.model(modelid).output.permutation(p).fold(f).pred=temp_model.predictions;
+0180             <span class="keyword">end</span>
+0181             
+0182             model.output.fold(f).predictions = temp_model.predictions;
+0183             model.output.fold(f).targets     = targets.test;
+0184             
+0185         <span class="keyword">end</span>
+0186         
+0187         <span class="comment">% Model level statistics (across folds)</span>
+0188         t             = vertcat(model.output.fold(:).targets);
+0189         m.type        = PRT.model(modelid).output.fold(1).type;
+0190         m.predictions = vertcat(model.output.fold(:).predictions);
+0191         perm_stats         = <a href="prt_stats.html" class="code" title="function stats = prt_stats(model, tte, nk)">prt_stats</a>(m,t,t);
+0192         
+0193         
+0194         <span class="keyword">switch</span> PRT.model(modelid).output.fold(1).type
+0195             
+0196             <span class="keyword">case</span> <span class="string">'classifier'</span>
+0197                 
+0198                 permutation.b_acc(p)=perm_stats.b_acc;
+0199                 n_class = length(PRT.model(modelid).output.fold(1).stats.c_acc);
+0200                 
+0201                 <span class="keyword">if</span> (perm_stats.b_acc &gt;= PRT.model(modelid).output.stats.b_acc)
+0202                     total_greater_b_acc=total_greater_b_acc+1;
+0203                 <span class="keyword">end</span>
+0204                 
+0205                 <span class="keyword">for</span> c=1:n_class
+0206                     permutation.c_acc(c,p)=perm_stats.c_acc(c);
+0207                     <span class="keyword">if</span> (perm_stats.c_acc(c) &gt;= PRT.model(modelid).output.stats.c_acc(c))
+0208                         total_greater_c_acc(c)=total_greater_c_acc(c)+1;
+0209                     <span class="keyword">end</span>
+0210                 <span class="keyword">end</span>
+0211                 
+0212             <span class="keyword">case</span> <span class="string">'regression'</span>
+0213                 permutation.corr(p)=perm_stats.corr;
+0214                 <span class="keyword">if</span> (perm_stats.corr &gt;= PRT.model(modelid).output.stats.corr)
+0215                     total_greater_corr=total_greater_corr+1;
+0216                 <span class="keyword">end</span>
+0217                 permutation.mse(p)=perm_stats.mse;
+0218                 <span class="keyword">if</span> (perm_stats.mse &lt;= PRT.model(modelid).output.stats.mse)
+0219                     total_greater_mse=total_greater_mse+1;
+0220                 <span class="keyword">end</span>
+0221                 permutation.nmse(p)=perm_stats.nmse;
+0222                 <span class="keyword">if</span> (perm_stats.nmse &lt;= PRT.model(modelid).output.stats.nmse)
+0223                     total_greater_nmse=total_greater_nmse+1;
+0224                 <span class="keyword">end</span>
+0225                 permutation.r2(p)=perm_stats.r2;
+0226                 <span class="keyword">if</span> (perm_stats.r2 &gt;= PRT.model(modelid).output.stats.r2)
+0227                     total_greater_r2=total_greater_r2+1;
+0228                 <span class="keyword">end</span>
+0229                 
+0230                 
+0231         <span class="keyword">end</span>
+0232     <span class="keyword">end</span>
+0233     
+0234     <span class="keyword">switch</span> PRT.model(modelid).output.fold(1).type
+0235         <span class="keyword">case</span> <span class="string">'classifier'</span>
+0236             
+0237             pval_b_acc = total_greater_b_acc / n_perm;
+0238             <span class="keyword">if</span> pval_b_acc == 0
+0239                 pval_b_acc = 1./n_perm;
+0240             <span class="keyword">end</span>
+0241             
+0242             pval_c_acc=zeros(n_class,1);
+0243             <span class="keyword">for</span> c=1:n_class
+0244                 pval_c_acc(c) = total_greater_c_acc(c) / n_perm;
+0245                 <span class="keyword">if</span> pval_c_acc(c) == 0
+0246                     pval_c_acc(c) = 1./n_perm;
+0247                 <span class="keyword">end</span>
+0248             <span class="keyword">end</span>
+0249             
+0250             permutation.pvalue_b_acc = pval_b_acc;
+0251             permutation.pvalue_c_acc = pval_c_acc;
+0252             
+0253         <span class="keyword">case</span> <span class="string">'regression'</span>
+0254             
+0255             pval_corr = total_greater_corr / n_perm;
+0256             <span class="keyword">if</span> pval_corr == 0
+0257                 pval_corr = 1./n_perm;
+0258             <span class="keyword">end</span>
+0259             
+0260             pval_mse = total_greater_mse / n_perm;
+0261             <span class="keyword">if</span> pval_mse == 0
+0262                 pval_mse = 1./n_perm;
+0263             <span class="keyword">end</span>
+0264             
+0265             pval_nmse = total_greater_nmse / n_perm;
+0266             <span class="keyword">if</span> pval_nmse == 0
+0267                 pval_nmse = 1./n_perm;
+0268             <span class="keyword">end</span>
+0269             
+0270             pval_r2 = total_greater_r2 / n_perm;
+0271             <span class="keyword">if</span> pval_r2 == 0
+0272                 pval_r2 = 1./n_perm;
+0273             <span class="keyword">end</span>
+0274             
+0275             permutation.pval_corr = pval_corr;
+0276             permutation.pval_mse = pval_mse;
+0277             permutation.pval_nmse = pval_nmse;
+0278             permutation.pval_r2 = pval_r2;
+0279     <span class="keyword">end</span>
+0280     
+0281     
+0282     
+0283     <span class="comment">%update PRT</span>
+0284     PRT.model(modelid).output.stats.permutation = permutation;
+0285     
+0286     <span class="comment">% Save PRT containing machine output</span>
+0287     <span class="comment">% -------------------------------------------------------------------------</span>
+0288     outfile = fullfile(path,<span class="string">'PRT.mat'</span>);
+0289     disp(<span class="string">'Updating PRT.mat.......&gt;&gt;'</span>)
+0290     <span class="keyword">if</span> spm_check_version(<span class="string">'MATLAB'</span>,<span class="string">'7'</span>) &lt; 0
+0291         save(outfile,<span class="string">'-V6'</span>,<span class="string">'PRT'</span>);
+0292     <span class="keyword">else</span>
+0293         save(outfile,<span class="string">'PRT'</span>);
+0294     <span class="keyword">end</span>
+0295     disp(<span class="string">'Permutation test done.'</span>)
+0296 <span class="keyword">end</span>
+0297 
+0298 <span class="keyword">end</span>
+0299</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

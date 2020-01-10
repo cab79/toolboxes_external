@@ -1,0 +1,428 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt</title>
+  <meta name="keywords" content="prt">
+  <meta name="description" content="Pattern Recognition for Neuroimaging Toolbox, PRoNTo.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = prt(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Pattern Recognition for Neuroimaging Toolbox, PRoNTo.
+
+ This function initializes things for PRoNTo and provides some low level
+ functionalities
+
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_batch.html" class="code" title="function prt_batch">prt_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_ui_main.html" class="code" title="function varargout = prt_ui_main(varargin)">prt_ui_main</a>	PRT_UI_MAIN M-file for prt_ui_main.fig</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="pronto.html" class="code" title="function pronto">pronto</a>	Function launching PRoNTo (Pattern Recognition for Neuroimaging Toolbox),</li><li><a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_batch.html" class="code" title="function prt_batch">prt_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_check.html" class="code" title="function ok = prt_check(list_check,dir_root)">prt_check</a>	Function to automatically test PRoNTo's integrity</li><li><a href="prt_defaults.html" class="code" title="function prt_defaults">prt_defaults</a>	Sets the defaults which are used by the Pattern Recognition for</li><li><a href="prt_func2html.html" class="code" title="">prt_func2html</a>	Script to generate the list of .m functions into html files</li><li><a href="prt_latex.html" class="code" title="function prt_latex(opt)">prt_latex</a>	</li><li><a href="prt_struct2latex.html" class="code" title="function prt_struct2latex(S)">prt_struct2latex</a>	Function that takes in a structure S and writes down the latex code</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ok = check_installation</a></li><li><a href="#_sub2" class="code">function lsdir = list_subdir(pth_dir,rejd)</a></li><li><a href="#_sub3" class="code">function v = get_version(ReDo)</a></li><li><a href="#_sub4" class="code">function gpath = clean_gpath(gpath,rejd)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = prt(varargin)</a>
+0002 <span class="comment">% Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function initializes things for PRoNTo and provides some low level</span>
+0005 <span class="comment">% functionalities</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%_______________________________________________________________________</span>
+0008 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0009 
+0010 <span class="comment">% Written by Christophe Phillips</span>
+0011 <span class="comment">% $Id$</span>
+0012 
+0013 <span class="comment">% TODO:</span>
+0014 <span class="comment">% - fix which subdirectories from all the machines are necessary, and only</span>
+0015 <span class="comment">%   add these to Matlab path.</span>
+0016 
+0017 <span class="comment">%-Format arguments</span>
+0018 <span class="comment">%-----------------------------------------------------------------------</span>
+0019 <span class="keyword">global</span> PRT_INIT
+0020 <span class="keyword">if</span> nargin == 0,
+0021     Action = <span class="string">'StartUp'</span>;
+0022 <span class="keyword">else</span>
+0023     Action = varargin{1};
+0024 <span class="keyword">end</span>
+0025 
+0026 <span class="keyword">switch</span> lower(Action)
+0027     <span class="comment">%==================================================================</span>
+0028     <span class="keyword">case</span> <span class="string">'startup'</span>                                    <span class="comment">% Startup the toolbox</span>
+0029         <span class="comment">%==================================================================</span>
+0030         
+0031         <span class="comment">% Welcome message</span>
+0032         <a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'ASCIIwelcome'</span>);
+0033         
+0034         <span class="comment">% add appropriate paths, if necessary</span>
+0035         <span class="comment">%   - batch dir</span>
+0036         <span class="keyword">if</span> ~exist(<span class="string">'prt_cfg_batch'</span>,<span class="string">'file'</span>)
+0037             addpath(fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'batch'</span>));
+0038         <span class="keyword">end</span>
+0039         <span class="comment">%   - machines</span>
+0040         <span class="keyword">if</span> ~exist(<span class="string">'prt_machine'</span>,<span class="string">'file'</span>)
+0041             pth_machines = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'machines'</span>);
+0042             addpath(pth_machines);
+0043             <span class="comment">% add each machine's sub-directory</span>
+0044             <span class="comment">% and ALL its subdirectories recursively</span>
+0045             ls_machinedir = <a href="#_sub2" class="code" title="subfunction lsdir = list_subdir(pth_dir,rejd)">list_subdir</a>(pth_machines);
+0046             <span class="keyword">for</span> ii=1:numel(ls_machinedir)
+0047                 gpath_ii = genpath(fullfile(pth_machines,ls_machinedir{ii}));
+0048                 gpath_ii = <a href="#_sub4" class="code" title="subfunction gpath = clean_gpath(gpath,rejd)">clean_gpath</a>(gpath_ii);
+0049                 addpath(gpath_ii)
+0050             <span class="keyword">end</span>
+0051         <span class="keyword">end</span>
+0052         
+0053         <span class="comment">% utils - dirty check for the moment</span>
+0054         <span class="keyword">if</span> ~exist(<span class="string">'prt_checkAlphaNumUnder'</span>,<span class="string">'file'</span>)
+0055             addpath(fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'utils'</span>));
+0056         <span class="keyword">end</span>
+0057         
+0058         <span class="comment">% check installation of machines and that of SPM8/12</span>
+0059         ok = <a href="#_sub1" class="code" title="subfunction ok = check_installation">check_installation</a>;
+0060         <span class="keyword">if</span> ~ok
+0061             beep
+0062             fprintf(<span class="string">'INSTALLATION PROBLEM!'</span>);
+0063             <span class="keyword">return</span>
+0064         <span class="keyword">end</span>
+0065         
+0066         <span class="comment">% Add SPM's directories: matlabbatch</span>
+0067         <span class="keyword">if</span> ~exist(<span class="string">'cfg_util'</span>,<span class="string">'file'</span>)
+0068             addpath(fullfile(spm(<span class="string">'Dir'</span>),<span class="string">'matlabbatch'</span>));
+0069         <span class="keyword">end</span>
+0070         
+0071         <span class="comment">% intialize the matlabbatch system</span>
+0072         cfg_get_defaults(<span class="string">'cfg_util.genscript_run'</span>, @genscript_run);
+0073         cfg_util(<span class="string">'initcfg'</span>);
+0074         clear <a href="prt_batch.html" class="code" title="function prt_batch">prt_batch</a>;
+0075         
+0076         <span class="comment">% set path to PRoNTo and SPM dir into 'file select'</span>
+0077         spm_select(<span class="string">'prevdirs'</span>,[spm(<span class="string">'Dir'</span>) filesep]);
+0078         spm_select(<span class="string">'prevdirs'</span>,[<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>) filesep]);
+0079         
+0080         <span class="comment">% launch the main GUI, if needed</span>
+0081         <span class="keyword">if</span> nargin&lt;2 || ~strcmp(varargin{2},<span class="string">'nogui'</span>)
+0082             <a href="prt_ui_main.html" class="code" title="function varargout = prt_ui_main(varargin)">prt_ui_main</a>;
+0083         <span class="keyword">end</span>
+0084         
+0085         <span class="comment">% print present working directory</span>
+0086         fprintf(<span class="string">'PRoNTo present working directory:\n\t%s\n'</span>,pwd)
+0087         
+0088         <span class="comment">% Init flag true</span>
+0089         PRT_INIT = true;
+0090         
+0091         <span class="comment">%==================================================================</span>
+0092     <span class="keyword">case</span> <span class="string">'asciiwelcome'</span>                       <span class="comment">%-ASCII PRoNTo banner welcome</span>
+0093         <span class="comment">%==================================================================</span>
+0094         disp( <span class="string">'                                                             '</span>);
+0095         disp( <span class="string">'     ____  ____        _   ________              ___    ____ '</span>);
+0096         disp( <span class="string">'    / __ \/ __ \____  / | / /_  __/___     _   _|__ \  / __ \'</span>);
+0097         disp( <span class="string">'   / /_/ / /_/ / __ \/  |/ / / / / __ \   | | / /_/ / / / / /'</span>);
+0098         disp( <span class="string">'  / ____/ _, _/ /_/ / /|  / / / / /_/ /   | |/ / __/_/ /_/ / '</span>);
+0099         disp( <span class="string">' /_/   /_/ |_|\____/_/ |_/ /_/  \____/    |___/____(_)____/  '</span>);
+0100         disp( <span class="string">'                                                             '</span>);
+0101         disp( <span class="string">'      PRoNTo v2.0 - http://www.mlnl.cs.ucl.ac.uk/pronto      '</span>);
+0102         fprintf(<span class="string">'\n'</span>);
+0103         
+0104         <span class="comment">%==================================================================</span>
+0105     <span class="keyword">case</span> <span class="string">'dir'</span>                          <span class="comment">%-Identify specific (PRT) directory</span>
+0106         <span class="comment">%==================================================================</span>
+0107         <span class="comment">% prt('Dir',Mfile)</span>
+0108         <span class="comment">%------------------------------------------------------------------</span>
+0109         <span class="keyword">if</span> nargin&lt;2,
+0110             Mfile = <span class="string">'prt'</span>;
+0111         <span class="keyword">else</span>
+0112             Mfile = varargin{2};
+0113         <span class="keyword">end</span>
+0114         PRTdir = which(Mfile);
+0115         
+0116         <span class="keyword">if</span> isempty(PRTdir)             <span class="comment">%-Not found or full pathname given</span>
+0117             <span class="keyword">if</span> exist(Mfile,<span class="string">'file'</span>)==2  <span class="comment">%-Full pathname</span>
+0118                 PRTdir = Mfile;
+0119             <span class="keyword">else</span>
+0120                 error([<span class="string">'Can''t find '</span>,Mfile,<span class="string">' on MATLABPATH'</span>]);
+0121             <span class="keyword">end</span>
+0122         <span class="keyword">end</span>
+0123         PRTdir    = fileparts(PRTdir);
+0124         varargout = {PRTdir};
+0125  
+0126         <span class="comment">%==================================================================</span>
+0127     <span class="keyword">case</span> <span class="string">'ver'</span>                                             <span class="comment">%-PRoNTo version</span>
+0128         <span class="comment">%==================================================================</span>
+0129         <span class="comment">% [ver, rel] = prt('Ver',ReDo)</span>
+0130         <span class="comment">%------------------------------------------------------------------</span>
+0131         <span class="comment">% NOTE:</span>
+0132         <span class="comment">% 1/</span>
+0133         <span class="comment">% This bit of code is largely inspired/copied from SPM8!</span>
+0134         <span class="comment">% See http://www.fil.ion.ucl.ac.uk/spm for details.</span>
+0135         <span class="comment">%</span>
+0136         <span class="comment">% 2/</span>
+0137         <span class="comment">% NOT usable any more to get the version of an individual file</span>
+0138         <span class="comment">% since the  switch from SVN to GitHub!</span>
+0139         <span class="comment">% Git does not update an Id tag inside the files, hence no option</span>
+0140         <span class="comment">% to check the version automatically...</span>
+0141        
+0142         <span class="keyword">if</span> nargin ~= 2,
+0143             ReDo = false;
+0144         <span class="keyword">else</span>
+0145             ReDo = logical(varargin{3});
+0146         <span class="keyword">end</span>
+0147         
+0148         v = <a href="#_sub3" class="code" title="subfunction v = get_version(ReDo)                 ">get_version</a>(ReDo);
+0149         varargout = {v.Release v.Version};
+0150         
+0151         <span class="comment">%==================================================================</span>
+0152     <span class="keyword">otherwise</span>                                       <span class="comment">%-Unknown action string</span>
+0153         <span class="comment">%==================================================================</span>
+0154         error(<span class="string">'Unknown action string'</span>);
+0155         
+0156 <span class="keyword">end</span>
+0157 
+0158 <span class="keyword">return</span>
+0159 
+0160 <span class="comment">%=======================================================================</span>
+0161 <span class="comment">%% SUBFUNCTIONS</span>
+0162 <span class="comment">%=======================================================================</span>
+0163 
+0164 <span class="comment">%=======================================================================</span>
+0165 <a name="_sub1" href="#_subfunctions" class="code">function ok = check_installation</a>
+0166 <span class="comment">%=======================================================================</span>
+0167 <span class="comment">% Function to check installation state of machines and SPM</span>
+0168 
+0169 ok = true;
+0170 
+0171 <span class="comment">% Check SPM installation</span>
+0172 <span class="keyword">if</span> exist(<span class="string">'spm.m'</span>,<span class="string">'file'</span>)
+0173     [SPMver, SPMrel] = spm(<span class="string">'Ver'</span>);
+0174     <span class="keyword">if</span> (~(strcmpi(SPMver,<span class="string">'spm8'</span>) &amp;&amp; str2double(SPMrel)&gt;8.5)) &amp;&amp; <span class="keyword">...</span>
+0175             isempty(regexpi(SPMver,<span class="string">'spm12'</span>))
+0176         beep
+0177         fprintf(<span class="string">'\nERROR:\n'</span>)
+0178         fprintf(<span class="string">'\tThe *latest* version of SPM8 or SPM12 should be installed on your computer,\n'</span>)
+0179         fprintf(<span class="string">'\tand be available on MATLABPATH!\n\n'</span>)
+0180         ok = false;
+0181     <span class="keyword">end</span>
+0182 <span class="keyword">else</span>
+0183     beep
+0184     fprintf(<span class="string">'\nERROR:\n'</span>)
+0185     fprintf(<span class="string">'\tThe *latest* version of SPM8 or SPM12 should be installed on your computer,\n'</span>)
+0186     fprintf(<span class="string">'\tand be available on MATLABPATH!\n\n'</span>)
+0187     ok = false;
+0188 <span class="keyword">end</span>
+0189 
+0190 
+0191 <span class="comment">% Check for compiled routines</span>
+0192 <span class="comment">%============================</span>
+0193 <span class="comment">% - svm</span>
+0194 dumb = which(<span class="string">'svmtrain'</span>);
+0195 <span class="keyword">if</span> ~isempty(strfind(dumb,<span class="string">'libsvm'</span>))          <span class="comment">% svm found in libsvm folder, OK</span>
+0196     disp(<span class="string">'SVM path: OK'</span>)
+0197     flag=1;
+0198 <span class="keyword">elseif</span> ~isempty(strfind(dumb,<span class="string">'biolearning'</span>)) <span class="comment">% svm found in the Matlab toolbox</span>
+0199     flag=0;
+0200 <span class="keyword">else</span>                                         <span class="comment">% svm not found at all, so need to compile</span>
+0201     flag=2;
+0202 <span class="keyword">end</span>
+0203 
+0204 <span class="comment">% in case PRoNTo was installed with all subfolders under the biostats</span>
+0205 <span class="keyword">if</span> ~flag
+0206     pth_machines = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'machines'</span>);
+0207     addpath(pth_machines);
+0208     <span class="comment">% add each machine's sub-directory</span>
+0209     <span class="comment">% and ALL its subdirectories recursively</span>
+0210     ls_machinedir = <a href="#_sub2" class="code" title="subfunction lsdir = list_subdir(pth_dir,rejd)">list_subdir</a>(pth_machines);
+0211     <span class="keyword">for</span> ii=1:numel(ls_machinedir)
+0212         gpath_ii = genpath(fullfile(pth_machines,ls_machinedir{ii}));
+0213         gpath_ii = <a href="#_sub4" class="code" title="subfunction gpath = clean_gpath(gpath,rejd)">clean_gpath</a>(gpath_ii);
+0214         addpath(gpath_ii)
+0215     <span class="keyword">end</span>
+0216     dumb = which(<span class="string">'svmtrain'</span>);
+0217     <span class="keyword">if</span> isempty(strfind(dumb,<span class="string">'libsvm'</span>))
+0218         flag=2; <span class="comment">%s till not working, need to recompile</span>
+0219     <span class="keyword">elseif</span> ~isempty(strfind(dumb,<span class="string">'biolearning'</span>))
+0220         flag = 2;
+0221         disp(<span class="string">'PRoNTo was found under the biostats toolbox, please correct path'</span>)
+0222         disp(<span class="string">'SVM path: OK'</span>)
+0223     <span class="keyword">else</span>
+0224         flag =1;
+0225     <span class="keyword">end</span>
+0226 <span class="keyword">end</span>
+0227 
+0228 <span class="keyword">if</span> flag ==2 <span class="comment">% need to recompile for the OS</span>
+0229     pth_machines = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'machines'</span>);
+0230     ls_machinedir = <a href="#_sub2" class="code" title="subfunction lsdir = list_subdir(pth_dir,rejd)">list_subdir</a>(pth_machines);
+0231     <span class="keyword">for</span> i=1:length(ls_machinedir)
+0232         <span class="keyword">if</span> ~isempty(strfind(ls_machinedir{i},<span class="string">'libsvm'</span>))
+0233             pfn= fullfile(pth_machines,ls_machinedir{i});
+0234             dirtorem=cd;
+0235             cd(pfn)
+0236             cd matlab
+0237             make;
+0238             cd(dirtorem)
+0239         <span class="keyword">end</span>
+0240     <span class="keyword">end</span>
+0241     dumb = which(<span class="string">'svmtrain'</span>);
+0242     <span class="keyword">if</span> isempty(strfind(dumb,<span class="string">'libsvm'</span>))
+0243         <span class="comment">%could not recompile</span>
+0244         beep
+0245         warning(<span class="string">'PRoNTo:SVMcompilation'</span>, <span class="keyword">...</span>
+0246         [<span class="string">'SVM path not recognized. Please check that: \n'</span>, <span class="keyword">...</span>
+0247         <span class="string">'- PRoNTo''directory was added *without* all subfolders \n'</span>,<span class="keyword">...</span>
+0248         <span class="string">'- PRoNTo is above the biostats Matlab toolbox \n'</span>,<span class="keyword">...</span>
+0249         <span class="string">'Otherwise, the routines surely need to be re-compiled for your OS \n'</span>,<span class="keyword">...</span>
+0250         <span class="string">'Please look on the web or ask on the mailing list for assistance'</span>])
+0251     <span class="keyword">end</span>
+0252 <span class="keyword">end</span>
+0253 
+0254 <span class="comment">% - GP</span>
+0255 dumb = which(<span class="string">'solve_chol'</span>);
+0256 <span class="keyword">if</span> ~isempty(dumb) &amp;&amp; ~isempty(strfind(dumb,<span class="string">'.mex'</span>))
+0257     disp(<span class="string">'GP path: OK'</span>)
+0258 <span class="keyword">else</span>
+0259     beep
+0260     disp(<span class="string">'GP not compiled: routines will work but be slower'</span>)
+0261 <span class="keyword">end</span>
+0262 
+0263 <span class="comment">% NOTE:</span>
+0264 <span class="comment">% Tree-based methods not available in this version.</span>
+0265 <span class="comment">% So no need to check for it!</span>
+0266 <span class="comment">% We still plan to have it in a future release.</span>
+0267 <span class="comment">%</span>
+0268 <span class="comment">% % - RF</span>
+0269 <span class="comment">% dumb = which('rtenslearn_c');</span>
+0270 <span class="comment">% if ~isempty(dumb) || ~isempty(strfind(dumb,'.mex'))</span>
+0271 <span class="comment">%     disp('RF path: OK')</span>
+0272 <span class="comment">% else</span>
+0273 <span class="comment">%     beep</span>
+0274 <span class="comment">%     warning('PRoNTo:RFcompilation', ...</span>
+0275 <span class="comment">%         ['RF path not recognized. Please check that \n', ...</span>
+0276 <span class="comment">%         'PRoNTo was added with all subfolders \n',...</span>
+0277 <span class="comment">%         'Otherwise, the routines surely need to be re-compiled for your OS \n',...</span>
+0278 <span class="comment">%         'Please look on the web or ask on the mailing list for assistance'])</span>
+0279 <span class="comment">% end</span>
+0280 
+0281 <span class="keyword">return</span>
+0282 
+0283 <span class="comment">%=======================================================================</span>
+0284 <a name="_sub2" href="#_subfunctions" class="code">function lsdir = list_subdir(pth_dir,rejd)</a>
+0285 <span class="comment">%=======================================================================</span>
+0286 <span class="comment">% function that returns the list of subdirectories of a directory,</span>
+0287 <span class="comment">% rejecting those beginning with some characters ('.', '@' and '_' by</span>
+0288 <span class="comment">% default)</span>
+0289 
+0290 <span class="keyword">if</span> nargin&lt;2
+0291     rejd = <span class="string">'.@_'</span>;
+0292 <span class="keyword">end</span>
+0293 <span class="keyword">if</span> nargin&lt;1
+0294     pth_dir = pwd;
+0295 <span class="keyword">end</span>
+0296 
+0297 tmp = dir(pth_dir);
+0298 ld = find([tmp.isdir]); ld([1 2]) = [];
+0299 lsdir = {tmp(ld).name};
+0300 <span class="keyword">if</span> ~isempty(rejd)
+0301     <span class="keyword">for</span> ii=1:numel(rejd)
+0302         lrej = find(strncmp(rejd(ii),lsdir,1));
+0303         <span class="keyword">if</span> ~isempty(lrej)
+0304             lsdir(lrej) = [];
+0305         <span class="keyword">end</span>
+0306     <span class="keyword">end</span>
+0307 <span class="keyword">end</span>
+0308 
+0309 <span class="keyword">return</span>
+0310 
+0311 <span class="comment">%=======================================================================</span>
+0312 <a name="_sub3" href="#_subfunctions" class="code">function v = get_version(ReDo)                 </a><span class="comment">%-Retrieve PRoNTo version</span>
+0313 <span class="comment">%=======================================================================</span>
+0314 <span class="keyword">persistent</span> PRoNTo_VER;
+0315 v = PRoNTo_VER;
+0316 <span class="keyword">if</span> isempty(PRoNTo_VER) || (nargin &gt; 0 &amp;&amp; ReDo)
+0317     v = struct(<span class="string">'Name'</span>,<span class="string">''</span>,<span class="string">'Version'</span>,<span class="string">''</span>,<span class="string">'Release'</span>,<span class="string">''</span>,<span class="string">'Date'</span>,<span class="string">''</span>);
+0318     <span class="keyword">try</span>
+0319         vfile = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'Dir'</span>),<span class="string">'prt_contents.m'</span>);
+0320         fid = fopen(vfile,<span class="string">'rt'</span>);
+0321         <span class="keyword">if</span> fid == -1, error(str); <span class="keyword">end</span>
+0322         l1 = fgetl(fid); l2 = fgetl(fid);
+0323         fclose(fid);
+0324         l1 = strtrim(l1(2:end)); l2 = strtrim(l2(2:end));
+0325         t  = textscan(l2,<span class="string">'%s'</span>,<span class="string">'delimiter'</span>,<span class="string">' '</span>); t = t{1};
+0326         v.Name = l1; v.Date = t{4};
+0327         v.Version = t{2}; v.Release = t{3}(2:end-1);
+0328     <span class="keyword">catch</span> <span class="comment">%#ok&lt;CTCH&gt;</span>
+0329         error(<span class="string">'PRoNTo:getversion'</span>, <span class="keyword">...</span>
+0330             <span class="string">'Can''t obtain PRoNTo Revision information.'</span>);
+0331     <span class="keyword">end</span>
+0332     PRoNTo_VER = v;
+0333 <span class="keyword">end</span>
+0334 
+0335 <span class="keyword">return</span>
+0336 
+0337 <span class="comment">%=======================================================================</span>
+0338 <a name="_sub4" href="#_subfunctions" class="code">function gpath = clean_gpath(gpath,rejd)</a>
+0339 <span class="comment">%=======================================================================</span>
+0340 <span class="comment">% function that &quot;cleans up&quot; a list of pathes to subdirectories,</span>
+0341 <span class="comment">% i.e. it removes any path containing a set of strings.</span>
+0342 <span class="comment">% By default, it removes all the '.svn' pathes. Other strings can be passed</span>
+0343 <span class="comment">% as a cell array</span>
+0344 
+0345 <span class="keyword">if</span> nargin&lt;2
+0346     rejd = {<span class="string">'.svn'</span>};
+0347 <span class="keyword">end</span>
+0348 <span class="keyword">if</span> nargin&lt;1
+0349     <span class="keyword">return</span>
+0350 <span class="keyword">end</span>
+0351 
+0352 <span class="keyword">if</span> numel(rejd)&gt;1
+0353     <span class="comment">% do it 1 by 1</span>
+0354     <span class="keyword">for</span> ii=1:numel(rejd)
+0355         gpath = <a href="#_sub4" class="code" title="subfunction gpath = clean_gpath(gpath,rejd)">clean_gpath</a>(gpath,rejd{ii});
+0356     <span class="keyword">end</span>
+0357 <span class="keyword">else</span>
+0358     <span class="comment">% deal with 1 string</span>
+0359     l_col = strfind(gpath,<span class="string">':'</span>);
+0360     <span class="keyword">for</span> ii=numel(l_col):-1:1
+0361         <span class="keyword">if</span> ii&gt;1
+0362             pth_bit = [l_col(ii-1)+1 l_col(ii)];
+0363         <span class="keyword">else</span>
+0364             pth_bit = [1 l_col(ii)];
+0365         <span class="keyword">end</span>
+0366         <span class="keyword">if</span> ~isempty(strfind(gpath(pth_bit(1):pth_bit(2)),rejd{1}))
+0367             <span class="comment">% remove the bit</span>
+0368             gpath(pth_bit(1):pth_bit(2)) = [];
+0369         <span class="keyword">end</span>
+0370     <span class="keyword">end</span>
+0371 <span class="keyword">end</span>
+0372 
+0373 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

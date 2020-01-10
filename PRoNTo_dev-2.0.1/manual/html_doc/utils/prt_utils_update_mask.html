@@ -1,0 +1,166 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_utils_update_mask</title>
+  <meta name="keywords" content="prt_utils_update_mask">
+  <meta name="description" content="Script to update the first level mask to be entered in the Data and">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">utils</a> &gt; prt_utils_update_mask.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./utils&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_utils_update_mask
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Script to update the first level mask to be entered in the Data and</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [nmask] = prt_utils_update_mask(files,mask,dir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Script to update the first level mask to be entered in the Data and
+ Design step of a PRoNTo analysis. The mask is first resized to match the
+ dimensions of provided images. Any NaN value found in any of the images
+ will then be removed from the mask.
+
+ Modalities/runs that will be concatenated in samples should be selected
+ at the same time to ensure common features&gt;
+
+ Inputs (optional):
+ - files: character array of the full file names to load
+ - mask : full name of the mask to update (e.g. SPMnoeyes in /masks)
+ - dir  : directory where to save the updated mask
+
+ Outputs: the updated mask, saved in the specified directory.
+--------------------------------------------------------------------------
+ Written by J. Schrouff, 2015, as a preprocessing step for PRoNTo.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [nmask] = prt_utils_update_mask(files,mask,dir)</a>
+0002 
+0003 <span class="comment">% Script to update the first level mask to be entered in the Data and</span>
+0004 <span class="comment">% Design step of a PRoNTo analysis. The mask is first resized to match the</span>
+0005 <span class="comment">% dimensions of provided images. Any NaN value found in any of the images</span>
+0006 <span class="comment">% will then be removed from the mask.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Modalities/runs that will be concatenated in samples should be selected</span>
+0009 <span class="comment">% at the same time to ensure common features&gt;</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Inputs (optional):</span>
+0012 <span class="comment">% - files: character array of the full file names to load</span>
+0013 <span class="comment">% - mask : full name of the mask to update (e.g. SPMnoeyes in /masks)</span>
+0014 <span class="comment">% - dir  : directory where to save the updated mask</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs: the updated mask, saved in the specified directory.</span>
+0017 <span class="comment">%--------------------------------------------------------------------------</span>
+0018 <span class="comment">% Written by J. Schrouff, 2015, as a preprocessing step for PRoNTo.</span>
+0019 
+0020 <span class="keyword">if</span> nargin&lt;1
+0021     files=spm_select([1 Inf],<span class="string">'image'</span>,<span class="string">'Select files to be analyzed in PRoNTo'</span>);
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> nargin&lt;2
+0025     mask = spm_select(1,<span class="string">'image'</span>,<span class="string">'Select maks image to be updated'</span>);
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="keyword">if</span> nargin&lt;3
+0029     dir = uigetdir();
+0030 <span class="keyword">end</span>
+0031 
+0032 
+0033 <span class="keyword">try</span>
+0034     M = nifti(mask);
+0035 <span class="keyword">catch</span> <span class="comment">%#ok&lt;*CTCH&gt;</span>
+0036     error(<span class="string">'prt_utils_update_mask:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0037         <span class="string">'Could not load mask file'</span>);
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% First, resize mask to 1st image dimensions</span>
+0041 <span class="comment">% -------------------------------------------------------------------------</span>
+0042 <span class="keyword">try</span> 
+0043     N = spm_vol(files(1,:));
+0044 <span class="keyword">catch</span>
+0045     error(<span class="string">'prt_utils_update_mask:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0046         <span class="string">'Could not load first image file'</span>);
+0047 <span class="keyword">end</span>
+0048 
+0049 <span class="keyword">if</span> N.dim(3)==1, Npdim = N.dim(1:2); <span class="keyword">else</span> Npdim = N.dim; <span class="keyword">end</span> <span class="comment">% handling case of 2D images</span>
+0050 <span class="keyword">if</span> any(size(M.dat(:,:,:,1)) ~= Npdim)
+0051     warning(<span class="string">'prt_utils_update_mask:maskAndImagesDifferentDim'</span>,<span class="keyword">...</span>
+0052         <span class="string">'Mask has different dimensions to the image files. Resizing...'</span>);
+0053     
+0054     V2 = spm_vol(char(mask));
+0055     <span class="comment">% reslicing V2</span>
+0056     fl_res = struct(<span class="string">'mean'</span>,false,<span class="string">'interp'</span>,0,<span class="string">'which'</span>,1,<span class="string">'prefix'</span>,<span class="string">'tmp_'</span>);
+0057     spm_reslice([N V2],fl_res)
+0058     <span class="comment">% now renaming the file</span>
+0059     [V2_pth,V2_fn,V2_ext] = spm_fileparts(V2.fname);
+0060     rV2_fn = [fl_res.prefix,V2_fn];
+0061     <span class="keyword">if</span> strcmp(V2_ext,<span class="string">'.nii'</span>)
+0062         <span class="comment">% turn .nii into .img/.hdr image!</span>
+0063         V_in = spm_vol(fullfile(V2_pth,[rV2_fn,<span class="string">'.nii'</span>]));
+0064         V_out = V_in; V_out.fname = fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]);
+0065         spm_imcalc(V_in,V_out,<span class="string">'i1'</span>);
+0066     <span class="keyword">end</span>
+0067     mfile_new = [<span class="string">'resized_'</span>,V2_fn];
+0068     movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]), <span class="keyword">...</span>
+0069         fullfile(dir,[mfile_new,<span class="string">'.img'</span>]));
+0070     movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.hdr'</span>]), <span class="keyword">...</span>
+0071         fullfile(dir,[mfile_new,<span class="string">'.hdr'</span>]));
+0072     mask = fullfile(dir,[mfile_new,<span class="string">'.img'</span>]);
+0073 <span class="keyword">end</span>
+0074 V2 = spm_vol(mask);
+0075 M = spm_read_vols(V2);
+0076 
+0077 <span class="comment">% Second, loop over all files to get the voxels with NaN values</span>
+0078 <span class="comment">% -------------------------------------------------------------------------</span>
+0079 uNan = [];
+0080 <span class="keyword">for</span> i=1:size(files,1)
+0081     <span class="keyword">try</span>
+0082         N = spm_vol(files(i,:));
+0083     <span class="keyword">catch</span>
+0084         error(<span class="string">'prt_utils_update_mask:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0085             [<span class="string">'Could not load image file '</span>,num2str(i)]);
+0086     <span class="keyword">end</span>
+0087     voxval = spm_read_vols(N);
+0088     voxval = voxval(:);
+0089     vNan = find(isnan(voxval));
+0090     <span class="keyword">if</span> ~isempty(vNan)
+0091         uNan = union(uNan,vNan);
+0092     <span class="keyword">end</span>
+0093 <span class="keyword">end</span>
+0094 
+0095 <span class="keyword">if</span> ~isempty(uNan)
+0096     M(uNan) = 0;
+0097 <span class="keyword">end</span>
+0098 
+0099 [V2_pth,V2_fn,V2_ext] = spm_fileparts(V2.fname);
+0100 mfile_new = [<span class="string">'updated_mask_'</span>,V2_fn];
+0101 nmask = V2;
+0102 nmask.fname = fullfile(dir,[mfile_new,V2_ext]);
+0103 nmask = spm_write_vol(nmask,M);
+0104</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

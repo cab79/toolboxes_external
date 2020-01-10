@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_plot_confusion_matrix</title>
+  <meta name="keywords" content="prt_plot_confusion_matrix">
+  <meta name="description" content="FORMAT prt_plot_confusion_matrix(PRT, model, fold, axes_handle)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_plot_confusion_matrix.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_plot_confusion_matrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_plot_confusion_matrix(PRT, model, fold, axes_handle)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt_plot_confusion_matrix(PRT, model, fold, axes_handle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_plot_confusion_matrix(PRT, model, fold, axes_handle)
+
+ This function plots the confusion matrix that appears on prt_ui_results
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+       model           - the number of the model that will be ploted
+       fold            - the number of the fold
+       axes_handle     - (Optional) axes where the plot will be displayed
+
+ Output:
+       None
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt_plot_confusion_matrix(PRT, model, fold, axes_handle)</a>
+0002 <span class="comment">% FORMAT prt_plot_confusion_matrix(PRT, model, fold, axes_handle)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function plots the confusion matrix that appears on prt_ui_results</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0007 <span class="comment">%                         at least one estimated model).</span>
+0008 <span class="comment">%       model           - the number of the model that will be ploted</span>
+0009 <span class="comment">%       fold            - the number of the fold</span>
+0010 <span class="comment">%       axes_handle     - (Optional) axes where the plot will be displayed</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Output:</span>
+0013 <span class="comment">%       None</span>
+0014 <span class="comment">%__________________________________________________________________________</span>
+0015 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0016 
+0017 <span class="comment">% Written by M. J. Rosa</span>
+0018 <span class="comment">% $Id: prt_plot_confusion_matrix.m 706 2013-06-07 14:33:34Z cphillip $</span>
+0019 
+0020 <span class="comment">%If no axes_handle is given, create a new window</span>
+0021 <span class="keyword">if</span> ~exist(<span class="string">'axes_handle'</span>, <span class="string">'var'</span>)
+0022     figure;
+0023     axes_handle = axes;
+0024 <span class="keyword">else</span>
+0025     set(axes_handle, <span class="string">'XScale'</span>,<span class="string">'linear'</span>);
+0026 <span class="keyword">end</span>
+0027 
+0028 
+0029 <span class="comment">% confusion matrix</span>
+0030 cla(axes_handle, <span class="string">'reset'</span>);
+0031 <span class="keyword">if</span> fold == 1
+0032     mconmat(:,:) = PRT.model(model).output.stats.con_mat;
+0033 <span class="keyword">else</span>
+0034     mconmat(:,:) = PRT.model(model).output.fold(fold-1).stats.con_mat;
+0035 <span class="keyword">end</span>
+0036 myH=bar3(axes_handle,mconmat,<span class="string">'detached'</span>,<span class="string">'w'</span>);
+0037 nclass = size(mconmat,1);
+0038 <span class="keyword">for</span> j = 1:nclass,
+0039     conLabels{j} = num2str(j);
+0040 <span class="keyword">end</span>
+0041 rotate3d on
+0042 <span class="keyword">if</span> fold == 1
+0043     title(axes_handle,sprintf(<span class="string">'Confusion matrix: all folds'</span>),<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0044 <span class="keyword">else</span>
+0045     title(axes_handle,sprintf(<span class="string">'Confusion matrix: fold %d'</span>,fold-1),<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0046 <span class="keyword">end</span>
+0047 xlabel(axes_handle,<span class="string">'True'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0048 ylabel(axes_handle,<span class="string">'Predicted'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0049 set(axes_handle,<span class="string">'XTick'</span>,1:nclass);
+0050 set(axes_handle,<span class="string">'XTickLabel'</span>,conLabels);
+0051 set(axes_handle,<span class="string">'YTick'</span>,1:nclass);
+0052 set(axes_handle,<span class="string">'YTickLabel'</span>,conLabels);
+0053 grid(axes_handle,<span class="string">'on'</span>);
+0054 set(axes_handle,<span class="string">'Color'</span>,[0.8 0.8 0.8]);
+0055 axis square; axis vis3d; axis tight;
+0056 <span class="comment">% add values</span>
+0057 <span class="keyword">for</span> foo_row=1:size(mconmat,1)
+0058     <span class="keyword">for</span> foo_col=1:size(mconmat,2)
+0059         foo_zval=mconmat(foo_row,foo_col);
+0060         <span class="keyword">if</span> foo_row==foo_col, foo_color=<span class="string">'g'</span>; <span class="keyword">else</span> foo_color=<span class="string">'r'</span>;<span class="keyword">end</span>
+0061         text(foo_col,foo_row,foo_zval,num2str(foo_zval),<span class="keyword">...</span>
+0062             <span class="string">'Color'</span>,foo_color);
+0063     <span class="keyword">end</span>
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

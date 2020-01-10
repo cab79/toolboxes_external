@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_machine_RT_bin</title>
+  <meta name="keywords" content="prt_machine_RT_bin">
+  <meta name="description" content="Run binary Ensemble of Regression Tree - wrapper for Pierre Geurt's">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_machine_RT_bin.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_machine_RT_bin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run binary Ensemble of Regression Tree - wrapper for Pierre Geurt's</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function output = prt_machine_RT_bin(d,args) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run binary Ensemble of Regression Tree - wrapper for Pierre Geurt's
+ RT code
+ FORMAT output =  prt_machine_RT_bin(d,args)
+ Inputs:
+   d         - structure with data information, with mandatory fields:
+     .train      - training data (cell array of matrices of row vectors,
+                   each [Ntr x D]). each matrix contains one representation
+                   of the data. This is useful for approaches such as
+                   multiple kernel learning.
+     .test       - testing data  (cell array of matrices row vectors, each
+                   [Nte x D])
+     .tr_targets - training labels (for classification) or values (for
+                   regression) (column vector, [Ntr x 1])
+     .use_kernel - flag, is data in form of kernel matrices (true) of in 
+                form of features (false)
+    args    - vector of RT arguments
+       args(1) - number of trees (default: 501)
+ Output:
+    output  - output of machine (struct).
+     * Mandatory fields:
+      .predictions - predictions of classification or regression [Nte x D]
+     * Optional fields:
+      .func_val - value of the decision function
+      .type     - which type of machine this is (here, 'classifier')
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = prt_machine_RT_bin(d,args)</a>
+0002 <span class="comment">% Run binary Ensemble of Regression Tree - wrapper for Pierre Geurt's</span>
+0003 <span class="comment">% RT code</span>
+0004 <span class="comment">% FORMAT output =  prt_machine_RT_bin(d,args)</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%   d         - structure with data information, with mandatory fields:</span>
+0007 <span class="comment">%     .train      - training data (cell array of matrices of row vectors,</span>
+0008 <span class="comment">%                   each [Ntr x D]). each matrix contains one representation</span>
+0009 <span class="comment">%                   of the data. This is useful for approaches such as</span>
+0010 <span class="comment">%                   multiple kernel learning.</span>
+0011 <span class="comment">%     .test       - testing data  (cell array of matrices row vectors, each</span>
+0012 <span class="comment">%                   [Nte x D])</span>
+0013 <span class="comment">%     .tr_targets - training labels (for classification) or values (for</span>
+0014 <span class="comment">%                   regression) (column vector, [Ntr x 1])</span>
+0015 <span class="comment">%     .use_kernel - flag, is data in form of kernel matrices (true) of in</span>
+0016 <span class="comment">%                form of features (false)</span>
+0017 <span class="comment">%    args    - vector of RT arguments</span>
+0018 <span class="comment">%       args(1) - number of trees (default: 501)</span>
+0019 <span class="comment">% Output:</span>
+0020 <span class="comment">%    output  - output of machine (struct).</span>
+0021 <span class="comment">%     * Mandatory fields:</span>
+0022 <span class="comment">%      .predictions - predictions of classification or regression [Nte x D]</span>
+0023 <span class="comment">%     * Optional fields:</span>
+0024 <span class="comment">%      .func_val - value of the decision function</span>
+0025 <span class="comment">%      .type     - which type of machine this is (here, 'classifier')</span>
+0026 <span class="comment">%__________________________________________________________________________</span>
+0027 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0028 
+0029 <span class="comment">%--------------------------------------------------------------------------</span>
+0030 <span class="comment">% Written by J.Richiardi</span>
+0031 <span class="comment">% $Id$</span>
+0032 
+0033 <span class="comment">% FIXME: support for multiple kernels / feature representations</span>
+0034 <span class="comment">% is not yet tested, there might be transposition or dimensionality errors.</span>
+0035 
+0036 <span class="comment">% TODO: this machine supports regression AND classification</span>
+0037 <span class="comment">% TODO: this machine supports multi-class</span>
+0038 
+0039 SANITYCHECK=true; <span class="comment">% can turn off for &quot;speed&quot;. Expert only.</span>
+0040 
+0041 <span class="keyword">if</span> SANITYCHECK==true
+0042     <span class="comment">% args should be a vector (empty or otherwise)</span>
+0043     <span class="keyword">if</span> ~isvector(args)
+0044         error(<span class="string">'prt_machine_RT_bin:RTargsNotVec'</span>,[<span class="string">'Error: RT'</span><span class="keyword">...</span>
+0045             <span class="string">' args should be a vector. '</span> <span class="keyword">...</span>
+0046             <span class="string">' SOLUTION: Please check your code. '</span>]);
+0047     <span class="keyword">end</span>
+0048     
+0049     <span class="comment">% check we can reach the binary library</span>
+0050     <span class="keyword">if</span> ~exist(<span class="string">'rtenslearn_c'</span>,<span class="string">'file'</span>)
+0051         error(<span class="string">'prt_machine_RT_bin:libNotFound'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0052             <span class="string">' RT function rtenslearn_c could not be found !'</span> <span class="keyword">...</span>
+0053             <span class="string">' SOLUTION: Please check your path.'</span>]);
+0054     <span class="keyword">end</span>
+0055     
+0056     <span class="comment">% check it is indeed a two-class classification problem</span>
+0057     uTL=unique(d.tr_targets(:)); <span class="comment">% unique training labels</span>
+0058     nC=numel(uTL);
+0059     <span class="keyword">if</span> nC&gt;2
+0060         error(<span class="string">'prt_machine_RT_bin:problemNotBinary'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0061             <span class="string">' This machine is only for two-class problems but the'</span> <span class="keyword">...</span>
+0062             <span class="string">' current problem has '</span> num2str(nC) <span class="string">' ! '</span> <span class="keyword">...</span>
+0063             <span class="string">'SOLUTION: Please select another machine than '</span> <span class="keyword">...</span>
+0064             <span class="string">'prt_machine_RT_bin in XXX'</span>]);
+0065     <span class="keyword">end</span>
+0066     
+0067     <span class="comment">% check it is indeed labelled correctly (probably should be done</span>
+0068     <span class="comment">% above?)</span>
+0069     <span class="keyword">if</span> ~all(uTL==[1 2]')
+0070         error(<span class="string">'prt_machine_RT_bin:LabellingIncorect'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0071             <span class="string">' This machine needs labels to be in {1,2} '</span> <span class="keyword">...</span>
+0072             <span class="string">' but they are '</span> mat2str(uTL) <span class="string">' ! '</span> <span class="keyword">...</span>
+0073             <span class="string">'SOLUTION: Please relabel your classes by changing the '</span><span class="keyword">...</span>
+0074             <span class="string">' ''tr_lbs'' argument to prt_machine_RT_bin'</span>]);
+0075     <span class="keyword">end</span>
+0076     
+0077     <span class="comment">% check we are not setting a ridiculous number of trees</span>
+0078     <span class="keyword">if</span> isempty(args)
+0079         args(1)=501;
+0080         disp(<span class="string">'prt_machine_RT_bin: defaulting to 501 trees'</span>);
+0081     <span class="keyword">else</span>
+0082         <span class="keyword">if</span> args(1)&gt;10000;
+0083             error(<span class="string">'prt_machine_RT_bin:argsProblem:maxTrees'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0084                 <span class="string">' Setting a high number of trees is not supported '</span> <span class="keyword">...</span>
+0085                 <span class="string">' without some modifications of the wrapper code. '</span> <span class="keyword">...</span>
+0086                 <span class="string">' Expert only! '</span> <span class="keyword">...</span>
+0087                 <span class="string">'SOLUTION: Please change the offending args to '</span><span class="keyword">...</span>
+0088                 <span class="string">'a value less than 10000.'</span>]);
+0089         <span class="keyword">end</span>
+0090     <span class="keyword">end</span>
+0091 <span class="keyword">end</span> <span class="comment">% SANITYCHECK</span>
+0092 
+0093 
+0094 <span class="comment">% Run RT</span>
+0095 <span class="comment">%--------------------------------------------------------------------------</span>
+0096 rtParams=init_rf(); <span class="comment">% random forests</span>
+0097 rtParams.nbterms=args(1); <span class="comment">% number of trees</span>
+0098 tridx=int32(1:numel(d.tr_targets));  <span class="comment">% (WARNING: int32 format is mandatory)</span>
+0099 verbose=1;   <span class="comment">% TODO: make this a machine arg</span>
+0100 
+0101 [output.func_val output.w trees]=rtenslearn_c(single(d.train{1}),<span class="keyword">...</span>
+0102     single(d.tr_targets),tridx,[],rtParams,single(d.test{1}),verbose);
+0103 
+0104 <span class="comment">% check if training succeeded:</span>
+0105 <span class="keyword">if</span> isempty(output)
+0106     error(<span class="string">'prt_machine_RT_bin:RTtrainUnsuccessful'</span>,[<span class="string">'Error:'</span><span class="keyword">...</span>
+0107         <span class="string">' RT rtenslearn_c function did not run properly!'</span> <span class="keyword">...</span>
+0108         <span class="string">' This could be a problem with the supplied function arguments'</span><span class="keyword">...</span>
+0109         mat2str(args)]);
+0110 <span class="keyword">end</span>
+0111 
+0112 <span class="comment">% compute hard decisions</span>
+0113 output.predictions=round(output.func_val);
+0114 
+0115 <span class="keyword">if</span> d.use_kernel==false
+0116     <span class="comment">% normalise importance to norm 1</span>
+0117     output.w=output.w/norm(output.w,1);
+0118 <span class="keyword">else</span>
+0119     <span class="comment">% do nothing - we can't compute primal weights from inside here</span>
+0120 <span class="keyword">end</span>
+0121 
+0122 <span class="comment">% prepare output</span>
+0123 output.type        = <span class="string">'classifier'</span>;
+0124 
+0125 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

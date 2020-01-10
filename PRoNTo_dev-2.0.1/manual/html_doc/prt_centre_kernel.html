@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_centre_kernel</title>
+  <meta name="keywords" content="prt_centre_kernel">
+  <meta name="description" content="FORMAT [C,C_s,C_ss] = Centre_kernel(K,K_s,K_ss)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_centre_kernel.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_centre_kernel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT [C,C_s,C_ss] = Centre_kernel(K,K_s,K_ss)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [C,C_s,C_ss] = prt_centre_kernel(K,K_s,K_ss) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT [C,C_s,C_ss] = Centre_kernel(K,K_s,K_ss)
+
+ This function centres the kernel matrix using only the training data
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cv_model.html" class="code" title="function [outfile]=prt_cv_model(PRT,in)">prt_cv_model</a>	Function to run a cross-validation structure on a given model</li><li><a href="prt_permutation.html" class="code" title="function [] = prt_permutation(PRT, n_perm, modelid, path)">prt_permutation</a>	Function to compute permutation test</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C,C_s,C_ss] = prt_centre_kernel(K,K_s,K_ss)</a>
+0002 
+0003 <span class="comment">% FORMAT [C,C_s,C_ss] = Centre_kernel(K,K_s,K_ss)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% This function centres the kernel matrix using only the training data</span>
+0006 <span class="comment">%__________________________________________________________________________</span>
+0007 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0008 
+0009 <span class="comment">% Written by D. Hardoon, A. Marquand and J. Mourao-Miranda</span>
+0010 <span class="comment">% Id:$</span>
+0011 
+0012 <span class="keyword">if</span> iscell(K), K = K{:}; <span class="keyword">end</span>
+0013 <span class="keyword">if</span> iscell(K_s), K_s = K_s{:}; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> iscell(K_ss), K_ss = K_ss{:}; <span class="keyword">end</span>
+0015 
+0016 l = size(K,1);
+0017 j = ones(l,1);
+0018 C = K - (j*j'*K)/l - (K*j*j')/l + ((j'*K*j)*j*j')/(l^2);
+0019 
+0020 <span class="keyword">if</span>( nargin &gt; 1 )
+0021     tk =  (1/l)*sum(K,1); <span class="comment">% (1 x l)</span>
+0022     tl = ones(size(K_s,1),1); <span class="comment">% (n x 1)</span>
+0023     C_s = K_s - ( tl * tk); <span class="comment">% ( n x l )</span>
+0024     tk2 = (1/(size(K_s,2)))*sum(C_s,2); <span class="comment">% ( n x 1 )</span>
+0025     C_s = C_s - (tk2 * j'); <span class="comment">% ( n x l )</span>
+0026     
+0027     <span class="comment">% Two equivalent ways to achieve the same thing</span>
+0028     <span class="comment">%C_s = K_s - repmat(sum(K),size(K_s,1),1)/l - repmat(sum(K_s,2),1,size(K_s,2))/size(K_s,2) + repmat(j'*K*j,size(K_s,1),size(K_s,2))/(l^2);</span>
+0029     <span class="comment">%C_s = K_s - (tl*sum(K))/l - (sum(K_s,2)*j')/size(K_s,2) + ((j'*K*j)*tl*j')/(l^2);</span>
+0030     
+0031     <span class="keyword">if</span> nargin &gt; 2
+0032         ttj = ones(size(K_ss,1),1);
+0033         C_ss = K_ss - (sum(K_s,2)*ttj')/l - (ttj*sum(K_s,2)')/l + ((j'*K*j)*ttj*ttj')/(l^2);
+0034     <span class="keyword">end</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 C={C};
+0038 C_s={C_s};
+0039 C_ss={C_ss};</pre></div>
+<hr><address>Generated on Mon 14-Nov-2011 11:14:03 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

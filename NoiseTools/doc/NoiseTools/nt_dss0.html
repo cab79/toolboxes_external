@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_dss0</title>
+  <meta name="keywords" content="nt_dss0">
+  <meta name="description" content="[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_dss0.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_dss0
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance
+
+ todss: matrix to convert data to normalized DSS components
+ pwr0: power per component (baseline)
+ pwr1: power per component (biased)
+
+ c0: baseline covariance
+ c1: biased covariance
+ keep1: number of PCs to retain (default: all)
+ keep2: ignore PCs smaller than keep2 (default: 10.^-10)
+
+ Cite:
+ de Cheveign\'e, A. and Simon J.Z. (2008), &quot;Denoising 
+ based on spatial filtering&quot;, J Neurosci Methods 171: 331-339.
+ and:
+ J. S\&quot;arel\&quot;a, J. and Valpola, H. (2005), Denoising source separation. 
+ Journal of Machine Learning Research 6: 233-272.
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>	[topcs,eigenvalues]=pcarot(cov,nkeep,threshold,N) - PCA matrix from covariance</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_bias_cluster.html" class="code" title="function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)">nt_bias_cluster</a>	[c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags) - cluster covariance</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose)">nt_cluster_jd</a>	[IDX,todss,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_cluster_jd_old.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd2(x,dsr,flags,init)">nt_cluster_jd_old</a>	[IDX,todss,SCORE]=nt_cluster_jd2(x,dsr,flags,init) - cluster with joint diagonalization</li><li><a href="nt_dss1.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2,sns_flag)">nt_dss1</a>	[todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2,sns_flag) - evoked-biased DSS denoising</li><li><a href="nt_enforce_stationarity.html" class="code" title="function x=nt_enforce_stationarity(x,DSR,thresh);">nt_enforce_stationarity</a>	y=nt_enforce_stationarity(x,DSR,thresh) - locally project out non-stationary components</li><li><a href="nt_hi_amp.html" class="code" title="function y=nt_hi_amp(x,exponent)">nt_hi_amp</a>	y=nt_hi_amp(x) - decompose into high-amplitude components</li><li><a href="nt_kurtosis.html" class="code" title="function [todss,K]=nt_kurtosis(x,nIterations,exponent,w,smooth)">nt_kurtosis</a>	[todss,K]=nt_kurtosis(x,nIterations,exponent,w,smooth)- find high-kurtosis components</li><li><a href="nt_narrowband_scan.html" class="code" title="function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag,yulewalk_order)">nt_narrowband_scan</a>	A=nt_narrowband_scan(x,freqs,sr,Q,plotflag) - scan for narrowband components using DSS</li><li><a href="nt_peaky.html" class="code" title="function [tocomps,ii]=nt_peaky(c,x,T,nSmooth)">nt_peaky</a>	[tocomps,ii]=nt_peaky(c,x,T,nSmooth) - find components that maximize peakiness</li><li><a href="nt_qca0.html" class="code" title="function [tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads)">nt_qca0</a>	[tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li><li><a href="nt_qca02.html" class="code" title="function [tosquare,quad,tosquare2,quad2,D]=nt_qca02(x,npcs,nsmooth)">nt_qca02</a>	[tosquare,quad,tosquare2,quad2,D]=nt_qca02(x,npcs,nsmooth) - maximize induced power using quadratic component analysis</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)</a>
+0002 <span class="comment">%[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% todss: matrix to convert data to normalized DSS components</span>
+0005 <span class="comment">% pwr0: power per component (baseline)</span>
+0006 <span class="comment">% pwr1: power per component (biased)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% c0: baseline covariance</span>
+0009 <span class="comment">% c1: biased covariance</span>
+0010 <span class="comment">% keep1: number of PCs to retain (default: all)</span>
+0011 <span class="comment">% keep2: ignore PCs smaller than keep2 (default: 10.^-10)</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Cite:</span>
+0014 <span class="comment">% de Cheveign\'e, A. and Simon J.Z. (2008), &quot;Denoising</span>
+0015 <span class="comment">% based on spatial filtering&quot;, J Neurosci Methods 171: 331-339.</span>
+0016 <span class="comment">% and:</span>
+0017 <span class="comment">% J. S\&quot;arel\&quot;a, J. and Valpola, H. (2005), Denoising source separation.</span>
+0018 <span class="comment">% Journal of Machine Learning Research 6: 233-272.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% NoiseTools</span>
+0021 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0022 
+0023 
+0024 <span class="keyword">if</span> nargin&lt;4||isempty(keep2); keep2=10.^-9; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin&lt;3; keep1=[]; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'needs at least two arguments'</span>); <span class="keyword">end</span>
+0027 
+0028 <span class="keyword">if</span> size(c0)~=size(c1); error(<span class="string">'C0 and C1 should have same size'</span>); <span class="keyword">end</span>
+0029 <span class="keyword">if</span> size(c0,1)~=size(c0,2); error(<span class="string">'C0 should be square'</span>); <span class="keyword">end</span>
+0030 
+0031 <span class="keyword">if</span> any(find(isnan(c0)))
+0032     error(<span class="string">'NaN in c0'</span>);
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> any(find(isnan(c1)))
+0035     error(<span class="string">'NaN in c1'</span>);
+0036 <span class="keyword">end</span>
+0037 <span class="keyword">if</span> any(find(isinf(c0)))
+0038     error(<span class="string">'INF in c0'</span>);
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">if</span> any(find(isinf(c1)))
+0041     error(<span class="string">'INF in c1'</span>);
+0042 <span class="keyword">end</span>
+0043 <span class="comment">% PCA and whitening matrix from the unbiased covariance</span>
+0044 [topcs1,evs1]=<a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>(c0,keep1);
+0045 evs1=abs(evs1);
+0046 
+0047 <span class="comment">% truncate PCA series if needed</span>
+0048 <span class="keyword">if</span> ~isempty(keep1); topcs1=topcs1(:,1:keep1); evs1=evs1(1:keep1); <span class="keyword">end</span>
+0049 <span class="keyword">if</span> ~isempty(keep2); idx=find(evs1/max(evs1)&gt;keep2); topcs1=topcs1(:,idx); evs1=evs1(idx); <span class="keyword">end</span>
+0050 
+0051 
+0052 
+0053 <span class="comment">% apply PCA and whitening to the biased covariance</span>
+0054 N=diag(sqrt(1./(evs1)));     
+0055 c2=N'*topcs1'*c1*topcs1*N;
+0056 
+0057 <span class="comment">% matrix to convert PCA-whitened data to DSS</span>
+0058 [topcs2,evs2]=<a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>(c2,keep1);
+0059 
+0060 <span class="comment">% DSS matrix (raw data to normalized DSS)</span>
+0061 todss=topcs1*N*topcs2;
+0062 N2=diag(todss'*c0*todss);
+0063 todss=todss*diag(1./sqrt(N2)); <span class="comment">% adjust so that components are normalized</span>
+0064 
+0065 <span class="comment">% power per DSS component</span>
+0066 pwr0=sqrt(sum((c0'*todss).^2)); <span class="comment">% unbiased</span>
+0067 pwr1=sqrt(sum((c1'*todss).^2)); <span class="comment">% biased</span>
+0068</pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

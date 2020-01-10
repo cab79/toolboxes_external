@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_plot_histograms</title>
+  <meta name="keywords" content="prt_plot_histograms">
+  <meta name="description" content="FORMAT prt_plot_histograms(PRT, model, fold, axes_handle)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_plot_histograms.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_plot_histograms
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_plot_histograms(PRT, model, fold, axes_handle)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt_plot_histograms(PRT, model, fold, axes_handle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_plot_histograms(PRT, model, fold, axes_handle)
+
+ This function plots the histogram that appears on prt_ui_results.
+
+ The maximum number of classes that can be ploted is 7. However, this can
+ be increased by editing the function. Just add more colours to the
+ colourList variable.
+
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+       model           - the number of the model that will be ploted
+       fold            - the number of the fold
+       axes_handle     - (Optional) axes where the plot will be displayed
+
+ Output:
+       None
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt_plot_histograms(PRT, model, fold, axes_handle)</a>
+0002 <span class="comment">% FORMAT prt_plot_histograms(PRT, model, fold, axes_handle)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function plots the histogram that appears on prt_ui_results.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% The maximum number of classes that can be ploted is 7. However, this can</span>
+0007 <span class="comment">% be increased by editing the function. Just add more colours to the</span>
+0008 <span class="comment">% colourList variable.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Inputs:</span>
+0011 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0012 <span class="comment">%                         at least one estimated model).</span>
+0013 <span class="comment">%       model           - the number of the model that will be ploted</span>
+0014 <span class="comment">%       fold            - the number of the fold</span>
+0015 <span class="comment">%       axes_handle     - (Optional) axes where the plot will be displayed</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Output:</span>
+0018 <span class="comment">%       None</span>
+0019 <span class="comment">%__________________________________________________________________________</span>
+0020 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0021 
+0022 <span class="comment">% Written by M. J. Rosa</span>
+0023 <span class="comment">% $Id: prt_plot_histograms.m 706 2013-06-07 14:33:34Z cphillip $</span>
+0024 
+0025 nfold = length(PRT.model(model).output.fold);
+0026 
+0027 
+0028 <span class="comment">%Check the number of classes</span>
+0029 nClasses = length(PRT.model(model).input.class);
+0030 
+0031 <span class="keyword">if</span> fold == 1
+0032     fVals   = [];
+0033     targets = [];
+0034     
+0035     <span class="keyword">for</span> f = 1:nfold,
+0036         targets = [targets;PRT.model(model).output.fold(f).targets];
+0037         <span class="keyword">if</span> isfield(PRT.model(model).output.fold(f),<span class="string">'func_val'</span>)
+0038             fVvals_exist = 1;
+0039             fVals  = [fVals;PRT.model(model).output.fold(f).func_val];
+0040         <span class="keyword">else</span>
+0041             fVvals_exist = 0;
+0042             fVals  = [fVals;<span class="keyword">...</span>
+0043                 PRT.model(model).output.fold(f).predictions];
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046     
+0047     
+0048     <span class="keyword">for</span> i=1:nClasses
+0049         targval(:, i) = targets == i;
+0050     <span class="keyword">end</span>
+0051     
+0052 <span class="keyword">else</span>
+0053     <span class="comment">% if folds wise</span>
+0054     targets = PRT.model(model).output.fold(fold-1).targets;
+0055     
+0056     <span class="keyword">for</span> i=1:nClasses
+0057         targval(:, i) = targets == i;
+0058     <span class="keyword">end</span>
+0059     
+0060     
+0061     <span class="keyword">if</span> isfield(PRT.model(model).output.fold(fold-1),<span class="string">'func_val'</span>)
+0062         fVals  = PRT.model(model).output.fold(fold-1).func_val;
+0063         fVvals_exist = 1;
+0064     <span class="keyword">else</span>
+0065         fVvals_exist = 0;
+0066         fVals  = PRT.model(model).output.fold(fold-1).predictions;
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 
+0071 <span class="comment">%Make list of classes</span>
+0072 <span class="keyword">for</span> i=1:nClasses
+0073     classNames{i} = PRT.model(model).input.class(i).class_name;
+0074 <span class="keyword">end</span>
+0075 <span class="comment">%If you want to use more classes, just add more colours to the list bellow</span>
+0076 colourList = {<span class="string">'black'</span>,<span class="string">'red'</span>, <span class="string">'blue'</span>, <span class="string">'green'</span>, <span class="string">'cyan'</span>, <span class="string">'magenta'</span>, <span class="string">'yellow'</span>};
+0077 
+0078 
+0079 <span class="comment">%If no axes_handle is given, create a new window</span>
+0080 <span class="keyword">if</span> ~exist(<span class="string">'axes_handle'</span>, <span class="string">'var'</span>)
+0081     figure;
+0082     axes_handle = axes;
+0083 <span class="keyword">else</span>
+0084     set(axes_handle, <span class="string">'XScale'</span>,<span class="string">'linear'</span>);
+0085 <span class="keyword">end</span>
+0086 
+0087 cla(axes_handle, <span class="string">'reset'</span>);
+0088 rotate3d off
+0089 <span class="comment">%                 axis xy</span>
+0090 set(axes_handle,<span class="string">'Color'</span>,[1,1,1])
+0091 
+0092 <span class="keyword">if</span> nClasses &lt;= length(colourList)
+0093     <span class="keyword">if</span> fVvals_exist
+0094         classes_used = [];
+0095         <span class="keyword">for</span> cl=1:nClasses
+0096             func_vals = fVals(targval(:,cl));
+0097             <span class="keyword">if</span> ~isempty(func_vals)
+0098                 <span class="keyword">if</span> exist(<span class="string">'ksdensity'</span>,<span class="string">'file'</span>)==2
+0099                     [f,x] = ksdensity(func_vals,<span class="string">'width'</span>,[]);
+0100                     plot(axes_handle,x,f,colourList{cl},<span class="string">'LineWidth'</span>,2);
+0101                     hold(axes_handle,<span class="string">'on'</span>)
+0102                 <span class="keyword">else</span>
+0103                     <span class="comment">% can't plot density, be happy with a histogram</span>
+0104                     [myHist,myX]=hist(func_vals,100);
+0105                     bar(axes_handle,myX,myHist,colourList{cl});
+0106                     hold(axes_handle,<span class="string">'on'</span>)
+0107                 <span class="keyword">end</span>
+0108                 <span class="keyword">if</span> cl == nClasses, hold(axes_handle,<span class="string">'off'</span>); <span class="keyword">end</span>
+0109                 classes_used = [classes_used,cl]; <span class="comment">% makes a list of the classes used in the plot</span>
+0110             <span class="keyword">end</span>
+0111         <span class="keyword">end</span>
+0112         
+0113         <span class="comment">%Make list of classes used to put in the legend</span>
+0114         nClasses_used = length(classes_used);
+0115         <span class="keyword">for</span> i=1:nClasses_used
+0116             classNames_legend{i} = classNames{classes_used(i)};
+0117         <span class="keyword">end</span>
+0118         
+0119         legend(axes_handle,classNames_legend);
+0120         
+0121         xlabel(axes_handle,<span class="string">'function value'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0122     <span class="keyword">else</span>
+0123         <span class="comment">% do nothing, no func_val available</span>
+0124     <span class="keyword">end</span>
+0125     
+0126 <span class="keyword">else</span>
+0127     error([<span class="string">'Too many classes, Max number of classes: '</span> num2str(length(colourList))]);
+0128 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

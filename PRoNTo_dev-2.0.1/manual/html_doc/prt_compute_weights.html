@@ -1,0 +1,473 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_compute_weights</title>
+  <meta name="keywords" content="prt_compute_weights">
+  <meta name="description" content="FORMAT prt_compute_weights(PRT,in)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_compute_weights.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_compute_weights
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_compute_weights(PRT,in)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function img_name = prt_compute_weights(PRT,in,flag,flag2) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_compute_weights(PRT,in)
+
+ This function calls prt_weights to compute weights
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+       in              - structure with specific information to create
+                         weights
+           .model_name - model name (string)
+           .img_name   - (optional) name of the file to be created
+                         (string)
+           .pathdir    - directory path where to save weights (same as the
+                         one for PRT.mat) (string)
+           .atl_name   - name of the atlas for post-hoc local averages of
+       flag            - set to 1 to compute the weight images for each
+                         permutation (default: 0)
+       flag2           - set to 1 to build image of weight per ROI
+                         weights according to atlas
+ Output:
+       img_name        - name of the .img file created
+       + image file created on disk
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_build_region_weights.html" class="code" title="function [NW_roi,idfeatroi]=prt_build_region_weights(weight_fname,atlas_fname,build_im,comp_perm)">prt_build_region_weights</a>	</li><li><a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>	FORMAT prt_compute_weights_class(PRT,in,model_idx)</li><li><a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>	FORMAT prt_compute_weights_regre(PRT,in,model_idx)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_compute_weights.html" class="code" title="function varargout = prt_ui_compute_weights(varargin)">prt_ui_compute_weights</a>	PRT_UI_COMPUTE_WEIGHTS M-file for prt_ui_compute_weights.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function img_name = prt_compute_weights(PRT,in,flag,flag2)</a>
+0002 <span class="comment">% FORMAT prt_compute_weights(PRT,in)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function calls prt_weights to compute weights</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0007 <span class="comment">%                         at least one estimated model).</span>
+0008 <span class="comment">%       in              - structure with specific information to create</span>
+0009 <span class="comment">%                         weights</span>
+0010 <span class="comment">%           .model_name - model name (string)</span>
+0011 <span class="comment">%           .img_name   - (optional) name of the file to be created</span>
+0012 <span class="comment">%                         (string)</span>
+0013 <span class="comment">%           .pathdir    - directory path where to save weights (same as the</span>
+0014 <span class="comment">%                         one for PRT.mat) (string)</span>
+0015 <span class="comment">%           .atl_name   - name of the atlas for post-hoc local averages of</span>
+0016 <span class="comment">%       flag            - set to 1 to compute the weight images for each</span>
+0017 <span class="comment">%                         permutation (default: 0)</span>
+0018 <span class="comment">%       flag2           - set to 1 to build image of weight per ROI</span>
+0019 <span class="comment">%                         weights according to atlas</span>
+0020 <span class="comment">% Output:</span>
+0021 <span class="comment">%       img_name        - name of the .img file created</span>
+0022 <span class="comment">%       + image file created on disk</span>
+0023 <span class="comment">%__________________________________________________________________________</span>
+0024 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0025 
+0026 <span class="comment">% Written by M.J.Rosa</span>
+0027 <span class="comment">% $Id$</span>
+0028 
+0029 <span class="comment">% Find model</span>
+0030 <span class="comment">% -------------------------------------------------------------------------</span>
+0031 nmodel = length(PRT.model);
+0032 model_idx = 0;
+0033 <span class="keyword">for</span> i = 1:nmodel
+0034     <span class="keyword">if</span> strcmp(PRT.model(i).model_name,in.model_name)
+0035         model_idx = i;
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038 <span class="comment">% Check if model exists</span>
+0039 <span class="keyword">if</span> model_idx == 0, error(<span class="string">'prt_compute_weights:ModelNotFound'</span>,<span class="keyword">...</span>
+0040         <span class="string">'Error: model not found in PRT.mat!'</span>); <span class="keyword">end</span>
+0041 
+0042 mtype = PRT.model(model_idx).input.type;
+0043 mname = PRT.model(model_idx).model_name;
+0044 
+0045 <span class="comment">% Initialize: get feature set and modalities indexes and deal with MK</span>
+0046 <span class="comment">% -------------------------------------------------------------------</span>
+0047 <span class="comment">% Get index of feature set</span>
+0048 fs_name  = PRT.model(model_idx).input.fs.fs_name;
+0049 nfs = length(PRT.fs);
+0050 <span class="keyword">for</span> f = 1:nfs
+0051     <span class="keyword">if</span> strcmp(PRT.fs(f).fs_name,fs_name)
+0052         fs_idx = f;
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% Find modality</span>
+0057 nfas = length(PRT.fas);
+0058 mods = {PRT.fs(fs_idx).modality.mod_name};
+0059 fas  = zeros(1,nfas);
+0060 mm=zeros(length(mods),nfas);
+0061 <span class="keyword">for</span> i = 1:nfas
+0062     <span class="keyword">for</span> j = 1:length(mods)
+0063         <span class="keyword">if</span> strcmpi(PRT.fas(i).mod_name,mods{j})
+0064             fas(i) = 1;
+0065             mm(i,j)= 1;
+0066         <span class="keyword">end</span>
+0067     <span class="keyword">end</span>
+0068 <span class="keyword">end</span>
+0069 fas_idx = find(fas);
+0070 
+0071 <span class="comment">% Loop over the different feature sets if they were considered as separate</span>
+0072 <span class="comment">% kernels (i.e. one or more kernel(s) per modality)</span>
+0073 ibeta_mod = cell(length(fas_idx),1);
+0074 <span class="keyword">if</span> PRT.fs(fs_idx).multkernelROI   <span class="comment">%multiple ROI kernels in feature set</span>
+0075     mult_kern_ROI = 1;
+0076     <span class="keyword">if</span> PRT.fs(fs_idx).multkernel <span class="comment">% Multiple modalities treated separately</span>
+0077         count = 0;
+0078         <span class="comment">% get the indexes of the betas for each modality</span>
+0079         <span class="keyword">for</span> i=1:length(fas_idx)
+0080 <span class="comment">%             mim = find(mm(i,:));</span>
+0081             numk = length(PRT.fs(fs_idx).modality(i).idfeat_img);
+0082             ibeta_mod{i} = (1:numk)+count;
+0083             count = count + numk;
+0084         <span class="keyword">end</span>
+0085     <span class="keyword">else</span> <span class="comment">% Multiple modalities concatenated or only one modality</span>
+0086         ibeta_mod{1} = 1:length(PRT.fs(fs_idx).modality(1).idfeat_img);
+0087     <span class="keyword">end</span>
+0088     nim = length(fas_idx);
+0089 <span class="keyword">else</span>
+0090     <span class="keyword">if</span> PRT.fs(fs_idx).multkernel <span class="comment">% Multiple modalities treated separately</span>
+0091         <span class="keyword">for</span> i=1:length(fas_idx)
+0092             ibeta_mod{i} = i;
+0093         <span class="keyword">end</span>
+0094         nim = length(fas_idx);
+0095     <span class="keyword">else</span>
+0096         nim = 1;
+0097     <span class="keyword">end</span>
+0098     mult_kern_ROI = 0;   
+0099 <span class="keyword">end</span>
+0100 
+0101 <span class="comment">% We also need to know whether those multiple kernels have been added in a</span>
+0102 <span class="comment">% non-MKL machine or if a MKL machine was used.</span>
+0103 <span class="keyword">if</span> ~isfield(PRT.model(model_idx).output.fold(1),<span class="string">'beta'</span>) || <span class="keyword">...</span>
+0104         isempty(PRT.model(model_idx).output.fold(1).beta)
+0105     added = 1;
+0106 <span class="keyword">else</span>
+0107     added = 0;
+0108 <span class="keyword">end</span>
+0109 
+0110 <span class="comment">% Compute the total number of images to be computed to initialize the</span>
+0111 <span class="comment">% outputs</span>
+0112 <span class="keyword">switch</span> mtype
+0113     <span class="keyword">case</span> <span class="string">'classification'</span>
+0114         nc = size(PRT.model(model_idx).output.stats.con_mat, 2);
+0115     <span class="keyword">case</span> <span class="string">'regression'</span>
+0116         nc = 1;
+0117 <span class="keyword">end</span>
+0118 <span class="keyword">if</span> nc &gt; 2
+0119     nim = nim*nc;
+0120 <span class="keyword">end</span>
+0121 
+0122 <span class="comment">% Check inputs for weights per region</span>
+0123 <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2
+0124     <span class="keyword">if</span> isempty(in.atl_name) &amp;&amp; ~mult_kern_ROI
+0125         error(<span class="string">'prt_compute_weights:NoAtlas'</span>,<span class="keyword">...</span>
+0126             <span class="string">'Error: Atlas should be provided to compute weights per region'</span>)
+0127     <span class="keyword">end</span>
+0128 <span class="keyword">end</span>
+0129 
+0130 
+0131 <span class="comment">% Build weights</span>
+0132 <span class="comment">%--------------------------------------------------------------------------</span>
+0133 <span class="keyword">if</span> isfield(PRT.model(model_idx).output,<span class="string">'weight_idfeatroi'</span>) &amp;&amp; <span class="keyword">...</span>
+0134         ~isempty(PRT.model(model_idx).output.weight_idfeatroi)
+0135     PRT.model(model_idx).output.weight_idfeatroi =[];
+0136 <span class="keyword">end</span>
+0137 
+0138 <span class="keyword">if</span> isfield(PRT.model(model_idx).output,<span class="string">'weight_atlas'</span>) &amp;&amp; <span class="keyword">...</span>
+0139         ~isempty(PRT.model(model_idx).output.weight_atlas)
+0140     PRT.model(model_idx).output.weight_atlas ={};
+0141 <span class="keyword">end</span>
+0142 PRT.model(model_idx).output.weight_ROI = cell(nim,1);
+0143 
+0144 <span class="keyword">if</span> PRT.fs(fs_idx).multkernel &amp;&amp; length(fas_idx)&gt;1 &amp;&amp; ~added <span class="comment">% Need to loop over the modalities since multiple kernels</span>
+0145     summroi  = 0;
+0146     <span class="comment">%get/set image names by appending the modality name at the end</span>
+0147     im_name = cell(1,length(fas_idx));
+0148     <span class="keyword">if</span> ~isempty(in.img_name)
+0149         <span class="keyword">if</span> ~(prt_checkAlphaNumUnder(in.img_name))
+0150             error(<span class="string">'prt_compute_weights:NameNotAlphaNumeric'</span>,<span class="keyword">...</span>
+0151                 <span class="string">'Error: image name should contain only alpha-numeric elements!'</span>);
+0152         <span class="keyword">end</span>
+0153         <span class="keyword">for</span> i = 1:length(fas_idx)
+0154             im_name{i} = [in.img_name,<span class="string">'_'</span>,PRT.fas(fas_idx(i)).mod_name];
+0155         <span class="keyword">end</span>
+0156     <span class="keyword">else</span>
+0157         <span class="keyword">for</span> i = 1:length(fas_idx)
+0158             im_name{i} = [<span class="string">'weights_'</span>,mname,<span class="string">'_'</span>,PRT.fas(fas_idx(i)).mod_name];
+0159         <span class="keyword">end</span>
+0160     <span class="keyword">end</span>
+0161     
+0162     <span class="comment">% Get the indexes in the feature set and ID mat for each modality</span>
+0163     ifa_all = PRT.fs(fs_idx).fas.ifa;
+0164     im_all = PRT.fs(fs_idx).fas.im;
+0165     name_fin = [];
+0166     
+0167     <span class="comment">% Prepare outputs</span>
+0168     PRT.model(model_idx).output.weight_ROI = cell(nim,1);
+0169     <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2 &amp;&amp; ~mult_kern_ROI
+0170         PRT.model(model_idx).output.weight_idfeatroi = cell(nim,1);
+0171         PRT.model(model_idx).output.weight_atlas = cell(nim,1);
+0172     <span class="keyword">end</span>
+0173     
+0174     imgcnt = 1;
+0175     
+0176     <span class="keyword">for</span> i = 1:length(fas_idx)
+0177         in.img_name = im_name{i};
+0178         in.fas_idx = fas_idx(i);
+0179         in.mm = find(mm(fas_idx(i),:));
+0180         <span class="comment">%Modify inputs according to file array and modality</span>
+0181         PRT.fs(fs_idx).id_mat(:,3) = in.fas_idx * ones(size(PRT.fs(fs_idx).id_mat,1),1);
+0182         PRT.fs(fs_idx).fas.im = im_all(im_all == fas_idx(i));
+0183         PRT.fs(fs_idx).fas.ifa = ifa_all(im_all == fas_idx(i));
+0184         <span class="keyword">switch</span> mtype
+0185             <span class="keyword">case</span> <span class="string">'classification'</span>
+0186                 
+0187                 <span class="comment">% Compute image of voxel weights</span>
+0188                 img_name = <a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>(PRT,in,model_idx,flag,ibeta_mod{i});
+0189                     
+0190                 <span class="comment">% Get the image names (multiple classes possible)</span>
+0191                 name_f = cell(length(img_name),1);
+0192                 <span class="keyword">for</span> j=1:size(name_f,1)
+0193                     [du,name_f{j}] = spm_fileparts(img_name{j});
+0194                 <span class="keyword">end</span>
+0195                 
+0196                 <span class="comment">% Build image of weights per region if asked for (flag2==1)</span>
+0197                 <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2 
+0198                     
+0199                     <span class="keyword">if</span> mult_kern_ROI <span class="comment">% Kernels built from an atlas directly</span>
+0200                         disp(<span class="string">'Building image of weights per region'</span>)
+0201                         <span class="keyword">if</span> length(name_f)&gt;1 <span class="comment">% multiple classes</span>
+0202                             in.img_name = [<span class="string">'ROI_'</span>,name_f{j}(1:end-2)];
+0203                         <span class="keyword">else</span>
+0204                             in.img_name = [<span class="string">'ROI_'</span>,name_f{1}];
+0205                         <span class="keyword">end</span>
+0206                         <a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>(PRT,in,model_idx,flag,ibeta_mod{i},1);
+0207                         
+0208                     <span class="keyword">else</span> <span class="comment">% Need to summarize the weights per region</span>
+0209                         disp(<span class="string">'Building image of weights per region'</span>)
+0210                         in.flag = flag;
+0211                         summroi  = 1;
+0212                         nimage = size(name_f,1); <span class="comment">% Multiclass?</span>
+0213                         <span class="keyword">for</span> c = 1:nimage
+0214                             <span class="keyword">if</span> c&gt;1
+0215                                 imgcnt = imgcnt + 1;
+0216                             <span class="keyword">end</span>
+0217                             [NW idfeatroi] = <a href="prt_build_region_weights.html" class="code" title="function [NW_roi,idfeatroi]=prt_build_region_weights(weight_fname,atlas_fname,build_im,comp_perm)">prt_build_region_weights</a>(img_name(c),in.atl_name,1,in.flag);
+0218                             PRT.model(model_idx).output.weight_ROI(imgcnt) = {NW};
+0219                             PRT.model(model_idx).output.weight_idfeatroi(imgcnt) = {idfeatroi};
+0220                             PRT.model(model_idx).output.weight_atlas{imgcnt} = in.atl_name;
+0221                         <span class="keyword">end</span>
+0222                     <span class="keyword">end</span>
+0223                 <span class="keyword">end</span>
+0224             <span class="keyword">case</span> <span class="string">'regression'</span>
+0225                 <span class="comment">% Compute image of voxel weights</span>
+0226                 img_name = <a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>(PRT,in,model_idx,flag,ibeta_mod{i});
+0227                     
+0228                 <span class="comment">% Get the image names</span>
+0229                 [du,name_f{1}] = spm_fileparts(img_name{1});
+0230                 
+0231                 <span class="comment">% Build image of weights per region if asked for (flag2==1)</span>
+0232                 <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2 
+0233                     
+0234                     <span class="keyword">if</span> mult_kern_ROI <span class="comment">% Kernels built from an atlas directly</span>
+0235                         disp(<span class="string">'Building image of weights per region'</span>)
+0236                         in.img_name = [<span class="string">'ROI_'</span>,name_f{1}];
+0237                         <a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>(PRT,in,model_idx,flag,ibeta_mod{i},1);
+0238                         
+0239                     <span class="keyword">else</span> <span class="comment">% Need to summarize the weights per region</span>
+0240                         disp(<span class="string">'Building image of weights per region'</span>)
+0241                         in.flag = flag;
+0242                         summroi = 1;
+0243                         [NW idfeatroi] = <a href="prt_build_region_weights.html" class="code" title="function [NW_roi,idfeatroi]=prt_build_region_weights(weight_fname,atlas_fname,build_im,comp_perm)">prt_build_region_weights</a>(img_name,in.atl_name,1,in.flag);
+0244                         PRT.model(model_idx).output.weight_ROI(imgcnt) = {NW};
+0245                         PRT.model(model_idx).output.weight_idfeatroi(imgcnt) = {idfeatroi};
+0246                         PRT.model(model_idx).output.weight_atlas{imgcnt} = in.atl_name;
+0247                     <span class="keyword">end</span>
+0248                 <span class="keyword">end</span>
+0249         <span class="keyword">end</span>
+0250         <span class="keyword">if</span> ~iscell(img_name)
+0251             img_name={img_name};
+0252         <span class="keyword">end</span>
+0253         name_fin = [name_fin; img_name];
+0254         imgcnt = imgcnt + 1;
+0255     <span class="keyword">end</span>
+0256     PRT.fs(fs_idx).fas.ifa = ifa_all;
+0257     PRT.fs(fs_idx).fas.im = im_all;
+0258     PRT.fs(fs_idx).id_mat(:,3) = ones(size(PRT.fs(fs_idx).id_mat,1),1);
+0259     
+0260     <span class="comment">% Used for the display of the weights per modality in</span>
+0261     <span class="comment">% prt_ui_disp_weights</span>
+0262     <span class="keyword">if</span> PRT.fs(fs_idx).multkernel &amp;&amp; ~summroi    <span class="comment">%create one image per modality, from MKL learning</span>
+0263         <span class="keyword">for</span> i=1:size(name_fin,1)
+0264             [du,name_fin{i}] = spm_fileparts(name_fin{i});
+0265             <span class="keyword">if</span> ~mult_kern_ROI
+0266                 idb = 1:length(fas_idx);
+0267             <span class="keyword">else</span>
+0268                 idb = ibeta_mod{i};
+0269             <span class="keyword">end</span>
+0270             tmp = zeros(length(idb),length(PRT.model(model_idx).output.fold));
+0271             <span class="keyword">for</span> j = 1:length(PRT.model(model_idx).output.fold)
+0272                 tmp(:,j) = [PRT.model(model_idx).output.fold(j).beta(idb)]';
+0273             <span class="keyword">end</span>
+0274             betas = [tmp, mean(tmp,2)];
+0275             <span class="keyword">if</span> ~flag2 &amp;&amp; ~mult_kern_ROI
+0276                 PRT.model(model_idx).output.weight_ROI(i) = {betas}; <span class="comment">% for now, replicate the betas for each modality and fill table</span>
+0277                 PRT.model(model_idx).output.weight_MOD(i) = {betas};
+0278             <span class="keyword">elseif</span> flag2 &amp;&amp; mult_kern_ROI
+0279                 PRT.model(model_idx).output.weight_ROI(i) = {betas}; <span class="comment">% for now, replicate the betas for each modality and fill table</span>
+0280                 PRT.model(model_idx).output.weight_MOD(i) = {sum(betas,1)}; <span class="comment">% sum the betas across regions for each modality</span>
+0281             <span class="keyword">end</span>
+0282         <span class="keyword">end</span>
+0283     <span class="keyword">else</span>
+0284         <span class="keyword">if</span> PRT.fs(fs_idx).multkernel &amp;&amp; summroi
+0285             <span class="keyword">for</span> i=1:size(name_fin,1)
+0286                 idb = ibeta_mod{i};
+0287                 tmp = zeros(length(idb),length(PRT.model(model_idx).output.fold));
+0288                 <span class="keyword">for</span> j = 1:length(PRT.model(model_idx).output.fold)
+0289                     tmp(:,j) = [PRT.model(model_idx).output.fold(j).beta(idb)]';
+0290                 <span class="keyword">end</span>
+0291                 betas = [tmp, mean(tmp,2)];                
+0292                 PRT.model(model_idx).output.weight_MOD(i) = {betas}; <span class="comment">%average of a multiple kernel on modalities</span>
+0293             <span class="keyword">end</span>
+0294         <span class="keyword">end</span>
+0295         <span class="keyword">for</span> i=1:size(name_fin,1)
+0296             [du,name_fin{i}] = spm_fileparts(name_fin{i}); <span class="comment">%get rid of path</span>
+0297         <span class="keyword">end</span>
+0298     <span class="keyword">end</span>
+0299     
+0300  <span class="comment">% Only one modality or they have been concatenated</span>
+0301 <span class="keyword">else</span>
+0302     in.fas_idx=fas_idx;
+0303     in.mm = [];
+0304     <span class="keyword">for</span> i=1:length(fas_idx)
+0305         in.mm = [in.mm, find(mm(fas_idx(i),:))];
+0306     <span class="keyword">end</span>
+0307     <span class="keyword">switch</span> mtype
+0308         <span class="keyword">case</span> <span class="string">'classification'</span>
+0309             img_name = <a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>(PRT,in,model_idx,flag);
+0310             name_fin = cell(length(img_name),1);
+0311             <span class="keyword">for</span> i=1:length(name_fin)
+0312                 [du,name_fin{i}] = spm_fileparts(img_name{i}); 
+0313             <span class="keyword">end</span>
+0314             <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2 <span class="comment">% Build image of weights per region</span>
+0315                 disp(<span class="string">'Building image of weights per region'</span>)
+0316 
+0317                 <span class="keyword">if</span> mult_kern_ROI &amp;&amp; <span class="keyword">...</span>
+0318                         isfield(PRT.model(model_idx).output.fold(1),<span class="string">'beta'</span>) &amp;&amp; <span class="keyword">...</span>
+0319                         ~isempty(PRT.model(model_idx).output.fold(1).beta)
+0320                     
+0321                     <span class="keyword">if</span> length(name_fin)&gt;1 <span class="comment">% multiple classes</span>
+0322                         in.img_name = [<span class="string">'ROI_'</span>,name_fin{j}(1:end-2)];
+0323                     <span class="keyword">else</span>
+0324                         in.img_name = [<span class="string">'ROI_'</span>,name_fin{1}];
+0325                     <span class="keyword">end</span>
+0326                     <a href="prt_compute_weights_class.html" class="code" title="function img_name = prt_compute_weights_class(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_class</a>(PRT,in,model_idx,flag,[],1);
+0327                     <span class="comment">% Get the weights per region, which are the same for</span>
+0328                     <span class="comment">% each class</span>
+0329                     tmp = [PRT.model(model_idx).output.fold(:).beta];
+0330                     tmp = reshape(tmp,length(PRT.model(model_idx).output.fold(1).beta),<span class="keyword">...</span>
+0331                         length(PRT.model(model_idx).output.fold));
+0332                     betas = [tmp, mean(tmp,2)];
+0333                     <span class="keyword">for</span> i = 1:size(name_fin,1)
+0334                         PRT.model(model_idx).output.weight_ROI(i) = {betas};
+0335                     <span class="keyword">end</span>
+0336                 <span class="keyword">else</span>
+0337                     in.flag = flag;
+0338                     <span class="keyword">if</span> isempty(in.atl_name) &amp;&amp; mult_kern_ROI
+0339                         in.atl_name = PRT.fs(fs_idx).atlas_name;
+0340                     <span class="keyword">end</span>                    
+0341                     nimage = size(name_fin,1); <span class="comment">% Multiclass?</span>
+0342                     PRT.model(model_idx).output.weight_ROI = cell(nimage,1);
+0343                     <span class="keyword">for</span> c = 1:nimage
+0344                         [NW idfeatroi] = <a href="prt_build_region_weights.html" class="code" title="function [NW_roi,idfeatroi]=prt_build_region_weights(weight_fname,atlas_fname,build_im,comp_perm)">prt_build_region_weights</a>(img_name(c),in.atl_name,1,in.flag);
+0345                         PRT.model(model_idx).output.weight_ROI(c) = {NW};
+0346                     <span class="keyword">end</span>
+0347                     PRT.model(model_idx).output.weight_idfeatroi{1} = idfeatroi;
+0348                     PRT.model(model_idx).output.weight_atlas{1} = in.atl_name;
+0349                 <span class="keyword">end</span>
+0350             <span class="keyword">else</span>
+0351                 PRT.model(model_idx).output.weight_ROI = [];
+0352             <span class="keyword">end</span>
+0353         <span class="keyword">case</span> <span class="string">'regression'</span>
+0354             img_name = <a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>(PRT,in,model_idx,flag);
+0355             name_fin = cell(length(img_name),1);
+0356             <span class="keyword">for</span> i=1:length(name_fin)
+0357                 [du,name_fin{i}] = spm_fileparts(img_name{i}); 
+0358             <span class="keyword">end</span>
+0359              <span class="keyword">if</span> exist(<span class="string">'flag2'</span>,<span class="string">'var'</span>) &amp;&amp; flag2 <span class="comment">% Build image of weights per region</span>
+0360                 <span class="keyword">if</span> mult_kern_ROI &amp;&amp; <span class="keyword">...</span>
+0361                         isfield(PRT.model(model_idx).output.fold(1),<span class="string">'beta'</span>) &amp;&amp; <span class="keyword">...</span>
+0362                         ~isempty(PRT.model(model_idx).output.fold(1).beta)
+0363                     disp(<span class="string">'Building image of weights per region'</span>)                   
+0364                     in.img_name = [<span class="string">'ROI_'</span>,name_fin{1}];
+0365                     <a href="prt_compute_weights_regre.html" class="code" title="function img_name = prt_compute_weights_regre(PRT,in,model_idx,flag, ibe, flag2)">prt_compute_weights_regre</a>(PRT,in,model_idx,flag,[],1);
+0366                     tmp = [PRT.model(model_idx).output.fold(:).beta];
+0367                     tmp = reshape(tmp,length(PRT.model(model_idx).output.fold(1).beta),<span class="keyword">...</span>
+0368                         length(PRT.model(model_idx).output.fold));
+0369                     betas = [tmp, mean(tmp,2)];
+0370                     PRT.model(model_idx).output.weight_ROI(1) = {betas}; <span class="comment">%only one class for now</span>
+0371                 <span class="keyword">else</span>
+0372                     disp(<span class="string">'Building image of weights per region'</span>)
+0373                     in.flag = flag;
+0374                     <span class="keyword">if</span> isempty(in.atl_name) &amp;&amp; mult_kern_ROI
+0375                         in.atl_name = PRT.fs(fs_idx).atlas_name;
+0376                     <span class="keyword">end</span>
+0377                     [NW idfeatroi] = <a href="prt_build_region_weights.html" class="code" title="function [NW_roi,idfeatroi]=prt_build_region_weights(weight_fname,atlas_fname,build_im,comp_perm)">prt_build_region_weights</a>(img_name,in.atl_name,1,in.flag);
+0378                     PRT.model(model_idx).output.weight_ROI(1) = {NW};
+0379                     PRT.model(model_idx).output.weight_idfeatroi{1} = idfeatroi;
+0380                     PRT.model(model_idx).output.weight_atlas{1} = in.atl_name;
+0381                 <span class="keyword">end</span>
+0382              <span class="keyword">else</span>
+0383                  PRT.model(model_idx).output.weight_ROI = [];
+0384              <span class="keyword">end</span>
+0385     <span class="keyword">end</span>
+0386 <span class="keyword">end</span>
+0387 
+0388 <span class="keyword">if</span> ~iscell(name_fin)
+0389     name_fin = {name_fin};
+0390 <span class="keyword">end</span>
+0391 PRT.model(model_idx).output.weight_img = name_fin;
+0392 
+0393 <span class="comment">% Save the updated PRT</span>
+0394 <span class="comment">%--------------------------------------------------------------------------</span>
+0395 outfile = fullfile(in.pathdir, <span class="string">'PRT.mat'</span>);
+0396 disp(<span class="string">'Updating PRT.mat.......&gt;&gt;'</span>)
+0397 <span class="keyword">if</span> spm_check_version(<span class="string">'MATLAB'</span>,<span class="string">'7'</span>) &lt; 0
+0398     save(outfile,<span class="string">'-V6'</span>,<span class="string">'PRT'</span>);
+0399 <span class="keyword">else</span>
+0400     save(outfile,<span class="string">'PRT'</span>);
+0401 <span class="keyword">end</span>
+0402 <span class="keyword">end</span>
+0403 
+0404</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

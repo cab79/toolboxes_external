@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_bsrms</title>
+  <meta name="keywords" content="nt_bsrms">
+  <meta name="description" content="[rms,sd,all]=nt_bsrms(x,N) - calculate rms, estimate sd using bootstrap">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_bsrms.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_bsrms
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[rms,sd,all]=nt_bsrms(x,N) - calculate rms, estimate sd using bootstrap</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [rms,sd,all]=nt_bsrms(x,N) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[rms,sd,all]=nt_bsrms(x,N) - calculate rms, estimate sd using bootstrap
+
+  rms: rms over second dimension of x
+  sd: standard deviation of rms calculated by bootstrap
+  all: matrix of all trials
+  
+  x: matrix of observations (time X repetitions)
+  N: number of bootstrap trials [default: 100]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>	nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation</li><li><a href="nt_bsplot2.html" class="code" title="function nt_bsplot2(x,percentile,style,abscissa,zeroflag,rmsflag)">nt_bsplot2</a>	nt_bsplot(x,percentile,style,abscissa,zeroflag,rmsflag) - plot average with confidence interval</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [rms,sd,all]=nt_bsrms(x,N)</a>
+0002 <span class="comment">%[rms,sd,all]=nt_bsrms(x,N) - calculate rms, estimate sd using bootstrap</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  rms: rms over second dimension of x</span>
+0005 <span class="comment">%  sd: standard deviation of rms calculated by bootstrap</span>
+0006 <span class="comment">%  all: matrix of all trials</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%  x: matrix of observations (time X repetitions)</span>
+0009 <span class="comment">%  N: number of bootstrap trials [default: 100]</span>
+0010 
+0011 <span class="keyword">if</span> nargin &lt;2; N=100; <span class="keyword">end</span>
+0012 
+0013 <span class="keyword">if</span> ndims(x)&gt;2; error(<span class="string">'data must be at most 2D'</span>); <span class="keyword">end</span>
+0014 
+0015 [m,n]=size(x);
+0016 all=zeros(m,N);
+0017 <span class="keyword">for</span> k=1:N
+0018     idx=ceil(n*rand(1,n));
+0019     all(:,k)=sqrt(mean(x(:,idx).^2,2));
+0020 <span class="keyword">end</span>
+0021 
+0022 rms=sqrt(mean(x.^2,2));
+0023 sd=sqrt(mean((all-repmat(rms,1,N)).^2,2));
+0024 
+0025</pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

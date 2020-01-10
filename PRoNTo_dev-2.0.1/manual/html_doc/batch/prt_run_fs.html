@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_run_fs</title>
+  <meta name="keywords" content="prt_run_fs">
+  <meta name="description" content="PRONTO job execution function">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_run_fs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_run_fs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>PRONTO job execution function</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_run_fs(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PRONTO job execution function
+ takes a harvested job data structure and rearrange data into &quot;proper&quot;
+ data structure, then save do what it has to do...
+ Here simply the harvested job structure in a mat file.
+
+ INPUT
+   job    - harvested job data structure (see matlabbatch help)
+
+ OUTPUT
+   out    - filename of saved data structure.
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_fs.html" class="code" title="function fs = prt_cfg_fs">prt_cfg_fs</a>	Data & design configuration file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_run_fs(varargin)</a>
+0002 <span class="comment">% PRONTO job execution function</span>
+0003 <span class="comment">% takes a harvested job data structure and rearrange data into &quot;proper&quot;</span>
+0004 <span class="comment">% data structure, then save do what it has to do...</span>
+0005 <span class="comment">% Here simply the harvested job structure in a mat file.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% INPUT</span>
+0008 <span class="comment">%   job    - harvested job data structure (see matlabbatch help)</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% OUTPUT</span>
+0011 <span class="comment">%   out    - filename of saved data structure.</span>
+0012 <span class="comment">%__________________________________________________________________________</span>
+0013 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0014 
+0015 <span class="comment">% Written by A Marquand and J Schrouff</span>
+0016 <span class="comment">% $Id$</span>
+0017 
+0018 <span class="comment">% Job variable</span>
+0019 <span class="comment">% -------------------------------------------------------------------------</span>
+0020 job   = varargin{1};
+0021 fname = char(job.infile);
+0022 <span class="keyword">if</span> exist(<span class="string">'PRT'</span>,<span class="string">'var'</span>)
+0023     clear PRT
+0024 <span class="keyword">end</span>
+0025 load(fname);
+0026 fs_name = job.k_file;
+0027 
+0028 <span class="comment">% Check for multimodal MKL flag</span>
+0029 <span class="keyword">if</span> isfield(job, <span class="string">'flag_mm'</span>)
+0030     flag_mm = job.flag_mm;
+0031 <span class="keyword">else</span>
+0032     flag_mm = 0;
+0033 <span class="keyword">end</span>
+0034 
+0035 mod      = struct();
+0036 allmod   = {PRT.masks(:).mod_name};
+0037 modchos  = {job.modality(:).mod_name};
+0038 <span class="comment">% maskchos = {job.mask(:).mod_name};</span>
+0039 maskchos = {job.modality(:).mod_name};
+0040 
+0041 <span class="keyword">if</span> ~isempty(setdiff(modchos,allmod))
+0042     error([<span class="string">'Couldn''t find modality &quot;'</span>,cell2mat(modchos),<span class="string">'&quot; in PRT.mat'</span>]);
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">for</span> i=1:length(PRT.masks)
+0046     <span class="keyword">if</span> any(strcmpi(modchos,allmod{i}))
+0047         mod(i).mod_name=allmod{i};
+0048         ind=find(strcmpi(modchos,allmod{i}));
+0049         
+0050         <span class="comment">%mod(i).detrend=job.modality(ind).detrend;</span>
+0051         <span class="comment">%mod(i).param_dt=job.modality(ind).param_dt;</span>
+0052         <span class="keyword">if</span> isfield(job.modality(ind).detrend,<span class="string">'linear_dt'</span>)
+0053             mod(i).detrend=1;
+0054             mod(i).param_dt=job.modality(ind).detrend.linear_dt.paramPoly_dt;
+0055         <span class="keyword">elseif</span> isfield(job.modality(ind).detrend,<span class="string">'no_dt'</span>)
+0056             mod(i).detrend=0;
+0057             mod(i).param_dt=[];
+0058         <span class="keyword">else</span>
+0059             mod(i).detrend=2;
+0060             mod(i).param_dt=job.modality(ind).detrend.dct_dt.param_dt;
+0061         <span class="keyword">end</span>        
+0062         
+0063         <span class="keyword">if</span> isfield(job.modality(ind).normalise,<span class="string">'no_gms'</span>)
+0064             mod(i).normalise = 0;
+0065             mod(i).matnorm = [];
+0066         <span class="keyword">elseif</span> isfield(job.modality(ind).normalise,<span class="string">'mat_gms'</span>)
+0067             mod(i).normalise=2;
+0068             mod(i).matnorm = char(job.modality(ind).normalise.mat_gms);
+0069         <span class="keyword">end</span>
+0070         
+0071         <span class="keyword">if</span> isfield(job.modality(ind).conditions,<span class="string">'all_cond'</span>)
+0072             mod(i).mode=<span class="string">'all_cond'</span>;
+0073         <span class="keyword">elseif</span> isfield(job.modality(ind).conditions,<span class="string">'all_scans'</span>)
+0074             mod(i).mode=<span class="string">'all_scans'</span>;
+0075         <span class="keyword">else</span>
+0076             error(<span class="string">'Wrong mode selected: choose either all scans or all conditions'</span>)
+0077         <span class="keyword">end</span>            
+0078         indm=find(strcmpi(maskchos,allmod{i}));
+0079 <span class="comment">%         if isempty(indm)</span>
+0080 <span class="comment">%             error(['No mask selected for ',allmod{i}])</span>
+0081 <span class="comment">%         else</span>
+0082 <span class="comment">%             mod(i).mask=char(job.modality(indm).fmask);</span>
+0083 <span class="comment">%         end</span>
+0084         <span class="keyword">if</span> isfield(job.modality(indm).voxels,<span class="string">'fmask'</span>)
+0085             mod(i).mask = char(job.modality(indm).voxels.fmask);
+0086         <span class="keyword">else</span>
+0087             mod(i).mask = [];
+0088         <span class="keyword">end</span>
+0089         
+0090         <span class="keyword">if</span> isfield(job.modality(ind),<span class="string">'atlasroi'</span>)
+0091             mod(i).atlasroi = job.modality(ind).atlasroi{1};
+0092             <span class="keyword">if</span> ~isempty(mod(i).atlasroi)
+0093                 mod(i).multroi = 1;
+0094             <span class="keyword">else</span>
+0095                 mod(i).multroi = 0;
+0096             <span class="keyword">end</span>
+0097         <span class="keyword">else</span>
+0098             mod(i).multroi = 0;
+0099         <span class="keyword">end</span>
+0100         
+0101     <span class="keyword">else</span>
+0102         mod(i).mod_name=[];<span class="comment">%allmod{i};</span>
+0103         mod(i).detrend=nan;
+0104         mod(i).mode=nan;
+0105         mod(i).mask=[];
+0106     <span class="keyword">end</span>
+0107 <span class="keyword">end</span>
+0108 
+0109 input = struct( <span class="keyword">...</span>
+0110             <span class="string">'fname'</span>,fname, <span class="keyword">...</span>
+0111             <span class="string">'fs_name'</span>,fs_name, <span class="keyword">...</span>
+0112             <span class="string">'mod'</span>,mod, <span class="keyword">...</span>
+0113             <span class="string">'flag_mm'</span>, flag_mm);
+0114     
+0115 prt_fs(PRT,input);
+0116 
+0117 out.fname{1} = fname;
+0118 out.fs_name  = fs_name;
+0119 disp(<span class="string">'Done.'</span>)
+0120 <span class="keyword">end</span>
+0121 
+0122 
+0123 
+0124 
+0125</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_machine</title>
+  <meta name="keywords" content="prt_machine">
+  <meta name="description" content="Run machine function for classification or regression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">machines</a> &gt; prt_machine.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./machines&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_machine
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Run machine function for classification or regression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function output = prt_machine(d,m) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Run machine function for classification or regression
+ FORMAT output = prt_machine(d,m)
+ Inputs:
+   d            - structure with information about the data, with fields:
+    Mandatory fields:
+    .train      - training data (cell array of matrices of row vectors,
+                  each [Ntr x D]). each matrix contains one representation
+                  of the data. This is useful for approaches such as
+                  multiple kernel learning.
+    .test       - testing data  (cell array of matrices row vectors, each
+                  [Nte x D])
+    .tr_targets - training labels (for classification) or values (for
+                  regression) (column vector, [Ntr x 1])
+    .use_kernel - flag, is data in form of kernel matrices (true) or in 
+                  form of features (false)
+    Optional fields: the machine is respnsible for dealing with this
+                  optional fields (e.g. d.testcov)
+   m            - structure with information about the classification or
+                  regression machine to use, with fields:
+      .function - function for classification or regression (string)
+      .args     - function arguments (either a string, a matrix, or a
+                  struct). This is specific to each machine, e.g. for
+                  an L2-norm linear SVM this could be the C parameter
+ Output:
+    output      - output of machine (struct).
+       Mandatory fields:
+       .predictions - predictions of classification or regression
+                      [Nte x D]
+       Optional fields: the machine is responsible for returning
+       parameters of interest. For exemple for an SVM this could be the
+       number of support vector used in the hyperplane weights computation
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function out = prt_ismatrix(A)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function output = prt_machine(d,m)</a>
+0002 <span class="comment">% Run machine function for classification or regression</span>
+0003 <span class="comment">% FORMAT output = prt_machine(d,m)</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%   d            - structure with information about the data, with fields:</span>
+0006 <span class="comment">%    Mandatory fields:</span>
+0007 <span class="comment">%    .train      - training data (cell array of matrices of row vectors,</span>
+0008 <span class="comment">%                  each [Ntr x D]). each matrix contains one representation</span>
+0009 <span class="comment">%                  of the data. This is useful for approaches such as</span>
+0010 <span class="comment">%                  multiple kernel learning.</span>
+0011 <span class="comment">%    .test       - testing data  (cell array of matrices row vectors, each</span>
+0012 <span class="comment">%                  [Nte x D])</span>
+0013 <span class="comment">%    .tr_targets - training labels (for classification) or values (for</span>
+0014 <span class="comment">%                  regression) (column vector, [Ntr x 1])</span>
+0015 <span class="comment">%    .use_kernel - flag, is data in form of kernel matrices (true) or in</span>
+0016 <span class="comment">%                  form of features (false)</span>
+0017 <span class="comment">%    Optional fields: the machine is respnsible for dealing with this</span>
+0018 <span class="comment">%                  optional fields (e.g. d.testcov)</span>
+0019 <span class="comment">%   m            - structure with information about the classification or</span>
+0020 <span class="comment">%                  regression machine to use, with fields:</span>
+0021 <span class="comment">%      .function - function for classification or regression (string)</span>
+0022 <span class="comment">%      .args     - function arguments (either a string, a matrix, or a</span>
+0023 <span class="comment">%                  struct). This is specific to each machine, e.g. for</span>
+0024 <span class="comment">%                  an L2-norm linear SVM this could be the C parameter</span>
+0025 <span class="comment">% Output:</span>
+0026 <span class="comment">%    output      - output of machine (struct).</span>
+0027 <span class="comment">%       Mandatory fields:</span>
+0028 <span class="comment">%       .predictions - predictions of classification or regression</span>
+0029 <span class="comment">%                      [Nte x D]</span>
+0030 <span class="comment">%       Optional fields: the machine is responsible for returning</span>
+0031 <span class="comment">%       parameters of interest. For exemple for an SVM this could be the</span>
+0032 <span class="comment">%       number of support vector used in the hyperplane weights computation</span>
+0033 <span class="comment">%__________________________________________________________________________</span>
+0034 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0035 
+0036 <span class="comment">% Written by M.J.Rosa and J.Richiardi</span>
+0037 <span class="comment">% $Id$</span>
+0038 
+0039 <span class="comment">% TODO: make tr_targets a cell array (?)</span>
+0040 <span class="comment">% TODO: fix 80-cols limit in source code</span>
+0041 <span class="comment">% TODO: Multi-kernel learning</span>
+0042 
+0043 SANITYCHECK = true; <span class="comment">% can turn off for &quot;speed&quot;</span>
+0044 
+0045 <span class="comment">%% INPUT CHECKS</span>
+0046 <span class="comment">%--------------------------------------------------------------------------</span>
+0047 fnch   = str2func(m.function);
+0048 <span class="keyword">if</span> SANITYCHECK==true
+0049     <span class="comment">% Check machine struct properties</span>
+0050     <span class="keyword">if</span> ~isempty(m)
+0051         <span class="keyword">if</span> isstruct(m)
+0052             <span class="keyword">if</span> isfield(m,<span class="string">'function'</span>)
+0053                 <span class="comment">% TODO: This case maybe needs more cautious handling</span>
+0054                 <span class="keyword">if</span> ~exist(m.function,<span class="string">'file'</span>)
+0055                     error(<span class="string">'prt_machine:machineFunctionFileNotFound'</span>,<span class="keyword">...</span>
+0056                         [<span class="string">'Error: %s function could not be found!'</span>],<span class="keyword">...</span>
+0057                         m.function);
+0058                 <span class="keyword">end</span>
+0059             <span class="keyword">else</span>
+0060                 error(<span class="string">'prt_machine:machineFunctionFieldNotFound'</span>,<span class="keyword">...</span>
+0061                     [<span class="string">'Error: machine structure should contain'</span><span class="keyword">...</span>
+0062                     <span class="string">' ''.function'' field!'</span>]);
+0063             <span class="keyword">end</span>
+0064             <span class="keyword">if</span> ~isfield(m,<span class="string">'args'</span>)
+0065                 error(<span class="string">'prt_machine:argsFieldNotFound'</span>,<span class="keyword">...</span>
+0066                     [<span class="string">'Error: machine structure should contain'</span> <span class="keyword">...</span>
+0067                     <span class="string">' ''.args'' field!'</span>]);
+0068             <span class="keyword">end</span>
+0069         <span class="keyword">else</span>
+0070             error(<span class="string">'prt_machine:machineNotStruct'</span>,<span class="keyword">...</span>
+0071                 <span class="string">'Error: machine should be a structure!'</span>);
+0072         <span class="keyword">end</span>
+0073     <span class="keyword">else</span>
+0074         error(<span class="string">'prt_machine:machineStructEmpty'</span>,<span class="keyword">...</span>
+0075             <span class="string">'Error: ''machine'' struct cannot be empty!'</span>);
+0076     <span class="keyword">end</span>
+0077     
+0078     <span class="comment">%----------------------------------------------------------------------</span>
+0079     <span class="comment">% Check data struct properties</span>
+0080     <span class="keyword">if</span> ~isempty(d)
+0081         <span class="comment">% 1: BASIC: check all mandatory fields exist so we can relax later</span>
+0082         <span class="keyword">if</span> ~isfield(d,<span class="string">'train'</span>)
+0083             error(<span class="string">'prt_machine:missingField_train'</span>,<span class="keyword">...</span>
+0084                 [<span class="string">'Error: ''data'' struct must contain a ''train'' '</span><span class="keyword">...</span>
+0085                 <span class="string">' field!'</span>]);
+0086         <span class="keyword">end</span>
+0087         <span class="keyword">if</span> ~isfield(d,<span class="string">'test'</span>)
+0088             error(<span class="string">'prt_machine:missingField_test'</span>,<span class="keyword">...</span>
+0089                 [<span class="string">'Error: ''data'' struct must contain a ''test'' '</span><span class="keyword">...</span>
+0090                 <span class="string">' field!'</span>]);
+0091         <span class="keyword">end</span>
+0092         <span class="keyword">if</span> ~isfield(d,<span class="string">'tr_targets'</span>)
+0093             error(<span class="string">'prt_machine:missingField_tr_targets'</span>,<span class="keyword">...</span>
+0094                 [<span class="string">'Error: ''data'' struct must contain a ''tr_targets'' '</span><span class="keyword">...</span>
+0095                 <span class="string">' field!'</span>]);
+0096         <span class="keyword">end</span>
+0097         <span class="keyword">if</span> ~isfield(d,<span class="string">'use_kernel'</span>)
+0098             error(<span class="string">'prt_machine:missingField_use_kernel'</span>,<span class="keyword">...</span>
+0099                 [<span class="string">'Error: ''data'' struct must contain a ''use_kernel'' '</span><span class="keyword">...</span>
+0100                 <span class="string">' field!'</span>]);
+0101         <span class="keyword">end</span>
+0102         <span class="keyword">if</span> ~isfield(d,<span class="string">'pred_type'</span>)
+0103             error(<span class="string">'prt_machine:missingField_pred_type'</span>,<span class="keyword">...</span>
+0104                 [<span class="string">'Error: ''data'' struct must contain a ''pred_type'' '</span><span class="keyword">...</span>
+0105                 <span class="string">' field!'</span>]);
+0106         <span class="keyword">end</span>
+0107         
+0108         
+0109         <span class="comment">% 2: BASIC: check datatype of train/test sets</span>
+0110         <span class="keyword">if</span> isempty(d.train) || isempty(d.test),
+0111             error(<span class="string">'prt_machine:TrAndTeEmpty'</span>,<span class="keyword">...</span>
+0112                 <span class="string">'Error: training and testing data cannot be empty!'</span>);
+0113         <span class="keyword">else</span>
+0114             <span class="keyword">if</span> ~iscell(d.train) || ~iscell(d.test),
+0115                 error(<span class="string">'prt_machine:TrAndTeEmpty'</span>,<span class="keyword">...</span>
+0116                     <span class="string">'Error: training and testing data should be cell arrays!'</span>);
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">end</span>
+0119         
+0120         <span class="comment">% 3: BASIC: check datatypes of labels</span>
+0121         <span class="keyword">if</span> ~isempty(d.tr_targets)
+0122             <span class="keyword">if</span> isvector(d.tr_targets)
+0123                 <span class="comment">% force targets to column vectors</span>
+0124                 d.tr_targets   = d.tr_targets(:);
+0125                 Ntrain_lbs = length(d.tr_targets);
+0126             <span class="keyword">else</span>
+0127                 error(<span class="string">'prt_machine:trainingLabelsNotVector'</span>,<span class="keyword">...</span>
+0128                     <span class="string">'Error: training labels should be a vector!'</span>);
+0129             <span class="keyword">end</span>
+0130         <span class="keyword">else</span>
+0131             error(<span class="string">'prt_machine:trainingLabelsEmpty'</span>,<span class="keyword">...</span>
+0132                 <span class="string">'Error: training labels cannot be empty!'</span>);
+0133         <span class="keyword">end</span>
+0134         
+0135         <span class="comment">% 4: Check data properties (over cells)</span>
+0136         Nk_train   = length(d.train);
+0137         
+0138         <span class="comment">% 5: Check if data has more than one cell</span>
+0139         <span class="keyword">if</span> isempty(strfind(char(fnch),<span class="string">'MKL'</span>)) &amp;&amp; Nk_train &gt; 1
+0140             <span class="comment">%Check that if multiple kernels, MKL was selected,</span>
+0141             <span class="comment">%otherwise add the kernels</span>
+0142             tr_tmp = zeros(size(d.train{1}));
+0143             te_tmp = zeros(size(d.test{1}));
+0144             tecov_tmp = zeros(size(d.testcov{1}));
+0145             <span class="keyword">for</span> j=1:Nk_train
+0146                 <span class="keyword">try</span>
+0147                     <span class="comment">%add kernels</span>
+0148                     tp = d.train{j}; <span class="comment">%train set</span>
+0149                     tr_tmp=tr_tmp + tp;
+0150                     tp = d.test{j}; <span class="comment">%test set</span>
+0151                     te_tmp=te_tmp + tp;
+0152                     tp = d.testcov{j}; <span class="comment">%test set covariance matrix for GP</span>
+0153                     tecov_tmp=tecov_tmp + tp;
+0154                 <span class="keyword">catch</span>
+0155                     error(<span class="string">'prt_cv_model:KernelsWithDifferentDimensions'</span>, <span class="keyword">...</span>
+0156                         <span class="string">'Kernels cannot be added since they have different dimensions'</span>)
+0157                 <span class="keyword">end</span>
+0158             <span class="keyword">end</span>
+0159             d.train = {tr_tmp};
+0160             d.test = {te_tmp};
+0161             d.testcov = {tecov_tmp};
+0162             Nk_train = 1;
+0163             clear tr_tmp te_tmp tecov_tmp     
+0164         <span class="keyword">end</span>
+0165         
+0166         <span class="comment">%6: Check validity of machines chosen.(e.g. use SVM to do</span>
+0167         <span class="comment">%regression is not valid</span>
+0168         <span class="keyword">if</span>  strcmp(d.pred_type,<span class="string">'regression'</span>) 
+0169             <span class="keyword">if</span> ~any(strcmp(m.function,{<span class="string">'prt_machine_krr'</span>,<span class="string">'prt_machine_rvr'</span>,<span class="keyword">...</span>
+0170                                        <span class="string">'prt_machine_gpml'</span>,<span class="string">'prt_machine_gpr'</span>, <span class="string">'prt_machine_sMKL_reg'</span>}))
+0171                 error(<span class="string">'prt_machine:RgressionMachineSupport'</span>,<span class="keyword">...</span>
+0172                     <span class="string">'Error: Regresion can only chose use KRR or RVR machines'</span>);
+0173             <span class="keyword">end</span>
+0174         <span class="keyword">end</span>
+0175         
+0176         <span class="comment">% 7: Check datasets properties (within cells)</span>
+0177         <span class="keyword">for</span> k = 1:Nk_train,
+0178             <span class="keyword">if</span> ~isempty(d.train{k}) &amp;&amp; ~isempty(d.test{k})
+0179                 <span class="keyword">if</span> (~<a href="#_sub1" class="code" title="subfunction out = prt_ismatrix(A)">prt_ismatrix</a>(d.train{k}) &amp;&amp; ~isvector(d.train{k}) ) || <span class="keyword">...</span>
+0180                         (~<a href="#_sub1" class="code" title="subfunction out = prt_ismatrix(A)">prt_ismatrix</a>(d.test{k}) &amp;&amp; ~isvector(d.test{k}) )
+0181                     error(<span class="string">'prt_machine:TrAndTeNotMatrices'</span>,<span class="keyword">...</span>
+0182                         [<span class="string">'Error: training and testing datasets should '</span> <span class="keyword">...</span>
+0183                         <span class="string">' be either matrices or vectors!'</span>]);
+0184                 <span class="keyword">end</span>
+0185             <span class="keyword">else</span>
+0186                 error(<span class="string">'prt_machine:TrAndTeEmpty'</span>,<span class="keyword">...</span>
+0187                     <span class="string">'Error: training and testing datasest cannot be empty!'</span>);
+0188             <span class="keyword">end</span>
+0189             <span class="comment">% check dimensions</span>
+0190             [Ntrain Dtrain] = size(d.train{k});
+0191             [Ntest, Dtest]  = size(d.test{k});
+0192             <span class="comment">% a: feature space dimension should be equal</span>
+0193             <span class="keyword">if</span> ~(Dtrain==Dtest)
+0194                 error(<span class="string">'prt_machine:DtrNotEqDte'</span>,[<span class="string">'Error: Training and testing '</span><span class="keyword">...</span>
+0195                     <span class="string">'dimensions should match, but Dtrain=%d and Dtest=%d for '</span><span class="keyword">...</span>
+0196                     <span class="string">'dataset %d!'</span>],Dtrain,Dtest,k);
+0197             <span class="keyword">end</span>
+0198             <span class="comment">% b: check we have as many training labels as examples</span>
+0199             <span class="keyword">if</span> ~(Ntrain_lbs==Ntrain)
+0200                 error(<span class="string">'prt_machine:NtrlbsNotEqNtr'</span>,[<span class="string">'Error: Number of training '</span><span class="keyword">...</span>
+0201                     <span class="string">'examples and training labels should match, but Ntrain_lbs=%d '</span><span class="keyword">...</span>
+0202                     <span class="string">'and Ntrain=%d for dataset %d!'</span>],Ntrain_lbs,Ntrain,k);
+0203             <span class="keyword">end</span>
+0204             <span class="comment">% c: if kernel check for kernel properties</span>
+0205             <span class="keyword">if</span> d.use_kernel
+0206                 <span class="keyword">if</span> ~(Ntrain==Dtrain)
+0207                     error(<span class="string">'prt_machine:NtrainNotEqDtrain'</span>,[<span class="string">'Error: Training '</span><span class="keyword">...</span>
+0208                         <span class="string">'dimensions should match, but Ntr=%d and Dtr=%d for '</span><span class="keyword">...</span>
+0209                         <span class="string">'dataset %d!'</span>],Ntrain,Dtrain,k);
+0210                 <span class="keyword">end</span>
+0211                 <span class="keyword">if</span> ~(Dtest==Ntrain)
+0212                     error(<span class="string">'prt_machine:DtestNotEqNtrain'</span>,[<span class="string">'Error: Testing '</span><span class="keyword">...</span>
+0213                         <span class="string">'dimensions should match, but Dte=%d and Ntr=%d for '</span><span class="keyword">...</span>
+0214                         <span class="string">'dataset %d!'</span>],Dtest,Ntrain,k);
+0215                 <span class="keyword">end</span>    
+0216             <span class="keyword">end</span>
+0217         <span class="keyword">end</span>
+0218     <span class="keyword">else</span>
+0219         error(<span class="string">'prt_machine:dataStructEmpty'</span>,<span class="keyword">...</span>
+0220             <span class="string">'Error: data struct cannot be empty!'</span>);
+0221     <span class="keyword">end</span>
+0222 <span class="keyword">end</span> <span class="comment">% SANITYCHECK</span>
+0223 
+0224 <span class="comment">%% Run model</span>
+0225 <span class="comment">%--------------------------------------------------------------------------</span>
+0226 <span class="keyword">try</span>
+0227     output = fnch(d,m.args);
+0228 <span class="keyword">catch</span>
+0229     err = lasterror;
+0230     err_ID=lower(err.identifier);
+0231     err_libProblem = strfind(err_ID,<span class="string">'libnotfound'</span>);
+0232     err_argsProblem = strfind(err_ID,<span class="string">'argsproblem'</span>);
+0233     disp(<span class="string">'prt_machine: machine did not run sucessfully.'</span>);
+0234     <span class="keyword">if</span> ~isempty(err_libProblem)
+0235         error(<span class="string">'prt_machine:libNotFound'</span>,[<span class="string">'Error: the library for '</span><span class="keyword">...</span>
+0236             <span class="string">'machine %s could not be found on your path. '</span>],m.function);
+0237     <span class="keyword">elseif</span> ~isempty(err_argsProblem)
+0238         disp([<span class="string">'Error: the arguments supplied '</span><span class="keyword">...</span>
+0239             <span class="string">' are invalid. '</span> <span class="keyword">...</span>
+0240             <span class="string">'SOLUTION: Please follow the advice given by the machine.'</span>]);
+0241         error(<span class="string">'prt_machine:argsProblem'</span>,<span class="keyword">...</span>
+0242             <span class="string">'Error running machine %s: %s %s'</span>, <span class="keyword">...</span>
+0243             m.function,err.identifier,err.message);
+0244     <span class="keyword">else</span>
+0245         <span class="comment">% we don't know what more to do here, pass it up</span>
+0246         disp([<span class="string">'SOLUTION: Please read the message below and attempt to'</span> <span class="keyword">...</span>
+0247             <span class="string">' correct the problem, or ask the developpers for '</span> <span class="keyword">...</span>
+0248             <span class="string">'assistance by copy-pasting all messages and explaining the'</span><span class="keyword">...</span>
+0249             <span class="string">' exact steps that led to the problem.'</span>]);
+0250         disp([<span class="string">'These kinds of issues are typically caused by Matlab '</span><span class="keyword">...</span>
+0251             <span class="string">'path problems.'</span>]);
+0252         <span class="keyword">for</span> en=numel(err.stack):-1:1
+0253             e=err.stack(en);
+0254             fprintf(<span class="string">'%d : function [%s] in file [%s] at line [%d]\n'</span>,<span class="keyword">...</span>
+0255                 en,e.name,e.file,e.line);
+0256         <span class="keyword">end</span>
+0257         error(<span class="string">'prt_machine:otherProblem'</span>,<span class="keyword">...</span>
+0258             <span class="string">'Error running machine %s: %s %s'</span>, <span class="keyword">...</span>
+0259             m.function,err.identifier,err.message);
+0260     <span class="keyword">end</span>
+0261 <span class="keyword">end</span>
+0262 
+0263 <span class="comment">%% OUTPUT CHECKS</span>
+0264 <span class="comment">%--------------------------------------------------------------------------</span>
+0265 <span class="keyword">if</span> SANITYCHECK==true
+0266     
+0267     <span class="comment">% Check output properties</span>
+0268     <span class="keyword">if</span> ~isfield(output,<span class="string">'predictions'</span>);
+0269         error(<span class="string">'prt_machine:outputNoPredictions'</span>,[<span class="string">'Output of machine should '</span><span class="keyword">...</span>
+0270             <span class="string">'contain the field ''.predictions''.'</span>]);
+0271     <span class="keyword">else</span>
+0272         <span class="comment">% FIXME: multiple kernels / feature representations is unsupported</span>
+0273         <span class="comment">% here</span>
+0274         <span class="comment">% [afm] removed to test glm approach</span>
+0275         <span class="comment">%if (size(output.predictions,1)~= Ntest)</span>
+0276         <span class="comment">%    error('prt_machine:outputNpredictionsNotEqNte',['Error: Number '...</span>
+0277         <span class="comment">%        'of predictions output and number of test examples should '...</span>
+0278         <span class="comment">%        'match, but Npre=%d and Nte=%d !'],...</span>
+0279         <span class="comment">%        size(output.predictions,1),Ntest);</span>
+0280         <span class="comment">%end</span>
+0281     <span class="keyword">end</span>
+0282     
+0283 <span class="keyword">end</span> <span class="comment">% SANITYCHECK on output</span>
+0284 
+0285 <span class="keyword">end</span>
+0286 
+0287 <span class="comment">%% local functions</span>
+0288 <a name="_sub1" href="#_subfunctions" class="code">function out = prt_ismatrix(A)</a>
+0289 <span class="comment">% ismatrix was not a built-in in Matlab 7.1, so do a homebrew</span>
+0290 <span class="comment">% implementation (based on Dan Vimont's Matlab libs at</span>
+0291 <span class="comment">% http://www.aos.wisc.edu/~dvimont/matlab but with short-circuit AND for</span>
+0292 <span class="comment">% &quot;speed&quot;)</span>
+0293 out=(ndims(A)==2) &amp;&amp; (min(size(A)) ~= 1); <span class="comment">% enable stricter check - a struct array should NOT pass.</span>
+0294 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

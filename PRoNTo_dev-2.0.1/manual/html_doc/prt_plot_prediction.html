@@ -1,0 +1,225 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_plot_prediction</title>
+  <meta name="keywords" content="prt_plot_prediction">
+  <meta name="description" content="FORMAT prt_plot_prediction(PRT, model, fold, marker_size, axes_handle)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_plot_prediction.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_plot_prediction
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>FORMAT prt_plot_prediction(PRT, model, fold, marker_size, axes_handle)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt_plot_prediction(PRT, model, fold, marker_size, axes_handle) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FORMAT prt_plot_prediction(PRT, model, fold, marker_size, axes_handle)
+
+ This function plots the prediction plot that appears on prt_ui_results
+ Inputs:
+       PRT             - data/design/model structure (it needs to contain
+                         at least one estimated model).
+       model           - the number of the model that will be ploted
+       fold            - the number of the fold
+       marker_size     - (Optional) the size of the markers in the plot,
+                         the default is 7
+       axes_handle     - (Optional) axes where the plot will be displayed
+
+ Output:
+       None
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_results.html" class="code" title="function varargout = prt_ui_results(varargin)">prt_ui_results</a>	PRT_UI_RESULTS MATLAB code for prt_ui_results.fig</li><li><a href="prt_ui_results_stats.html" class="code" title="function varargout = prt_ui_results_stats(varargin)">prt_ui_results_stats</a>	PRT_UI_RESULTS_STATS MATLAB code for prt_ui_results_stats.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt_plot_prediction(PRT, model, fold, marker_size, axes_handle)</a>
+0002 <span class="comment">% FORMAT prt_plot_prediction(PRT, model, fold, marker_size, axes_handle)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function plots the prediction plot that appears on prt_ui_results</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%       PRT             - data/design/model structure (it needs to contain</span>
+0007 <span class="comment">%                         at least one estimated model).</span>
+0008 <span class="comment">%       model           - the number of the model that will be ploted</span>
+0009 <span class="comment">%       fold            - the number of the fold</span>
+0010 <span class="comment">%       marker_size     - (Optional) the size of the markers in the plot,</span>
+0011 <span class="comment">%                         the default is 7</span>
+0012 <span class="comment">%       axes_handle     - (Optional) axes where the plot will be displayed</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Output:</span>
+0015 <span class="comment">%       None</span>
+0016 <span class="comment">%__________________________________________________________________________</span>
+0017 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0018 
+0019 <span class="comment">% Written by M. J. Rosa</span>
+0020 <span class="comment">% $Id: prt_plot_prediction.m 706 2013-06-07 14:33:34Z cphillip $</span>
+0021 
+0022 
+0023 nfold = length(PRT.model(model).output.fold);
+0024 bcl = 0;
+0025 
+0026 
+0027 fVals   = [];
+0028 targets = [];
+0029 
+0030 <span class="keyword">for</span> f = 1:nfold,
+0031     targets = [targets;PRT.model(model).output.fold(f).targets];
+0032     <span class="keyword">if</span> isfield(PRT.model(model).output.fold(f),<span class="string">'func_val'</span>)
+0033         fVvals_exist = 1;
+0034         fVals  = [fVals;PRT.model(model).output.fold(f).func_val];
+0035     <span class="keyword">else</span>
+0036         fVvals_exist = 0;
+0037         fVals  = [fVals;<span class="keyword">...</span>
+0038             PRT.model(model).output.fold(f).predictions];
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">end</span>
+0041 tarmax = max(targets);
+0042 <span class="keyword">if</span> fold==1
+0043     targpos = targets == 1;
+0044     <span class="keyword">if</span> length(find(targpos))~=length(targets) &amp;&amp; ~isempty(find(targpos))
+0045         <span class="comment">%both classes are present across all folds (for class labels)</span>
+0046         bcl = 1;
+0047     <span class="keyword">end</span>
+0048 <span class="keyword">end</span>
+0049     
+0050 <span class="keyword">if</span> fold&gt;1
+0051     <span class="comment">% if folds wise</span>
+0052     targets = PRT.model(model).output.fold(fold-1).targets;
+0053     targpos = targets == tarmax;
+0054     <span class="keyword">if</span> isfield(PRT.model(model).output.fold(fold-1),<span class="string">'func_val'</span>)
+0055         fVals  = PRT.model(model).output.fold(fold-1).func_val;
+0056         fVvals_exist = 1;
+0057     <span class="keyword">else</span>
+0058         fVvals_exist = 0;
+0059         fVals  = PRT.model(model).output.fold(fold-1).predictions;
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 
+0064 <span class="comment">%Defined the marker size, if no value is given</span>
+0065 <span class="keyword">if</span> ~exist(<span class="string">'marker_size'</span>, <span class="string">'var'</span>)
+0066     marker_size = 7;
+0067 <span class="keyword">end</span>
+0068 <span class="comment">%If no axes_handle is given, create a new window</span>
+0069 <span class="keyword">if</span> ~exist(<span class="string">'axes_handle'</span>, <span class="string">'var'</span>)
+0070     figure;
+0071     axes_handle = axes;
+0072 <span class="keyword">else</span>
+0073     set(axes_handle, <span class="string">'XScale'</span>,<span class="string">'linear'</span>);
+0074 <span class="keyword">end</span>
+0075 
+0076 cla(axes_handle, <span class="string">'reset'</span>);
+0077 rotate3d off
+0078 colorbar(<span class="string">'peer'</span>,axes_handle,<span class="string">'off'</span>)
+0079 set(axes_handle,<span class="string">'Color'</span>,[1,1,1])
+0080 <span class="comment">% predictions</span>
+0081 <span class="keyword">if</span> fVvals_exist
+0082     <span class="keyword">if</span> fold == 1
+0083         foldlabels = 1:nfold;
+0084         <span class="keyword">for</span> f = 2:nfold+1
+0085             targets = PRT.model(model).output.fold(f-1).targets;
+0086             targpos = targets == tarmax; <span class="comment">%both for SVM and GP, linear</span>
+0087             fVals   = PRT.model(model).output.fold(f-1).func_val;
+0088             func_valsc1 = fVals(targpos);
+0089             func_valsc2 = fVals(~targpos);
+0090             yc1 = (f-1)*ones(length(func_valsc1),1);
+0091             yc2 = (f-1)*ones(length(func_valsc2),1);
+0092             <span class="keyword">if</span> f==2
+0093                 maxfv = max(abs([func_valsc1;func_valsc2]));
+0094             <span class="keyword">else</span>
+0095                 maxtmp = max(abs([func_valsc1;func_valsc2]));
+0096                 <span class="keyword">if</span> maxfv &lt; maxtmp, maxfv = maxtmp; <span class="keyword">end</span>
+0097             <span class="keyword">end</span>
+0098             pl1 = plot(axes_handle,func_valsc1,yc1,<span class="string">'kx'</span>,<span class="string">'MarkerSize'</span>,marker_size);
+0099             hold(axes_handle,<span class="string">'on'</span>);
+0100             <span class="keyword">if</span> ~isempty(yc1), isyc1 = 1; plot1 = pl1; <span class="keyword">else</span> isyc1 = 0; <span class="keyword">end</span>
+0101             pl2 = plot(axes_handle,func_valsc2,yc2,<span class="string">'ro'</span>,<span class="string">'MarkerSize'</span>,marker_size);
+0102             hold(axes_handle,<span class="string">'on'</span>);
+0103             <span class="keyword">if</span> ~isempty(yc2), isyc2 = 1; plot2 = pl2; <span class="keyword">else</span> isyc2 = 0; <span class="keyword">end</span>
+0104         <span class="keyword">end</span>
+0105     <span class="keyword">else</span>
+0106         foldlabels  = fold-1;
+0107         func_valsc1 = fVals(targpos);
+0108         func_valsc2 = fVals(~targpos);
+0109         yc1 = (fold-1)*ones(length(func_valsc1),1);
+0110         yc2 = (fold-1)*ones(length(func_valsc2),1);
+0111         maxfv = max(abs([func_valsc1;func_valsc2]));
+0112         pl1 = plot(axes_handle,func_valsc1,yc1,<span class="string">'kx'</span>,<span class="string">'MarkerSize'</span>,marker_size);
+0113         hold(axes_handle,<span class="string">'on'</span>);
+0114         <span class="keyword">if</span> ~isempty(yc1), isyc1 = 1; plot1 = pl1; <span class="keyword">else</span> isyc1 = 0; <span class="keyword">end</span>
+0115         pl2 = plot(axes_handle,func_valsc2,yc2,<span class="string">'ro'</span>,<span class="string">'MarkerSize'</span>,marker_size);
+0116         hold(axes_handle,<span class="string">'on'</span>);
+0117         <span class="keyword">if</span> ~isempty(yc2), isyc2 = 1; plot2 = pl2; <span class="keyword">else</span> isyc2 = 0;  <span class="keyword">end</span>
+0118     <span class="keyword">end</span>
+0119     <span class="comment">% Change the x axis for gaussian process or RT - change in</span>
+0120     <span class="comment">% the future</span>
+0121     y = [0:nfold+1]';
+0122     <span class="keyword">if</span> strcmp(PRT.model(model).input.machine.function,<span class="string">'prt_machine_gpml'</span>);
+0123         x = 0.5*ones(nfold+2,1);
+0124         plot(axes_handle,x,y,<span class="string">'--'</span>,<span class="string">'Color'</span>,[1 1 1]*.6);
+0125         xlim(axes_handle,[0 1]);
+0126     <span class="keyword">elseif</span> strcmp(PRT.model(model).input.machine.function,<span class="string">'prt_machine_RT_bin'</span>)
+0127         <span class="comment">% nothing to do - just leave auto scaling</span>
+0128     <span class="keyword">else</span>
+0129         x = zeros(nfold+2,1);
+0130         plot(axes_handle,x,y,<span class="string">'--'</span>,<span class="string">'Color'</span>,[1 1 1]*.6);
+0131         xlim(axes_handle,[-maxfv-0.5 maxfv+0.5]);
+0132     <span class="keyword">end</span>
+0133     ylim(axes_handle,[0 nfold+1.3]);
+0134     xlabel(axes_handle,<span class="string">'function value'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0135     h=ylabel(axes_handle,<span class="string">'fold'</span>,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0136     set(h,<span class="string">'Rotation'</span>,90)
+0137     
+0138     <span class="comment">%These 2 lines were added. See if it's better to give the class names</span>
+0139     <span class="comment">%as input</span>
+0140     classNames{1} = PRT.model(model).input.class(2).class_name;
+0141     classNames{2} = PRT.model(model).input.class(1).class_name;
+0142     
+0143     
+0144     <span class="keyword">if</span> (isyc1 &amp;&amp; isyc2) || bcl
+0145         legend([plot1,plot2],classNames,<span class="string">'Color'</span>,[1,1,1]);
+0146     <span class="keyword">else</span>
+0147         <span class="keyword">if</span> isyc1
+0148             legend(plot1,classNames{1});
+0149         <span class="keyword">else</span>
+0150             legend(plot2,classNames{2});
+0151         <span class="keyword">end</span>
+0152     <span class="keyword">end</span>
+0153     set(axes_handle,<span class="string">'YTick'</span>,foldlabels)
+0154     hold(axes_handle,<span class="string">'off'</span>);
+0155     set(axes_handle,<span class="string">'Color'</span>,[1,1,1],<span class="string">'Visible'</span>,<span class="string">'on'</span>)
+0156     <span class="comment">%                 axis normal</span>
+0157     <span class="comment">%                 axis xy</span>
+0158     title(axes_handle,<span class="string">''</span>)
+0159 <span class="keyword">else</span>
+0160     set(axes_handle,<span class="string">'Color'</span>,[1,1,1])
+0161     beep
+0162     disp(<span class="string">'No function values to display!'</span>)
+0163 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

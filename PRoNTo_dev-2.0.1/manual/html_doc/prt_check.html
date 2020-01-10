@@ -1,0 +1,424 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_check</title>
+  <meta name="keywords" content="prt_check">
+  <meta name="description" content="Function to automatically test PRoNTo's integrity">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_check.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_check
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to automatically test PRoNTo's integrity</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function ok = prt_check(list_check,dir_root) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to automatically test PRoNTo's integrity
+
+ The goal is to have PRoNTo run through typical analysis and check if the
+ calculations proceed smoothly.
+ This relies on pre-specified 
+ - organisation of data in subdirectories
+ - batches with all the operations, in a .mat file with known location
+ 
+ Data sets considered, in this *specific order*:
+ 1. &quot;Haxby&quot; - Haxby data, single subject, fmri 
+ 2. &quot;IXI&quot;   - IXI data, multi subject, divergence &amp; momentum maps
+ 3. &quot;Faces&quot; - SPM's famous-vs-nonfamous faces data, multi subject.
+
+ See the subfunctions for a detailed description of the tests performed.
+
+ FORMAT ok = prt_check(list_check,dir_root)
+
+ INPUT
+   list_check  - list of data sets to use, [1 2 3] by default
+   dir_root    - root directory of data sets (you'd better set this for
+                 your own HD organization!)
+
+ OUTPUT:
+   ok          - vector of output (1='ok', 0='failed', -1='not tested')
+
+ NOTE:
+ - For a more automatic testing on your own system, then up date the
+   default 'dir_root' variable with the path to the 'PRoNTo_data'
+   directory on your system.
+ - This will close all Matlab windows before relaunching PRoNTo and the
+   matlabbatch system.
+ 
+ WARNING:
+ This version was developped for and is running on **SPM12** 
+
+_______________________________________________________________________
+ Copyright (C) 2012 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_batch.html" class="code" title="function prt_batch">prt_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ok = check_Haxby(rdata_dir)</a></li><li><a href="#_sub2" class="code">function ok = check_IXI(rdata_dir)</a></li><li><a href="#_sub3" class="code">function ok = check_FvsNF(rdata_dir)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ok = prt_check(list_check,dir_root)</a>
+0002 <span class="comment">% Function to automatically test PRoNTo's integrity</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% The goal is to have PRoNTo run through typical analysis and check if the</span>
+0005 <span class="comment">% calculations proceed smoothly.</span>
+0006 <span class="comment">% This relies on pre-specified</span>
+0007 <span class="comment">% - organisation of data in subdirectories</span>
+0008 <span class="comment">% - batches with all the operations, in a .mat file with known location</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Data sets considered, in this *specific order*:</span>
+0011 <span class="comment">% 1. &quot;Haxby&quot; - Haxby data, single subject, fmri</span>
+0012 <span class="comment">% 2. &quot;IXI&quot;   - IXI data, multi subject, divergence &amp; momentum maps</span>
+0013 <span class="comment">% 3. &quot;Faces&quot; - SPM's famous-vs-nonfamous faces data, multi subject.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See the subfunctions for a detailed description of the tests performed.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% FORMAT ok = prt_check(list_check,dir_root)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% INPUT</span>
+0020 <span class="comment">%   list_check  - list of data sets to use, [1 2 3] by default</span>
+0021 <span class="comment">%   dir_root    - root directory of data sets (you'd better set this for</span>
+0022 <span class="comment">%                 your own HD organization!)</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% OUTPUT:</span>
+0025 <span class="comment">%   ok          - vector of output (1='ok', 0='failed', -1='not tested')</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% NOTE:</span>
+0028 <span class="comment">% - For a more automatic testing on your own system, then up date the</span>
+0029 <span class="comment">%   default 'dir_root' variable with the path to the 'PRoNTo_data'</span>
+0030 <span class="comment">%   directory on your system.</span>
+0031 <span class="comment">% - This will close all Matlab windows before relaunching PRoNTo and the</span>
+0032 <span class="comment">%   matlabbatch system.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% WARNING:</span>
+0035 <span class="comment">% This version was developped for and is running on **SPM12**</span>
+0036 <span class="comment">%</span>
+0037 <span class="comment">%_______________________________________________________________________</span>
+0038 <span class="comment">% Copyright (C) 2012 Machine Learning &amp; Neuroimaging Laboratory</span>
+0039 
+0040 <span class="comment">% Written by Christophe Phillips, CRC, ULg, Belgium.</span>
+0041 <span class="comment">% $Id$</span>
+0042 
+0043 <span class="comment">% Defining the check parameters.</span>
+0044 <span class="comment">% data sets, list to check and root directory</span>
+0045 <span class="comment">%--------------------------------------------</span>
+0046 <span class="comment">% list here the ones you want to check, e.g. 'list_check = 1:3;' for all</span>
+0047 <span class="keyword">if</span> nargin&lt;1, list_check = [1 2 3]; <span class="keyword">end</span>
+0048 <span class="keyword">if</span> nargin&lt;2
+0049      <span class="comment">% adjust with your own data set</span>
+0050     dir_root = <span class="string">'/Users/chrisp/Documents/MATLAB/3_Data/PRoNTo/PRoNTo_data'</span>; 
+0051 <span class="keyword">end</span>
+0052 <span class="keyword">while</span> isempty(dir_root) || ~exist(dir_root,<span class="string">'dir'</span>)
+0053     <span class="comment">% or select the root directories manually</span>
+0054     dir_root = spm_select([1 1],<span class="string">'dir'</span>,<span class="string">'Select root dir for data sets'</span>);
+0055 <span class="keyword">end</span>
+0056 dat_name = {<span class="string">'Haxby'</span> , <span class="string">'IXI '</span> , <span class="string">'Faces'</span>};
+0057 Ndat = numel(dat_name);
+0058 data_dir = cell(Ndat,1);
+0059 <span class="keyword">for</span> ii=1:Ndat
+0060     data_dir{ii} = fullfile(dir_root,deblank(dat_name{ii}));
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="comment">% Clearing Matlab then setting up PRONTO and the batch system</span>
+0064 <span class="comment">%------------------------------------------------------------</span>
+0065  close all
+0066  <a href="prt_batch.html" class="code" title="function prt_batch">prt_batch</a>
+0067  
+0068 <span class="comment">% Going through the various tests</span>
+0069 <span class="comment">%--------------------------------</span>
+0070 ok = zeros(Ndat,1)-1;
+0071 <span class="keyword">for</span> ii=list_check
+0072     <span class="keyword">switch</span> ii
+0073         <span class="keyword">case</span> 1 <span class="comment">% Haxby data</span>
+0074             ok(ii) = <a href="#_sub1" class="code" title="subfunction ok = check_Haxby(rdata_dir)">check_Haxby</a>(data_dir{ii});
+0075         <span class="keyword">case</span> 2 <span class="comment">% IXI data</span>
+0076             ok(ii) = <a href="#_sub2" class="code" title="subfunction ok = check_IXI(rdata_dir)">check_IXI</a>(data_dir{ii});
+0077         <span class="keyword">case</span> 3 <span class="comment">% famous-vs-nonfamous data</span>
+0078             ok(ii) = <a href="#_sub3" class="code" title="subfunction ok = check_FvsNF(rdata_dir)">check_FvsNF</a>(data_dir{ii});
+0079         <span class="keyword">otherwise</span>
+0080             fprintf(1,<span class="string">'\nUNKNOWN DATA SET TO CHECK!\n'</span>) <span class="comment">%#ok&lt;*PRTCAL&gt;</span>
+0081             beep
+0082     <span class="keyword">end</span>
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">% Printing out the results</span>
+0086 <span class="comment">%-------------------------</span>
+0087 fprintf(<span class="string">'\nTesting on data sets:\n'</span>)
+0088 <span class="keyword">for</span> ii=1:Ndat
+0089     <span class="keyword">switch</span> ok(ii)
+0090         <span class="keyword">case</span> -1, msg = <span class="string">'not tested'</span>;
+0091         <span class="keyword">case</span> 0 , msg = <span class="string">'failed'</span>;
+0092         <span class="keyword">case</span> 1 , msg = <span class="string">'passed'</span>;
+0093         <span class="keyword">otherwise</span>, msg = <span class="string">'unknown output flag'</span>;
+0094     <span class="keyword">end</span>
+0095     fprintf(<span class="string">'\t%s\t: %s\n'</span>,dat_name{ii},msg);
+0096 <span class="keyword">end</span>
+0097 
+0098 <span class="keyword">end</span>
+0099 
+0100 <span class="comment">%==========================================================================</span>
+0101 <span class="comment">%% INDIVIDUAL DATA SET CHECKING ROUTINES</span>
+0102 <span class="comment">%==========================================================================</span>
+0103 
+0104 <span class="comment">%% HAXBY data set</span>
+0105 <a name="_sub1" href="#_subfunctions" class="code">function ok = check_Haxby(rdata_dir)</a>
+0106 <span class="comment">%</span>
+0107 <span class="comment">% This batch will go through the following modules, as saved in the</span>
+0108 <span class="comment">% batch_test_HaxbyData.mat file:</span>
+0109 <span class="comment">% - 'File selector' for (1) images, (2) SPM.mat, (3) mask 1st level,</span>
+0110 <span class="comment">%   (4) mask 2nd level, and (5) atlas for ROI</span>
+0111 <span class="comment">% - 'Directory selector' for the root of the data directory</span>
+0112 <span class="comment">% - 'Make directory', create 'test_results' directory at the root of the</span>
+0113 <span class="comment">%   data directory</span>
+0114 <span class="comment">% - 'Data &amp; design' as in manual example with whole brain mask</span>
+0115 <span class="comment">% - 'Feature set', as in manual example, no 2nd level mask</span>
+0116 <span class="comment">% - 'Specify model', use MKL with separate kernel for each ROI, as defined</span>
+0117 <span class="comment">%   in the AAL atlas. And a k-folds CV on blocks (k=4)</span>
+0118 <span class="comment">% - 'Run model' with 1000 permutations</span>
+0119 <span class="comment">% - 'Compute weights' -&gt; create 'mkl_weights' image</span>
+0120 <span class="comment">% - 'Feature set', DCT detrending and a 2nd level mask (fusiform gyrus)</span>
+0121 <span class="comment">% - 'Specify model', multi-GPC Faces vs Houses vs Shoes, LOBO CV</span>
+0122 <span class="comment">% - 'Run model' without any permutation</span>
+0123 <span class="comment">% - 'Compute weights' -&gt; create 'mgpc_weights' image</span>
+0124 
+0125 <span class="comment">% select images, SPM.mat and mask(s)</span>
+0126 d_dir = fullfile(rdata_dir,<span class="string">'fMRI'</span>);
+0127 [img_files] = spm_select(<span class="string">'FPList'</span>,d_dir,<span class="string">'^w.*\.nii$'</span>);
+0128 s_dir = fullfile(rdata_dir,<span class="string">'design'</span>);
+0129 [spm_file] = spm_select(<span class="string">'FPList'</span>,s_dir,<span class="string">'^SPM\.mat$'</span>);
+0130 m_dir = fullfile(rdata_dir,<span class="string">'masks'</span>);
+0131 [msk_file] = spm_select(<span class="string">'FPList'</span>,m_dir,<span class="string">'^.*\.img$'</span>);
+0132 a_dir = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'atlas'</span>);
+0133 [atlas_file] = spm_select(<span class="string">'FPList'</span>,a_dir,<span class="string">'^aal.*\.img$'</span>);
+0134 
+0135 <span class="comment">% get batch file</span>
+0136 job = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'_unitTests'</span>,<span class="string">'batch_test_HaxbyData.mat'</span>);
+0137 
+0138 inputs = cell(6,1);
+0139 inputs{1} = cellstr(img_files);     <span class="comment">% fMRI data</span>
+0140 inputs{2} = cellstr(spm_file);      <span class="comment">% SPM.mat file</span>
+0141 inputs{3} = cellstr(msk_file(2,:)); <span class="comment">% 1st level mask</span>
+0142 inputs{4} = cellstr(msk_file(1,:)); <span class="comment">% 2nd level mask</span>
+0143 inputs{5} = cellstr(atlas_file);    <span class="comment">% ROI atlas</span>
+0144 inputs{6} = {rdata_dir};            <span class="comment">% root directory</span>
+0145 
+0146 ok = 1;
+0147 
+0148 <span class="keyword">try</span>
+0149     job_id = cfg_util(<span class="string">'initjob'</span>, job);
+0150     sts    = cfg_util(<span class="string">'filljob'</span>, job_id, inputs{:});
+0151     <span class="keyword">if</span> sts
+0152         cfg_util(<span class="string">'run'</span>, job_id);
+0153     <span class="keyword">else</span>
+0154         disp(<span class="string">'Job status problem.'</span>)
+0155         ok = 0;
+0156     <span class="keyword">end</span>
+0157     cfg_util(<span class="string">'deljob'</span>, job_id);
+0158 <span class="keyword">catch</span> ME
+0159     cfg_util(<span class="string">'deljob'</span>, job_id);
+0160     disp(ME.message)
+0161     ok = 0;
+0162     <span class="keyword">return</span>;
+0163 <span class="keyword">end</span>
+0164 
+0165 <span class="keyword">end</span>
+0166 
+0167 <span class="comment">%==========================================================================</span>
+0168 <span class="comment">%% IXI data set</span>
+0169 <a name="_sub2" href="#_subfunctions" class="code">function ok = check_IXI(rdata_dir)</a>
+0170 <span class="comment">%</span>
+0171 <span class="comment">% NOTE:</span>
+0172 <span class="comment">% The data set only includes 5 subjects!</span>
+0173 <span class="comment">%</span>
+0174 <span class="comment">% This batch will go through the following modules, as saved in the</span>
+0175 <span class="comment">% batch_test_IXIdata.mat file:</span>
+0176 <span class="comment">% - 'Load Variables from .mat File' 3 times the regression targets for the</span>
+0177 <span class="comment">%   Guys/Hammers/IOP data</span>
+0178 <span class="comment">% - 'File selector' for the 6 sets of images:</span>
+0179 <span class="comment">%       Guys-divergence (g1m1), Guys-momentum (g1m2),</span>
+0180 <span class="comment">%       HammersH-divergence (g2m1), HammersH-momentum (g2m2)</span>
+0181 <span class="comment">%       IOP-divergence (g3m1), IOP-momentum (g3m2)</span>
+0182 <span class="comment">% - 'File selector' for 2 masks: momentum, divergence (could be the same</span>
+0183 <span class="comment">%   file actually and it will be defined so when filling the batch)</span>
+0184 <span class="comment">% - 'Directory selector' for the root of the data directory</span>
+0185 <span class="comment">% - 'Make directory', create 'test_results' directory at the root of the</span>
+0186 <span class="comment">%   data directory</span>
+0187 <span class="comment">% - 'Data &amp; design' with 3 groups (Guys/HammersH/IOP) and 2 modalities each</span>
+0188 <span class="comment">%   ('momentum'/'divergence') + regression target (age).</span>
+0189 <span class="comment">% - 'Feature set', only the 'divergence' data</span>
+0190 <span class="comment">% - 'Specify model', svm Guys-vs-(HammersH+IOP), on divergence data,</span>
+0191 <span class="comment">%   leave-1s/gr-out CV</span>
+0192 <span class="comment">% - 'Run model' with 1000 permutations</span>
+0193 <span class="comment">% - 'Compute weights' -&gt; create 'svm_GvsHI' image</span>
+0194 <span class="comment">% - 'Feature set', only the 'momentum' data</span>
+0195 <span class="comment">% - 'Specify model', KRR for age of all 3 groups of scans</span>
+0196 <span class="comment">% - 'Run model' with 1000 permutations</span>
+0197 <span class="comment">% - 'Feature set', pool 'momentum' and 'divergence' data together</span>
+0198 <span class="comment">% - 'Specify model', GPC Guys-vs-HammersH-vs-IOP, on 'momentum+divergence'</span>
+0199 <span class="comment">%   data leave-1s/gr-out</span>
+0200 <span class="comment">% - 'Run model' without permutation</span>
+0201 <span class="comment">% - 'Specify model', RVR for age of all 3 groups of scans (using momentum</span>
+0202 <span class="comment">%   feature set)</span>
+0203 <span class="comment">% - 'Run model' with 1000 permutations</span>
+0204 <span class="comment">% - 'Specify model', GPR for age of all 3 groups of scans (using momentum</span>
+0205 <span class="comment">%   feature set)</span>
+0206 <span class="comment">% - 'Run model' without permutation</span>
+0207 <span class="comment">% - 'Feature set', both 'divergence' and 'momentum', one kernel modality</span>
+0208 <span class="comment">% - 'Feature set', both 'divergence' and 'momentum', one kernel modality +</span>
+0209 <span class="comment">%   one kenel per ROI</span>
+0210 <span class="comment">% - 'Specify model', MKL with 1 kernel/modality, Guys-vs-(HammersH+IOP),</span>
+0211 <span class="comment">%   leave-1s/gr-out CV</span>
+0212 <span class="comment">% - 'Run model' without permutation</span>
+0213 <span class="comment">% - 'Compute weights' -&gt; create 'MKLmm_weights' image</span>
+0214 <span class="comment">% - 'Specify model', MKL with 1 kernel/modality and /ROI,</span>
+0215 <span class="comment">%   Guys-vs-(HammersH+IOP), leave-1s/gr-out CV</span>
+0216 <span class="comment">% - 'Run model' without permutation</span>
+0217 <span class="comment">% - 'Compute weights' -&gt; create 'MKLmmroi_weights' image, with ROI specific</span>
+0218 <span class="comment">%   weights</span>
+0219 
+0220 <span class="comment">% set images directories and select mask(s)</span>
+0221 d_dir{1} = fullfile(rdata_dir,<span class="string">'divergences'</span>);
+0222 d_dir{2} = fullfile(rdata_dir,<span class="string">'momentum'</span>);
+0223 m_dir = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'masks'</span>);
+0224 [msk_file] = spm_select(<span class="string">'FPList'</span>,m_dir,<span class="string">'^.*\.img$'</span>);
+0225 a_dir = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'atlas'</span>);
+0226 [atlas_file] = spm_select(<span class="string">'FPList'</span>,a_dir,<span class="string">'^aal.*\.img$'</span>);
+0227 
+0228 <span class="comment">% get batch file</span>
+0229 job = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'_unitTests'</span>,<span class="string">'batch_test_IXIdata.mat'</span>);
+0230 
+0231 inputs = cell(13,1);
+0232 <span class="comment">% set files: regression target variables</span>
+0233 inputs{1} = cellstr(fullfile(rdata_dir,<span class="string">'reg_targets'</span>,<span class="string">'rt_Guys.mat'</span>));
+0234 inputs{2} = cellstr(fullfile(rdata_dir,<span class="string">'reg_targets'</span>,<span class="string">'rt_HammerH.mat'</span>));
+0235 inputs{3} = cellstr(fullfile(rdata_dir,<span class="string">'reg_targets'</span>,<span class="string">'rt_IOP.mat'</span>));
+0236 <span class="comment">% set files: images into 6 sets (g1m1-g1m2-g2m1-g2m2-g3m1-g3m2)</span>
+0237 inputs{4} = cellstr(<span class="keyword">...</span>
+0238     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{1},<span class="string">'Guys'</span>),<span class="string">'^sdv.*\.nii$'</span>));
+0239 inputs{5} = cellstr(<span class="keyword">...</span>
+0240     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{2},<span class="string">'Guys'</span>),<span class="string">'^sa.*\.nii$'</span>));
+0241 inputs{6} = cellstr(<span class="keyword">...</span>
+0242     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{1},<span class="string">'HammerH'</span>),<span class="string">'^sdv.*\.nii$'</span>)); 
+0243 inputs{7} = cellstr(<span class="keyword">...</span>
+0244     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{2},<span class="string">'HammerH'</span>),<span class="string">'^sa.*\.nii$'</span>)); 
+0245 inputs{8} = cellstr(<span class="keyword">...</span>
+0246     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{1},<span class="string">'IOP'</span>),<span class="string">'^sdv.*\.nii$'</span>)); 
+0247 inputs{9} = cellstr(<span class="keyword">...</span>
+0248     spm_select(<span class="string">'FPList'</span>,fullfile(d_dir{2},<span class="string">'IOP'</span>),<span class="string">'^sa.*\.nii$'</span>)); 
+0249 <span class="comment">% set files: mask (1st level) for both modalities</span>
+0250 inputs{10} = cellstr(msk_file);
+0251 inputs{11} = cellstr(msk_file);
+0252 <span class="comment">% set files: atlas for ROI</span>
+0253 inputs{12} = cellstr(atlas_file);
+0254 <span class="comment">% set directory: where result directory is created = &quot;root data directory&quot;</span>
+0255 inputs{13} = {rdata_dir};
+0256 
+0257 ok = 1;
+0258 <span class="keyword">try</span>
+0259     job_id = cfg_util(<span class="string">'initjob'</span>, job);
+0260     sts    = cfg_util(<span class="string">'filljob'</span>, job_id, inputs{:});
+0261     <span class="keyword">if</span> sts
+0262         cfg_util(<span class="string">'run'</span>, job_id);
+0263     <span class="keyword">else</span>
+0264         disp(<span class="string">'Job status problem.'</span>)
+0265         ok = 0;
+0266     <span class="keyword">end</span>
+0267     cfg_util(<span class="string">'deljob'</span>, job_id);
+0268 <span class="keyword">catch</span> ME
+0269     cfg_util(<span class="string">'deljob'</span>, job_id);
+0270     disp(ME.message)
+0271     ok = 0;
+0272     <span class="keyword">return</span>;
+0273 <span class="keyword">end</span>
+0274 
+0275 <span class="keyword">end</span>
+0276 
+0277 <span class="comment">%==========================================================================</span>
+0278 <span class="comment">%% Faces Famous-vs-NonFamous data set</span>
+0279 <a name="_sub3" href="#_subfunctions" class="code">function ok = check_FvsNF(rdata_dir)</a>
+0280 
+0281 <span class="comment">% This batch will go through the following modules, as saved in the</span>
+0282 <span class="comment">% batch_test_FacesData.mat file:</span>
+0283 <span class="comment">% - 'File selector' for</span>
+0284 <span class="comment">%       (1/2) the 2 sets of images: 'Famous' and 'NonFamous' beta's</span>
+0285 <span class="comment">%       (3) the whole brain mask, and (4) the customCV.mat file</span>
+0286 <span class="comment">% - 'Directory selector' for the root of the data directory</span>
+0287 <span class="comment">% - 'Make directory', create 'test_results' directory at the root of the</span>
+0288 <span class="comment">%   data directory</span>
+0289 <span class="comment">% - 'Data &amp; design', defining the 2 groups Famous/NonFamous and data</span>
+0290 <span class="comment">% - 'Feature set', using the beta images</span>
+0291 <span class="comment">% - 'Specify model', svm F-vs-NF, leave-1s-out CV with hyper-parameter</span>
+0292 <span class="comment">%   estimation in nested CV</span>
+0293 <span class="comment">% - 'Run model' without permutations</span>
+0294 <span class="comment">% - 'Compute weights' -&gt; create 'svm_FvsNF' image</span>
+0295 <span class="comment">% - 'Specify model', gpc F-vs-NF, custom CV (training on 1st 20 images from</span>
+0296 <span class="comment">%   each group and testing last 6)</span>
+0297 <span class="comment">% - 'Run model' without permutations</span>
+0298 <span class="comment">% - 'Compute weights' -&gt; create 'gpc_FvsNF' image</span>
+0299 
+0300 <span class="comment">% select images, SPM.mat and mask(s)</span>
+0301 d_dir = fullfile(rdata_dir,<span class="string">'Famous'</span>);
+0302 [imgF_files] = spm_select(<span class="string">'FPList'</span>,d_dir,<span class="string">'^beta.*\.img$'</span>);
+0303 d_dir = fullfile(rdata_dir,<span class="string">'NonFamous'</span>);
+0304 [imgNF_files] = spm_select(<span class="string">'FPList'</span>,d_dir,<span class="string">'^beta.*\.img$'</span>);
+0305 m_dir = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'masks'</span>);
+0306 [msk_file] = spm_select(<span class="string">'FPList'</span>,m_dir,<span class="string">'^.*\.img$'</span>);
+0307 CV_file = spm_select(<span class="string">'FPList'</span>,rdata_dir,<span class="string">'^customCV\.mat$'</span>);
+0308 
+0309 <span class="comment">% get batch file</span>
+0310 job = fullfile(<a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'dir'</span>),<span class="string">'_unitTests'</span>,<span class="string">'batch_test_FacesData.mat'</span>);
+0311 
+0312 inputs = cell(5,1);
+0313 inputs{1} = cellstr(imgF_files);
+0314 inputs{2} = cellstr(imgNF_files); 
+0315 inputs{3} = cellstr(msk_file); 
+0316 inputs{4} = cellstr(CV_file); 
+0317 <span class="comment">% set directory where result directory is created = &quot;root data directory&quot;</span>
+0318 inputs{5} = {rdata_dir}; 
+0319 
+0320 ok = 1;
+0321 <span class="keyword">try</span>
+0322     job_id = cfg_util(<span class="string">'initjob'</span>, job);
+0323     sts    = cfg_util(<span class="string">'filljob'</span>, job_id, inputs{:});
+0324     <span class="keyword">if</span> sts
+0325         cfg_util(<span class="string">'run'</span>, job_id);
+0326     <span class="keyword">else</span>
+0327         disp(<span class="string">'Job status problem.'</span>)
+0328         ok = 0;
+0329     <span class="keyword">end</span>
+0330     cfg_util(<span class="string">'deljob'</span>, job_id);
+0331 <span class="keyword">catch</span> ME
+0332     cfg_util(<span class="string">'deljob'</span>, job_id);
+0333     disp(ME.message)
+0334     ok = 0;
+0335     <span class="keyword">return</span>;
+0336 <span class="keyword">end</span>
+0337 
+0338 <span class="keyword">end</span>
+0339</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

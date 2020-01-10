@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_contents</title>
+  <meta name="keywords" content="prt_contents">
+  <meta name="description" content="Pattern Recognition for Neuroimaging Toolbox, aka. PRoNTo">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_contents.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_contents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Pattern Recognition for Neuroimaging Toolbox, aka. PRoNTo</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Pattern Recognition for Neuroimaging Toolbox, aka. PRoNTo
+ Verion 2.0 (PRoNTo2) February-2015
+__________________________________________________________________________
+    ____  ____        _   ________              ___    ____ 
+   / __ \/ __ \____  / | / /_  __/___     _   _|__ \  / __ \
+  / /_/ / /_/ / __ \/  |/ / / / / __ \   | | / /_/ / / / / /
+ / ____/ _, _/ /_/ / /|  / / / / /_/ /   | |/ / __/_/ /_/ / 
+/_/   /_/ |_|\____/_/ |_/ /_/  \____/    |___/____(_)____/  
+
+                         PRoNTO v2.0 - http://www.mlnl.cs.ucl.ac.uk/pronto
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory
+
+ $Id$
+
+__________________________________________________________________________
+
+ PRoNTo is the deliverable of a Pascal Harvest project 
+ coordinated by Dr. Mourao-Miranda.
+ PRoNTo is  developed by the Machine Learning &amp; Neuroimaging Laboratory,
+ Computer Science department, University College London, UK.
+ http://www.mlnl.cs.ucl.ac.uk and associated researchers.
+ 
+ The main contributors, in alphabetical order, are:
+ - John Ashburner, 
+ - Carlton Chu, 
+ - Andre Marquand,
+ - Joao M. Monteiro, 
+ - Janaina Mourao-Miranda, 
+ - Christophe Phillips, 
+ - Jonas Richiardi,
+ - Jane Rondina,
+ - Maria J. Rosa,
+ - Jessica Schrouff.
+ 
+ The development of PRoNTo was possible with the financial and logistic 
+ support of 
+ - PASCAL Harvest Programme (http://www.pascal-network.org/)
+ - the Department of Computer Science, University College London
+   (http://www.cs.ucl.ac.uk);
+ - the Wellcome Trust;
+ - PASCAL2 (http://www.pascal-network.org/) and its HARVEST programme;
+ - the Fonds de la Recherche Scientifique-FNRS, Belgium
+   (http://www.fnrs.be);
+ - The Foundation for Science and Technology, Portugal 
+   (http://www.fct.pt);
+ - Swiss National Science Foundation (PP00P2-123438) and Center for
+   Biomedical Imaging (CIBM) of the EPFL and Universities and Hospitals
+   of Lausanne and Geneva.
+ - Laboratory of Behavioral and Cognitive Neuroscience, Stanford
+   University, USA.
+
+ PRoNTo is designed to work from MATLAB versions 7.5 (R2007b) to 
+ 8.3 (R2014a), and will not work with earlier versions.
+ Some routine may need to be compiled for your specific OS.
+ 
+ Moreover the latest version of the SPM software is also required! You can
+ get SPM (and all required information) from:
+   http://www.fil.ion.ucl.ac.uk/spm/
+
+__________________________________________________________________________
+
+ PRoNTo is free software: you can redistribute it  and/or modify it under  
+ the terms of the GNU General Public License as published by the Free 
+ Software Foundation,  either version 2 of  the License,  or (at  your  
+ option) any later version.
+ PRoNTo is  distributed in the hope  that it will be  useful, but WITHOUT 
+ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU General Public License   
+ for more details.
+ You should  have received a copy of the  GNU General Public License along
+ with PRoNTo, in prt_LICENCE.man. If not, see 
+ &lt;http://www.gnu.org/licenses/&gt;.
+
+ See prt_licence.man
+__________________________________________________________________________</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Pattern Recognition for Neuroimaging Toolbox, aka. PRoNTo</span>
+0002 <span class="comment">% Verion 2.0 (PRoNTo2) February-2015</span>
+0003 <span class="comment">%__________________________________________________________________________</span>
+0004 <span class="comment">%    ____  ____        _   ________              ___    ____</span>
+0005 <span class="comment">%   / __ \/ __ \____  / | / /_  __/___     _   _|__ \  / __ \</span>
+0006 <span class="comment">%  / /_/ / /_/ / __ \/  |/ / / / / __ \   | | / /_/ / / / / /</span>
+0007 <span class="comment">% / ____/ _, _/ /_/ / /|  / / / / /_/ /   | |/ / __/_/ /_/ /</span>
+0008 <span class="comment">%/_/   /_/ |_|\____/_/ |_/ /_/  \____/    |___/____(_)____/</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%                         PRoNTO v2.0 - http://www.mlnl.cs.ucl.ac.uk/pronto</span>
+0011 <span class="comment">%__________________________________________________________________________</span>
+0012 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% $Id$</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%__________________________________________________________________________</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% PRoNTo is the deliverable of a Pascal Harvest project</span>
+0019 <span class="comment">% coordinated by Dr. Mourao-Miranda.</span>
+0020 <span class="comment">% PRoNTo is  developed by the Machine Learning &amp; Neuroimaging Laboratory,</span>
+0021 <span class="comment">% Computer Science department, University College London, UK.</span>
+0022 <span class="comment">% http://www.mlnl.cs.ucl.ac.uk and associated researchers.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% The main contributors, in alphabetical order, are:</span>
+0025 <span class="comment">% - John Ashburner,</span>
+0026 <span class="comment">% - Carlton Chu,</span>
+0027 <span class="comment">% - Andre Marquand,</span>
+0028 <span class="comment">% - Joao M. Monteiro,</span>
+0029 <span class="comment">% - Janaina Mourao-Miranda,</span>
+0030 <span class="comment">% - Christophe Phillips,</span>
+0031 <span class="comment">% - Jonas Richiardi,</span>
+0032 <span class="comment">% - Jane Rondina,</span>
+0033 <span class="comment">% - Maria J. Rosa,</span>
+0034 <span class="comment">% - Jessica Schrouff.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% The development of PRoNTo was possible with the financial and logistic</span>
+0037 <span class="comment">% support of</span>
+0038 <span class="comment">% - PASCAL Harvest Programme (http://www.pascal-network.org/)</span>
+0039 <span class="comment">% - the Department of Computer Science, University College London</span>
+0040 <span class="comment">%   (http://www.cs.ucl.ac.uk);</span>
+0041 <span class="comment">% - the Wellcome Trust;</span>
+0042 <span class="comment">% - PASCAL2 (http://www.pascal-network.org/) and its HARVEST programme;</span>
+0043 <span class="comment">% - the Fonds de la Recherche Scientifique-FNRS, Belgium</span>
+0044 <span class="comment">%   (http://www.fnrs.be);</span>
+0045 <span class="comment">% - The Foundation for Science and Technology, Portugal</span>
+0046 <span class="comment">%   (http://www.fct.pt);</span>
+0047 <span class="comment">% - Swiss National Science Foundation (PP00P2-123438) and Center for</span>
+0048 <span class="comment">%   Biomedical Imaging (CIBM) of the EPFL and Universities and Hospitals</span>
+0049 <span class="comment">%   of Lausanne and Geneva.</span>
+0050 <span class="comment">% - Laboratory of Behavioral and Cognitive Neuroscience, Stanford</span>
+0051 <span class="comment">%   University, USA.</span>
+0052 <span class="comment">%</span>
+0053 <span class="comment">% PRoNTo is designed to work from MATLAB versions 7.5 (R2007b) to</span>
+0054 <span class="comment">% 8.3 (R2014a), and will not work with earlier versions.</span>
+0055 <span class="comment">% Some routine may need to be compiled for your specific OS.</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">% Moreover the latest version of the SPM software is also required! You can</span>
+0058 <span class="comment">% get SPM (and all required information) from:</span>
+0059 <span class="comment">%   http://www.fil.ion.ucl.ac.uk/spm/</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">%__________________________________________________________________________</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">% PRoNTo is free software: you can redistribute it  and/or modify it under</span>
+0064 <span class="comment">% the terms of the GNU General Public License as published by the Free</span>
+0065 <span class="comment">% Software Foundation,  either version 2 of  the License,  or (at  your</span>
+0066 <span class="comment">% option) any later version.</span>
+0067 <span class="comment">% PRoNTo is  distributed in the hope  that it will be  useful, but WITHOUT</span>
+0068 <span class="comment">% ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or</span>
+0069 <span class="comment">% FITNESS FOR A  PARTICULAR PURPOSE.  See the  GNU General Public License</span>
+0070 <span class="comment">% for more details.</span>
+0071 <span class="comment">% You should  have received a copy of the  GNU General Public License along</span>
+0072 <span class="comment">% with PRoNTo, in prt_LICENCE.man. If not, see</span>
+0073 <span class="comment">% &lt;http://www.gnu.org/licenses/&gt;.</span>
+0074 <span class="comment">%</span>
+0075 <span class="comment">% See prt_licence.man</span>
+0076 <span class="comment">%__________________________________________________________________________</span>
+0077   
+0078</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

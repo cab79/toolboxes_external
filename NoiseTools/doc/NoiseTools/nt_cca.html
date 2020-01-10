@@ -1,0 +1,304 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_cca</title>
+  <meta name="keywords" content="nt_cca">
+  <meta name="description" content="[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_cca.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_cca
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [A,B,R]=nt_cca(x,y,lags,C,m,thresh) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation
+
+  A, B: transform matrices
+  R: r scores
+
+  x,y: column matrices
+  lags: array of lags to apply to y relative to x (can be negative)
+  C: covariance matrix of [x, y]
+  m: number of columns of x
+  thresh: discard PCs below this 
+
+  Usage 1:
+   [A,B,R]=nt_cca(x,y); % CCA of x, y
+
+  Usage 2: 
+   [A,B,R]=nt_cca(x,y,lags); % CCA of x, y for each value of lags.
+   A positive lag indicates that y is delayed relative to x.
+
+  Usage 3:
+   C=[x,y]'*[x,y]; % covariance
+   [A,B,R]=nt_cca([],[],[],C,size(x,2)); % CCA of x,y
+
+ Use the third form to handle multiple files or large data
+ (covariance C can be calculated chunk-by-chunk). 
+
+ C can be 3-D, which case CCA is derived independently from each page.
+
+ Warning: means of x and y are NOT removed.
+ Warning: A, B scaled so that (x*A)^2 and (y*B)^2 are identity matrices (differs from canoncorr).
+
+ See nt_cov_lags, nt_relshift, nt_cov, nt_pca.
+
+ NoiseTools.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>	[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation</li><li><a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,lags)">nt_cov_lags</a>	[C,tw,m]=nt_cov_lags(x,y,lags) - covariance of [x,y] with lags</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>	[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation</li><li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags)">nt_cca_crossvalidate</a>	[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)</a>
+0002 <span class="comment">%[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  A, B: transform matrices</span>
+0005 <span class="comment">%  R: r scores</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  x,y: column matrices</span>
+0008 <span class="comment">%  lags: array of lags to apply to y relative to x (can be negative)</span>
+0009 <span class="comment">%  C: covariance matrix of [x, y]</span>
+0010 <span class="comment">%  m: number of columns of x</span>
+0011 <span class="comment">%  thresh: discard PCs below this</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%  Usage 1:</span>
+0014 <span class="comment">%   [A,B,R]=nt_cca(x,y); % CCA of x, y</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%  Usage 2:</span>
+0017 <span class="comment">%   [A,B,R]=nt_cca(x,y,lags); % CCA of x, y for each value of lags.</span>
+0018 <span class="comment">%   A positive lag indicates that y is delayed relative to x.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%  Usage 3:</span>
+0021 <span class="comment">%   C=[x,y]'*[x,y]; % covariance</span>
+0022 <span class="comment">%   [A,B,R]=nt_cca([],[],[],C,size(x,2)); % CCA of x,y</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Use the third form to handle multiple files or large data</span>
+0025 <span class="comment">% (covariance C can be calculated chunk-by-chunk).</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% C can be 3-D, which case CCA is derived independently from each page.</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Warning: means of x and y are NOT removed.</span>
+0030 <span class="comment">% Warning: A, B scaled so that (x*A)^2 and (y*B)^2 are identity matrices (differs from canoncorr).</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% See nt_cov_lags, nt_relshift, nt_cov, nt_pca.</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% NoiseTools.</span>
+0035 
+0036 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>; 
+0037 
+0038 <span class="keyword">if</span> ~exist(<span class="string">'thresh'</span>,<span class="string">'var'</span>);
+0039     thresh=10.^-12; 
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="keyword">if</span> exist(<span class="string">'x'</span>,<span class="string">'var'</span>) &amp;&amp; ~isempty(x)
+0043     <span class="comment">% Calculate covariance of [x,y]</span>
+0044     <span class="keyword">if</span> ~exist(<span class="string">'y'</span>,<span class="string">'var'</span>); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0045     <span class="keyword">if</span> ~exist(<span class="string">'lags'</span>,<span class="string">'var'</span>)||isempty(<span class="string">'lags'</span>); lags=[0]; <span class="keyword">end</span>
+0046     <span class="keyword">if</span> numel(lags)==1 &amp;&amp; lags==0 &amp;&amp; isnumeric(x) &amp;&amp; ndims(x)==2; 
+0047         C=[x,y]'*[x,y]; <span class="comment">% simple case</span>
+0048         m=size(x,2); 
+0049     <span class="keyword">else</span>
+0050         [C,~,m]=<a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,lags)">nt_cov_lags</a>(x,y,lags); <span class="comment">% lags, multiple trials, etc.</span>
+0051     <span class="keyword">end</span>
+0052     [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>([],[],[],C,m,thresh);
+0053     <span class="keyword">return</span>
+0054 <span class="keyword">end</span> <span class="comment">% else keep going</span>
+0055 
+0056 <span class="keyword">if</span> ~exist(<span class="string">'C'</span>,<span class="string">'var'</span>) || isempty(C) ; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0057 <span class="keyword">if</span> ~exist(<span class="string">'m'</span>,<span class="string">'var'</span>); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0058 <span class="keyword">if</span> size(C,1)~=size(C,2); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0059 <span class="keyword">if</span> ~isempty(x) || ~isempty(y) || ~isempty(lags)  ; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0060 <span class="keyword">if</span> ndims(C)&gt;3; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0061 
+0062 <span class="keyword">if</span> ndims(C) == 3
+0063     <span class="comment">% covariance is 3D: do a separate CCA for each page</span>
+0064     N=min(m,size(C,1)-m); <span class="comment">% note that for some pages there may be fewer than N CCs</span>
+0065     A=zeros(m,N,size(C,3));
+0066     B=zeros(size(C,1)-m,N,size(C,3));
+0067     R=zeros(N,size(C,3));
+0068     <span class="keyword">for</span> k=1:size(C,3);
+0069         [AA,BB,RR]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>([],[],[],C(:,:,k),m);
+0070         A(1:size(AA,1),1:size(AA,2),k)=AA;
+0071         B(1:size(BB,1),1:size(BB,2),k)=BB;
+0072         R(1:size(RR,2),k)=RR;
+0073     <span class="keyword">end</span>
+0074     <span class="keyword">return</span>;
+0075 <span class="keyword">end</span> <span class="comment">% else keep going</span>
+0076 
+0077 
+0078 <span class="comment">%%</span>
+0079 <span class="comment">% Calculate CCA given C=[x,y]'*[x,y] and m=size(x,2);</span>
+0080 
+0081 <span class="comment">% sphere x</span>
+0082 Cx=C(1:m,1:m);
+0083 [V, S] = eig(Cx) ;  
+0084 V=real(V); S=real(S);
+0085 [E, idx] = sort(diag(S)', <span class="string">'descend'</span>) ;
+0086 keep=find(E/max(E)&gt;thresh);
+0087 topcs = V(:,idx(keep));
+0088 E = E (keep);
+0089 EXP=1-10^-12; 
+0090 E=E.^EXP; <span class="comment">% break symmetry when x and y perfectly correlated (otherwise cols of x*A and y*B are not orthogonal)</span>
+0091 A1=topcs*diag(sqrt((1./E)));
+0092 
+0093 <span class="comment">% sphere y</span>
+0094 Cy=C(m+1:<span class="keyword">end</span>,m+1:end);
+0095 [V, S] = eig(Cy) ;  
+0096 V=real(V); S=real(S);
+0097 [E, idx] = sort(diag(S)', <span class="string">'descend'</span>) ;
+0098 keep=find(E/max(E)&gt;thresh);
+0099 topcs = V(:,idx(keep));
+0100 E = E (keep);
+0101 E=E.^EXP; <span class="comment">%</span>
+0102 A2=topcs*diag(sqrt((1./E)));
+0103 
+0104 <span class="comment">% apply sphering matrices to C</span>
+0105 AA=zeros( size(A1,1)+size(A2,1), size(A1,2)+size(A2,2) );
+0106 AA( 1:size(A1,1), 1:size(A1,2) )=A1;
+0107 AA( size(A1,1)+1:<span class="keyword">end</span>, size(A1,2)+1:end )=A2;
+0108 C= AA' * C * AA;
+0109 
+0110 N=min(size(A1,2),size(A2,2)); <span class="comment">% number of canonical components</span>
+0111 
+0112 <span class="comment">% PCA</span>
+0113 [V, S] = eig(C) ;
+0114 <span class="comment">%[V, S] = eigs(C,N) ; % not faster</span>
+0115 V=real(V); S=real(S);
+0116 [E, idx] = sort(diag(S)', <span class="string">'descend'</span>) ;
+0117 topcs = V(:,idx);
+0118 
+0119 A=A1*topcs(1:size(A1,2),1:N)*sqrt(2);  <span class="comment">% why sqrt(2)?...</span>
+0120 B=A2*topcs(size(A1,2)+1:<span class="keyword">end</span>,1:N)*sqrt(2);
+0121 R=E(1:N)-1; 
+0122 
+0123 
+0124 <span class="comment">%{</span>
+0125 Why does it work?
+0126 If x and y were uncorrelated, eigenvalues E would be all ones. 
+0127 Correlated dimensions (the canonical correlates) should give values E&gt;1, 
+0128 i.e. they should map to the first PCs. 
+0129 To obtain CCs we just select the first N PCs. 
+0130 <span class="comment">%}</span>
+0131 
+0132 
+0133 <span class="comment">%%</span>
+0134 <span class="comment">% test code</span>
+0135 <span class="keyword">if</span> 0
+0136     <span class="comment">% basic</span>
+0137     clear
+0138     x=randn(10000,20);
+0139     y=randn(10000,8);
+0140     y(:,1:2)=x(:,1:2); <span class="comment">% perfectly correlated</span>
+0141     y(:,3:4)=x(:,3:4)+randn(10000,2); <span class="comment">% 1/2 correlated</span>
+0142     y(:,5:6)=x(:,5:6)+randn(10000,2)*3; <span class="comment">% 1/4 correlated</span>
+0143     y(:,7:8)=randn(10000,2); <span class="comment">% uncorrelated</span>
+0144     [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(x,y);
+0145     figure(1); clf
+0146     subplot 321; imagesc(A); title(<span class="string">'A'</span>);
+0147     subplot 322; imagesc(B); title(<span class="string">'B'</span>);
+0148     subplot 323; plot(R, <span class="string">'.-'</span>); title(<span class="string">'R'</span>)
+0149     subplot 324; imagescc((x*A)'*(x*A)); title (<span class="string">'covariance of x*A'</span>);
+0150     subplot 325; imagescc((y*B)'*(y*B)); title (<span class="string">'covariance of y*B'</span>);
+0151     subplot 326; imagescc([x*A,y*B]'*[x*A,y*B]); title (<span class="string">'covariance of [x*A,y*B]'</span>);
+0152 <span class="keyword">end</span>
+0153 
+0154 <span class="keyword">if</span> 0 
+0155     <span class="comment">% compare with canoncorr</span>
+0156     clear
+0157     x=randn(1000,11);
+0158     y=randn(1000,9);
+0159     x=x-repmat(mean(x),size(x,1),1); <span class="comment">% center, otherwise result may differ slightly from canoncorr</span>
+0160     y=y-repmat(mean(y),size(y,1),1);
+0161     [A1,B1,R1]=canoncorr(x,y);
+0162     [A2,B2,R2]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(x,y);   
+0163     A2=A2*sqrt(size(x,1)); <span class="comment">% scale like canoncorr</span>
+0164     B2=B2*sqrt(size(y,1));
+0165     figure(1); clf; 
+0166     subplot 211; 
+0167     plot([R1' R2']); title(<span class="string">'R'</span>); legend({<span class="string">'canoncorr'</span>, <span class="string">'nt_cca'</span>}, <span class="string">'Interpreter'</span>,<span class="string">'none'</span>); 
+0168     <span class="keyword">if</span> mean(A1(:,1).*A2(:,1))&lt;0; A2=-A2; <span class="keyword">end</span>
+0169     subplot 212; 
+0170     plot(([x*A1(:,1),x*A2(:,1)])); title(<span class="string">'first component'</span>); legend({<span class="string">'canoncorr'</span>, <span class="string">'nt_cca'</span>}, <span class="string">'Interpreter'</span>,<span class="string">'none'</span>); 
+0171     figure(2); clf;set(gcf,<span class="string">'defaulttextinterpreter'</span>,<span class="string">'none'</span>)
+0172     subplot 121; 
+0173     imagescc([x*A1,y*B1]'*[x*A1,y*B1]); title(<span class="string">'canoncorr'</span>); 
+0174     subplot 122; 
+0175     imagescc([x*A2,y*B2]'*[x*A2,y*B2]); title(<span class="string">'nt_cca'</span>);
+0176 <span class="keyword">end</span>
+0177 
+0178 <span class="keyword">if</span> 0
+0179     <span class="comment">% time</span>
+0180     x=randn(100000,100); 
+0181     tic; 
+0182     [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(x,x); 
+0183     disp(<span class="string">'nt_cca time: '</span>);
+0184     toc    
+0185     [A,B,R]=canoncorr(x,x); 
+0186     disp(<span class="string">'canoncorr time: '</span>);
+0187     toc
+0188     [A,B,R]=cca(x,x); 
+0189     disp(<span class="string">'cca time: '</span>);
+0190     toc
+0191 <span class="keyword">end</span>
+0192 
+0193 <span class="keyword">if</span> 0
+0194     <span class="comment">% lags</span>
+0195     x=randn(1000,10);
+0196     y=randn(1000,10);
+0197     y(:,1:3)=x(:,1:3);
+0198     lags=-10:10;
+0199     [A1,B1,R1]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(x,y,lags);
+0200     figure(1); clf
+0201     plot(lags,R1'); xlabel(<span class="string">'lag'</span>); ylabel(<span class="string">'R'</span>);
+0202 <span class="keyword">end</span>
+0203 
+0204 <span class="keyword">if</span> 0
+0205     <span class="comment">% what happens if x &amp; y perfectly correlated?</span>
+0206     x=randn(1000,10);
+0207     y=randn(1000,10); y=x(:,randperm(10)); <span class="comment">%+0.000001*y;</span>
+0208     [A1,B1,R1]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(x,y);
+0209     figure(1); clf
+0210     imagescc([x*A1,y*B1]'*[x*A1,y*B1]);
+0211 <span class="keyword">end</span>    
+0212 
+0213 <span class="keyword">if</span> 0
+0214     <span class="comment">% x and y are cell arrays</span>
+0215     x=randn(1000,10); 
+0216     y=randn(1000,10);
+0217     xx={x,x,x};  yy={x,y,y};
+0218     [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>(xx,yy);
+0219     disp(<span class="string">'seems to work...'</span>);
+0220 <span class="keyword">end</span>
+0221 
+0222 <span class="comment">%%</span>
+0223 <span class="comment">% joint covariance of [x,y] - handles 3D and cell array</span>
+0224 
+0225</pre></div>
+<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

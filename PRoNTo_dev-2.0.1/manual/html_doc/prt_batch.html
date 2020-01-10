@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_batch</title>
+  <meta name="keywords" content="prt_batch">
+  <meta name="description" content="Pattern Recognition for Neuroimaging Toolbox, PRoNTo.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_batch.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_batch
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function prt_batch </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Pattern Recognition for Neuroimaging Toolbox, PRoNTo.
+
+ This function prepares and launches the batch system.
+ This builds the whole tree for the various tools and their GUI at the
+ first call to this script.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li><li><a href="prt_check.html" class="code" title="function ok = prt_check(list_check,dir_root)">prt_check</a>	Function to automatically test PRoNTo's integrity</li><li><a href="prt_ui_main.html" class="code" title="function varargout = prt_ui_main(varargin)">prt_ui_main</a>	PRT_UI_MAIN M-file for prt_ui_main.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function prt_batch</a>
+0002 <span class="comment">% Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function prepares and launches the batch system.</span>
+0005 <span class="comment">% This builds the whole tree for the various tools and their GUI at the</span>
+0006 <span class="comment">% first call to this script.</span>
+0007 <span class="comment">%_______________________________________________________________________</span>
+0008 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0009 
+0010 <span class="comment">% Written by Christophe Phillips</span>
+0011 <span class="comment">% $Id$</span>
+0012 
+0013 <span class="keyword">persistent</span> batch_initialize
+0014 <span class="keyword">global</span> PRT_INIT
+0015 
+0016 <span class="keyword">if</span> isempty(PRT_INIT) || ~PRT_INIT
+0017     <a href="prt.html" class="code" title="function varargout = prt(varargin)">prt</a>(<span class="string">'startup'</span>,<span class="string">'nogui'</span>);
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">if</span> isempty(batch_initialize) || ~batch_initialize
+0021     <span class="comment">% PRoNTo config tree</span>
+0022     prt_gui = prt_cfg_batch;
+0023     <span class="comment">% Adding PRoNTo config tree to the SPM tools</span>
+0024     cfg_util(<span class="string">'addapp'</span>, prt_gui)
+0025     <span class="comment">% No need to do it again for this session</span>
+0026     batch_initialize = 1;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Launching the batch system</span>
+0030 cfg_ui
+0031 
+0032 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

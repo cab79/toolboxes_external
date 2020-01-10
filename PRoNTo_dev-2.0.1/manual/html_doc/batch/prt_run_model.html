@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_run_model</title>
+  <meta name="keywords" content="prt_run_model">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_run_model.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_run_model
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_run_model(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ PRoNTo job execution function
+ takes a harvested job data structure and rearrange data into &quot;proper&quot;
+ data structure, then save do what it has to do...
+ Here simply the harvested job structure in a mat file.
+
+ INPUT
+   job    - harvested job data structure (see matlabbatch help)
+
+ OUTPUT
+   out    - filename of saved data structure.
+
+   This function assembles a model structure with following fields:
+
+   model.fname:      filename for PRT.mat
+   model.model_name: name for this cross-validation structure
+   model.type:       'classification' or 'regression'
+   model.use_kernel: does this model use kernels or features?
+   model.operations: operations to apply before prediction
+
+   model.fs(f).fs_name:     feature set(s) this CV approach is defined for
+   model.fs(f).fs_features: feature selection mode ('all' or 'mask')
+   model.fs(f).mask_file:   mask for this feature set (fs_features='mask')
+
+   model.class(c).class_name
+   model.class(c).group(g).subj(s).num
+   model.class(c).group(g).subj(s).modality(m).mod_name
+   EITHER: model.class(c).group(g).subj(s).modality(m).conds(c).cond_name
+   OR:     model.class(c).group(g).subj(s).modality(m).all_scans
+   OR:     model.class(c).group(g).subj(s).modality(m).all_cond
+
+   model.cv.type:     type of cross-validation ('loso','losgo','custom')
+   model.cv.mat_file: file specifying CV matrix (if type = 'custom');
+
+   FIXME: add a more flexible interface for specifying custom CV
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_model.html" class="code" title="function model = prt_cfg_model">prt_cfg_model</a>	Data & design configuration file</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cv = get_cv_type(cv_struct)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_run_model(varargin)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% PRoNTo job execution function</span>
+0004 <span class="comment">% takes a harvested job data structure and rearrange data into &quot;proper&quot;</span>
+0005 <span class="comment">% data structure, then save do what it has to do...</span>
+0006 <span class="comment">% Here simply the harvested job structure in a mat file.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUT</span>
+0009 <span class="comment">%   job    - harvested job data structure (see matlabbatch help)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% OUTPUT</span>
+0012 <span class="comment">%   out    - filename of saved data structure.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   This function assembles a model structure with following fields:</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%   model.fname:      filename for PRT.mat</span>
+0017 <span class="comment">%   model.model_name: name for this cross-validation structure</span>
+0018 <span class="comment">%   model.type:       'classification' or 'regression'</span>
+0019 <span class="comment">%   model.use_kernel: does this model use kernels or features?</span>
+0020 <span class="comment">%   model.operations: operations to apply before prediction</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%   model.fs(f).fs_name:     feature set(s) this CV approach is defined for</span>
+0023 <span class="comment">%   model.fs(f).fs_features: feature selection mode ('all' or 'mask')</span>
+0024 <span class="comment">%   model.fs(f).mask_file:   mask for this feature set (fs_features='mask')</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%   model.class(c).class_name</span>
+0027 <span class="comment">%   model.class(c).group(g).subj(s).num</span>
+0028 <span class="comment">%   model.class(c).group(g).subj(s).modality(m).mod_name</span>
+0029 <span class="comment">%   EITHER: model.class(c).group(g).subj(s).modality(m).conds(c).cond_name</span>
+0030 <span class="comment">%   OR:     model.class(c).group(g).subj(s).modality(m).all_scans</span>
+0031 <span class="comment">%   OR:     model.class(c).group(g).subj(s).modality(m).all_cond</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%   model.cv.type:     type of cross-validation ('loso','losgo','custom')</span>
+0034 <span class="comment">%   model.cv.mat_file: file specifying CV matrix (if type = 'custom');</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">%   FIXME: add a more flexible interface for specifying custom CV</span>
+0037 <span class="comment">%__________________________________________________________________________</span>
+0038 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0039 
+0040 <span class="comment">% Written by A Marquand</span>
+0041 <span class="comment">% $Id$</span>
+0042 
+0043 <span class="comment">% Job variable</span>
+0044 <span class="comment">% -------------------------------------------------------------------------</span>
+0045 job   = varargin{1};
+0046 
+0047 <span class="comment">% Load PRT.mat</span>
+0048 <span class="comment">% -------------------------------------------------------------------------</span>
+0049 fname = char(job.infile);
+0050 <span class="keyword">if</span> exist(<span class="string">'PRT'</span>,<span class="string">'var'</span>)
+0051     clear PRT
+0052 <span class="keyword">end</span>
+0053 PRT=prt_load(fname);
+0054 <span class="keyword">if</span> ~isempty(PRT)
+0055     handles.dat=PRT;
+0056 <span class="keyword">else</span>
+0057     beep
+0058     disp(<span class="string">'Could not load file'</span>)
+0059     <span class="keyword">return</span>
+0060 <span class="keyword">end</span>
+0061 
+0062 <span class="comment">% assemble basic fields</span>
+0063 model.fname      = fname;
+0064 model.model_name = job.model_name;
+0065 <span class="keyword">if</span> ~(prt_checkAlphaNumUnder(model.model_name))
+0066     beep
+0067     disp(<span class="string">'Model name should be entered in alphanumeric format only'</span>)
+0068     disp(<span class="string">'Please correct'</span>)
+0069     <span class="keyword">return</span>
+0070 <span class="keyword">end</span>
+0071 model.use_kernel = job.use_kernel;
+0072 
+0073 <span class="comment">% insert feature set fields</span>
+0074 
+0075 model.fs(1).fs_name = job.fsets;
+0076 fid = prt_init_fs(PRT,model.fs(1));
+0077 mods = cellstr(char(PRT.fs(fid).modality(:).mod_name));
+0078 
+0079 <span class="comment">% get the conditions which are common to all subjects from all groups</span>
+0080 nm = length(mods);
+0081 <span class="keyword">for</span> i=1:nm
+0082     flag=1;
+0083     <span class="keyword">for</span> j=1:length(PRT.group)
+0084         <span class="keyword">for</span> k=1:length(PRT.group(j).subject)
+0085             m2= find(strcmpi(PRT.fs(fid).modality(i).mod_name,mods));
+0086             <span class="keyword">if</span> isempty(m2)
+0087                 m2= find(strcmpi(PRT.fs(fid).modality(i).mod_name,mods{1}));
+0088             <span class="keyword">end</span>
+0089             des=PRT.group(j).subject(k).modality(m2).design;
+0090             <span class="keyword">if</span> isstruct(des) &amp;&amp; flag
+0091                 <span class="keyword">if</span> k==1 &amp;&amp; j==1
+0092                     lcond={des.conds(:).cond_name};
+0093                 <span class="keyword">else</span>
+0094                     tocmp={des.conds(:).cond_name};
+0095                     lcond=intersect(lower(lcond),lower(tocmp));
+0096                 <span class="keyword">end</span>
+0097             <span class="keyword">else</span>
+0098                 flag=0;
+0099                 lcond={};
+0100             <span class="keyword">end</span>
+0101         <span class="keyword">end</span>
+0102     <span class="keyword">end</span>
+0103 <span class="keyword">end</span>
+0104 <span class="comment">% Insert fields for generating the labels (ie. translate the fields coming</span>
+0105 <span class="comment">% from matlabbatch to something more consistent for the prt_model function)</span>
+0106 <span class="comment">% Note that we cycle through the groups to flatten out the structure, since</span>
+0107 <span class="comment">% we potentially specify multiple subjects per group</span>
+0108 <span class="keyword">if</span> isfield(job.model_type,<span class="string">'classification'</span>)
+0109     model.type = <span class="string">'classification'</span>;
+0110     <span class="keyword">for</span> c = 1:length(job.model_type.classification.class)
+0111         model.class(c).class_name = job.model_type.classification.class(c).class_name;
+0112 
+0113         <span class="keyword">for</span> g = 1:length(job.model_type.classification.class(c).group)
+0114             scount = 1;
+0115             model.class(c).group(g).gr_name = <span class="keyword">...</span>
+0116                 job.model_type.classification.class(c).group(g).gr_name;
+0117 
+0118             sids   = job.model_type.classification.class(c).group(g).subj_nums;
+0119             <span class="keyword">for</span> s = 1:length(sids)
+0120                 model.class(c).group(g).subj(scount).num = sids(s);
+0121                 <span class="keyword">for</span> m = 1: length(mods)
+0122                     model.class(c).group(g).subj(scount).modality(m).mod_name=mods{m};
+0123                     <span class="keyword">if</span> isfield(job.model_type.classification.class(c).group(g).conditions,<span class="string">'all_scans'</span>)
+0124                         model.class(c).group(g).subj(scount).modality(m).all_scans = true;
+0125                     <span class="keyword">elseif</span> isfield(job.model_type.classification.class(c).group(g).conditions,<span class="string">'all_cond'</span>)
+0126                         model.class(c).group(g).subj(scount).modality(m).all_cond = true;
+0127                         <span class="keyword">if</span> isempty(lcond)
+0128                             beep
+0129                             disp(<span class="string">'All conditions selected while no conditions were common to all subjects'</span>)
+0130                             disp(<span class="string">'Please review the selection and/or the data and design'</span>)
+0131                             <span class="keyword">return</span>
+0132                         <span class="keyword">end</span>
+0133                     <span class="keyword">else</span>
+0134                         model.class(c).group(g).subj(scount).modality(m).conds = <span class="keyword">...</span>
+0135                             job.model_type.classification.class(c).group(g).conditions.conds;
+0136                         <span class="keyword">for</span> cc=1:length(job.model_type.classification.class(c).group(g).conditions.conds)
+0137                             cname=job.model_type.classification.class(c).group(g).conditions.conds(cc).cond_name;
+0138                             <span class="keyword">if</span> isempty(intersect(lower({cname}),lower(lcond)))
+0139                                 beep
+0140                                 disp(<span class="string">'This condition is not common to all subjects'</span>)
+0141                                 disp(<span class="string">'Please remove it from the selection'</span>)
+0142                                 <span class="keyword">return</span>
+0143                             <span class="keyword">end</span>
+0144                         <span class="keyword">end</span>
+0145                     <span class="keyword">end</span>
+0146                 <span class="keyword">end</span>
+0147                 scount = scount+1;
+0148             <span class="keyword">end</span>
+0149         <span class="keyword">end</span>
+0150     <span class="keyword">end</span>
+0151     <span class="comment">% insert machine fields</span>
+0152     <span class="keyword">if</span> isfield(job.model_type.classification.machine_cl,<span class="string">'svm'</span>)
+0153         model.machine.function = <span class="string">'prt_machine_svm_bin'</span>;
+0154         model.machine.args     = job.model_type.classification.machine_cl.svm.svm_args;
+0155         <span class="keyword">if</span> isfield(job.model_type.classification.machine_cl.svm, <span class="string">'svm_opt'</span>)
+0156             <span class="keyword">if</span> job.model_type.classification.machine_cl.svm.svm_opt
+0157                 model.cv.nested = 1;
+0158                 model.cv.nested_param = job.model_type.classification.machine_cl.svm.svm_args;
+0159             <span class="keyword">end</span>
+0160         <span class="keyword">end</span>
+0161         <span class="keyword">if</span> isfield(job.model_type.classification.machine_cl.svm, <span class="string">'cv_type_nested'</span>)
+0162            [cv_tmp] = <a href="#_sub1" class="code" title="subfunction cv = get_cv_type(cv_struct)">get_cv_type</a>(job.model_type.classification.machine_cl.svm.cv_type_nested);
+0163            model.cv.type_nested = cv_tmp.type;
+0164            model.cv.k_nested = cv_tmp.k;
+0165         <span class="keyword">end</span>
+0166     <span class="keyword">elseif</span> isfield(job.model_type.classification.machine_cl,<span class="string">'gpc'</span>)
+0167         model.machine.function=<span class="string">'prt_machine_gpml'</span>;
+0168         model.machine.args=job.model_type.classification.machine_cl.gpc.gpc_args;
+0169     <span class="keyword">elseif</span> isfield(job.model_type.classification.machine_cl,<span class="string">'gpclap'</span>)
+0170         model.machine.function=<span class="string">'prt_machine_gpclap'</span>;
+0171         model.machine.args=job.model_type.classification.machine_cl.gpclap.gpclap_args;
+0172     <span class="keyword">elseif</span> isfield(job.model_type.classification.machine_cl,<span class="string">'rt'</span>)
+0173         model.machine.function=<span class="string">'prt_machine_RT_bin'</span>;
+0174         model.machine.args=job.model_type.classification.machine_cl.rt.rt_args;
+0175     <span class="keyword">elseif</span> isfield(job.model_type.classification.machine_cl,<span class="string">'sMKL_cla'</span>)
+0176         model.machine.function=<span class="string">'prt_machine_sMKL_cla'</span>;
+0177         model.machine.args=job.model_type.classification.machine_cl.sMKL_cla.sMKL_cla_args;
+0178         <span class="keyword">if</span> isfield(job.model_type.classification.machine_cl.sMKL_cla, <span class="string">'sMKL_cla_opt'</span>)
+0179             <span class="keyword">if</span> job.model_type.classification.machine_cl.sMKL_cla.sMKL_cla_opt
+0180                 model.cv.nested = 1;
+0181                 model.cv.nested_param = job.model_type.classification.machine_cl.sMKL_cla.sMKL_cla_args;
+0182             <span class="keyword">end</span>
+0183         <span class="keyword">end</span>
+0184         <span class="keyword">if</span> isfield(job.model_type.classification.machine_cl.sMKL_cla, <span class="string">'cv_type_nested'</span>)
+0185            [cv_tmp] = <a href="#_sub1" class="code" title="subfunction cv = get_cv_type(cv_struct)">get_cv_type</a>(job.model_type.classification.machine_cl.sMKL_cla.cv_type_nested);
+0186            model.cv.type_nested = cv_tmp.type;
+0187            model.cv.k_nested = cv_tmp.k;
+0188         <span class="keyword">end</span>
+0189         
+0190     <span class="keyword">else</span>
+0191         [pat, nam] = fileparts(char(job.model_type.classification.machine_cl.custom_machine.machine_func));
+0192         model.machine.function = nam;
+0193         model.machine.args = job.model_type.classification.machine_cl.custom_machine.machine_args;
+0194     <span class="keyword">end</span>
+0195 
+0196 <span class="keyword">elseif</span> isfield(job.model_type,<span class="string">'regression'</span>)
+0197     model.type = <span class="string">'regression'</span>;
+0198     <span class="keyword">for</span> g = 1:length(job.model_type.regression.reg_group)
+0199         scount = 1;
+0200         model.group(g).gr_name = job.model_type.regression.reg_group(g).gr_name;
+0201         sids   =  job.model_type.regression.reg_group(g).subj_nums;
+0202         <span class="keyword">for</span> s = 1:length(sids)
+0203             model.group(g).subj(scount).num = sids(s);
+0204             model.group(g).subj(scount).modality.mod_name =  mods;
+0205             scount=scount+1;
+0206         <span class="keyword">end</span>
+0207     <span class="keyword">end</span>
+0208     
+0209     <span class="keyword">if</span> isfield(job.model_type.regression.machine_rg,<span class="string">'krr'</span>)
+0210         model.machine.function = <span class="string">'prt_machine_krr'</span>;
+0211         model.machine.args=job.model_type.regression.machine_rg.krr.krr_args;
+0212         <span class="keyword">if</span> isfield(job.model_type.regression.machine_rg.krr, <span class="string">'krr_opt'</span>)
+0213             <span class="keyword">if</span> job.model_type.regression.machine_rg.krr.krr_opt
+0214                 model.cv.nested = 1;
+0215                 model.cv.nested_param = job.model_type.regression.machine_rg.krr.krr_args;
+0216             <span class="keyword">end</span>
+0217         <span class="keyword">end</span>
+0218          <span class="keyword">if</span> isfield(job.model_type.regression.machine_rg.krr, <span class="string">'cv_type_nested'</span>)
+0219            [cv_tmp] = <a href="#_sub1" class="code" title="subfunction cv = get_cv_type(cv_struct)">get_cv_type</a>(job.model_type.regression.machine_rg.krr.cv_type_nested);
+0220            model.cv.type_nested = cv_tmp.type;
+0221            model.cv.k_nested = cv_tmp.k;
+0222         <span class="keyword">end</span>
+0223     <span class="keyword">elseif</span> isfield(job.model_type.regression.machine_rg,<span class="string">'rvr'</span>)
+0224         model.machine.function=<span class="string">'prt_machine_rvr'</span>;
+0225         model.machine.args=[];
+0226     <span class="keyword">elseif</span> isfield(job.model_type.regression.machine_rg,<span class="string">'gpr'</span>)
+0227         model.machine.function=<span class="string">'prt_machine_gpr'</span>;
+0228         model.machine.args=job.model_type.regression.machine_rg.gpr.gpr_args;
+0229     <span class="keyword">elseif</span> isfield(job.model_type.regression.machine_rg,<span class="string">'sMKL_reg'</span>)
+0230         model.machine.function=<span class="string">'prt_machine_sMKL_reg'</span>;
+0231         model.machine.args=job.model_type.regression.machine_rg.sMKL_reg.sMKL_reg_args;
+0232         <span class="keyword">if</span> isfield(job.model_type.regression.machine_rg.sMKL_reg, <span class="string">'sMKL_reg_opt'</span>)
+0233             <span class="keyword">if</span> job.model_type.regression.machine_rg.sMKL_reg.sMKL_reg_opt
+0234                 model.cv.nested = 1;
+0235                 model.cv.nested_param = job.model_type.regression.machine_rg.sMKL_reg.sMKL_reg_args;
+0236             <span class="keyword">end</span>
+0237         <span class="keyword">end</span>
+0238         <span class="keyword">if</span> isfield(job.model_type.regression.machine_rg.sMKL_reg, <span class="string">'cv_type_nested'</span>)
+0239 <span class="comment">%            [cv_type, k] = get_cv_type(job.model_type.regression.machine_rg.sMKL_reg.cv_type_nested);</span>
+0240 <span class="comment">%            model.cv.type_nested = cv_type;</span>
+0241 <span class="comment">%            model.cv.k_nested = k;</span>
+0242            [cv_tmp] = <a href="#_sub1" class="code" title="subfunction cv = get_cv_type(cv_struct)">get_cv_type</a>(job.model_type.regression.machine_rg.sMKL_reg.cv_type_nested);
+0243            model.cv.type_nested = cv_tmp.type;
+0244            model.cv.k_nested = cv_tmp.k;
+0245         <span class="keyword">end</span>        
+0246         
+0247     <span class="keyword">else</span>
+0248         [pat, nam] = fileparts(char(job.model_type.regression.machine_rg.custom_machine.machine_func));
+0249         model.machine.function = nam;
+0250         model.machine.args = job.model_type.regression.machine_rg.custom_machine.machine_args;
+0251     <span class="keyword">end</span>
+0252 <span class="keyword">else</span>
+0253     error(<span class="string">'this is not implemented yet'</span>);
+0254 <span class="keyword">end</span>
+0255 
+0256 <span class="comment">% assemble structure for performing cross-validation</span>
+0257 model.cv = <a href="#_sub1" class="code" title="subfunction cv = get_cv_type(cv_struct)">get_cv_type</a>(job.cv_type);
+0258 model.include_allscans = job.include_allscans;
+0259 
+0260 <span class="comment">% specify operations to apply to the data prior to prediction</span>
+0261 <span class="comment">% if isfield(job.data_ops,'data_ops')</span>
+0262 <span class="comment">%     model.operations = [job.data_ops.sel_ops.data_op{:}];</span>
+0263 <span class="comment">% elseif isfield(job.data_ops,'no_op')</span>
+0264 <span class="comment">%     model.operations = [];</span>
+0265 <span class="comment">% end</span>
+0266 <span class="keyword">if</span> isfield(job.sel_ops.use_other_ops,<span class="string">'data_op'</span>)
+0267     ops = [job.sel_ops.use_other_ops.data_op{:}];
+0268 <span class="keyword">elseif</span> isfield(job.sel_ops.use_other_ops,<span class="string">'no_op'</span>)
+0269     ops = [];
+0270 <span class="keyword">end</span>
+0271 <span class="keyword">if</span> job.sel_ops.data_op_mc == 1
+0272     model.operations = [3 ops];
+0273 <span class="keyword">else</span>
+0274     model.operations = ops;
+0275 <span class="keyword">end</span>
+0276 
+0277 prt_model(PRT,model);
+0278 
+0279 <span class="comment">% Function output</span>
+0280 <span class="comment">% -------------------------------------------------------------------------</span>
+0281 out.files{1} = fname;
+0282 out.mname = model.model_name;
+0283 disp(<span class="string">'Model configuration complete.'</span>)
+0284 <span class="keyword">end</span>
+0285 
+0286 
+0287 <span class="comment">%--------------------------------------------------------------------------</span>
+0288 <span class="comment">% Private functions</span>
+0289 <span class="comment">%--------------------------------------------------------------------------</span>
+0290 <a name="_sub1" href="#_subfunctions" class="code">function cv = get_cv_type(cv_struct)</a>
+0291 
+0292 <span class="comment">% assemble structure for performing cross-validation</span>
+0293 <span class="keyword">if</span> isfield(cv_struct,<span class="string">'cv_loso'</span>)
+0294     cv = struct(<span class="string">'type'</span>,<span class="string">'loso'</span>,<span class="string">'k'</span>,0);
+0295 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_lkso'</span>)
+0296     cv = struct(<span class="string">'type'</span>,<span class="string">'loso'</span>,<span class="string">'k'</span>,cv_struct.cv_lkso.k_args);
+0297 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_losgo'</span>)
+0298     cv = struct(<span class="string">'type'</span>,<span class="string">'losgo'</span>,<span class="string">'k'</span>,0);
+0299 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_lksgo'</span>)
+0300     cv = struct(<span class="string">'type'</span>,<span class="string">'losgo'</span>,<span class="string">'k'</span>,cv_struct.cv_lksgo.k_args);
+0301 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_lobo'</span>)
+0302     cv = struct(<span class="string">'type'</span>,<span class="string">'lobo'</span>,<span class="string">'k'</span>,0);
+0303 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_lkbo'</span>)
+0304     cv = struct(<span class="string">'type'</span>,<span class="string">'lobo'</span>,<span class="string">'k'</span>,cv_struct.cv_lkbo.k_args);
+0305 <span class="keyword">elseif</span> isfield(cv_struct,<span class="string">'cv_loro'</span>) <span class="comment">% currently implemented for MCKR only</span>
+0306     cv = struct(<span class="string">'type'</span>,<span class="string">'loro'</span>);
+0307 <span class="keyword">else</span>
+0308     cv = struct(<span class="string">'type'</span>,<span class="string">'custom'</span>,<span class="string">'k'</span>,cv_struct.cv_custom{1},<span class="keyword">...</span>
+0309         <span class="string">'mat_file'</span>,cv_struct.cv_custom{1});
+0310     <span class="comment">% Not sure if I should keep the field 'k' here...</span>
+0311 <span class="keyword">end</span>
+0312 
+0313 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

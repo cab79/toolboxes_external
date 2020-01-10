@@ -1,0 +1,252 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_ui_sure</title>
+  <meta name="keywords" content="prt_ui_sure">
+  <meta name="description" content="PRT_UI_SURE M-file for prt_ui_sure.fig">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_ui_sure.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_ui_sure
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>PRT_UI_SURE M-file for prt_ui_sure.fig</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function varargout = prt_ui_sure(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> PRT_UI_SURE M-file for prt_ui_sure.fig
+      PRT_UI_SURE, by itself, creates a new PRT_UI_SURE or raises the existing
+      singleton*.
+
+      H = PRT_UI_SURE returns the handle to a new PRT_UI_SURE or the handle to
+      the existing singleton*.
+
+      PRT_UI_SURE('CALLBACK',hObject,eventData,handles,...) calls the local
+      function named CALLBACK in PRT_UI_SURE.M with the given input arguments.
+
+      PRT_UI_SURE('Property','Value',...) creates a new PRT_UI_SURE or raises the
+      existing singleton*.  Starting from the left, property value pairs are
+      applied to the GUI before prt_ui_sure_OpeningFcn gets called.  An
+      unrecognized property name or invalid value makes property application
+      stop.  All inputs are passed to prt_ui_sure_OpeningFcn via varargin.
+
+      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one
+      instance to run (singleton)&quot;.
+
+ See also: GUIDE, GUIDATA, GUIHANDLES</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>	Get/set the defaults values associated with an identifier</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_design.html" class="code" title="function varargout = prt_ui_design(varargin)">prt_ui_design</a>	PRT_UI_DESIGN M-file for prt_ui_design.fig</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function prt_ui_sure_OpeningFcn(hObject, eventdata, handles, varargin)</a></li><li><a href="#_sub2" class="code">function varargout = prt_ui_sure_OutputFcn(hObject, eventdata, handles)</a></li><li><a href="#_sub3" class="code">function yesbutt_Callback(hObject, eventdata, handles)</a></li><li><a href="#_sub4" class="code">function nobutt_Callback(hObject, eventdata, handles)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = prt_ui_sure(varargin)</a>
+0002 <span class="comment">% PRT_UI_SURE M-file for prt_ui_sure.fig</span>
+0003 <span class="comment">%      PRT_UI_SURE, by itself, creates a new PRT_UI_SURE or raises the existing</span>
+0004 <span class="comment">%      singleton*.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%      H = PRT_UI_SURE returns the handle to a new PRT_UI_SURE or the handle to</span>
+0007 <span class="comment">%      the existing singleton*.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%      PRT_UI_SURE('CALLBACK',hObject,eventData,handles,...) calls the local</span>
+0010 <span class="comment">%      function named CALLBACK in PRT_UI_SURE.M with the given input arguments.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%      PRT_UI_SURE('Property','Value',...) creates a new PRT_UI_SURE or raises the</span>
+0013 <span class="comment">%      existing singleton*.  Starting from the left, property value pairs are</span>
+0014 <span class="comment">%      applied to the GUI before prt_ui_sure_OpeningFcn gets called.  An</span>
+0015 <span class="comment">%      unrecognized property name or invalid value makes property application</span>
+0016 <span class="comment">%      stop.  All inputs are passed to prt_ui_sure_OpeningFcn via varargin.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%      *See GUI Options on GUIDE's Tools menu.  Choose &quot;GUI allows only one</span>
+0019 <span class="comment">%      instance to run (singleton)&quot;.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% See also: GUIDE, GUIDATA, GUIHANDLES</span>
+0022 
+0023 <span class="comment">% Edit the above text to modify the response to help prt_ui_sure</span>
+0024 
+0025 <span class="comment">% Last Modified by GUIDE v2.5 16-May-2012 14:33:00</span>
+0026 
+0027 <span class="comment">% Begin initialization code - DO NOT EDIT</span>
+0028 gui_Singleton = 1;
+0029 gui_State = struct(<span class="string">'gui_Name'</span>,       mfilename, <span class="keyword">...</span>
+0030     <span class="string">'gui_Singleton'</span>,  gui_Singleton, <span class="keyword">...</span>
+0031     <span class="string">'gui_OpeningFcn'</span>, @<a href="#_sub1" class="code" title="subfunction prt_ui_sure_OpeningFcn(hObject, eventdata, handles, varargin)">prt_ui_sure_OpeningFcn</a>, <span class="keyword">...</span>
+0032     <span class="string">'gui_OutputFcn'</span>,  @<a href="#_sub2" class="code" title="subfunction varargout = prt_ui_sure_OutputFcn(hObject, eventdata, handles)">prt_ui_sure_OutputFcn</a>, <span class="keyword">...</span>
+0033     <span class="string">'gui_LayoutFcn'</span>,  [] , <span class="keyword">...</span>
+0034     <span class="string">'gui_Callback'</span>,   []);
+0035 <span class="keyword">if</span> nargin &amp;&amp; ischar(varargin{1})
+0036     gui_State.gui_Callback = str2func(varargin{1});
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> nargout
+0040     [varargout{1:nargout}] = gui_mainfcn(gui_State, varargin{:});
+0041 <span class="keyword">else</span>
+0042     gui_mainfcn(gui_State, varargin{:});
+0043 <span class="keyword">end</span>
+0044 <span class="comment">% End initialization code - DO NOT EDIT</span>
+0045 
+0046 
+0047 <span class="comment">% --- Executes just before prt_ui_sure is made visible.</span>
+0048 <a name="_sub1" href="#_subfunctions" class="code">function prt_ui_sure_OpeningFcn(hObject, eventdata, handles, varargin)</a>
+0049 <span class="comment">% This function has no output args, see OutputFcn.</span>
+0050 <span class="comment">% hObject    handle to figure</span>
+0051 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0052 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0053 <span class="comment">% varargin   command line arguments to prt_ui_sure (see VARARGIN)</span>
+0054 
+0055 <span class="comment">% Choose default command line output for prt_ui_sure</span>
+0056 handles.output = hObject;
+0057 Tag=<span class="string">'continue_input'</span>;
+0058 F = findall(allchild(0),<span class="string">'Flat'</span>,<span class="string">'Tag'</span>,Tag);
+0059 <span class="keyword">if</span> length(F) &gt; 1
+0060     <span class="comment">% Multiple Graphics windows - close all but most recent</span>
+0061     close(F(2:end))
+0062     F = F(1);
+0063     uistack(F,<span class="string">'top'</span>)
+0064 <span class="keyword">elseif</span> length(F)==1
+0065     uistack(F,<span class="string">'top'</span>)
+0066 <span class="keyword">else</span>
+0067     set(handles.figure1,<span class="string">'Tag'</span>,Tag)
+0068     
+0069     <span class="comment">%set size of the window, taking screen resolution and platform into account</span>
+0070     S0= spm(<span class="string">'WinSize'</span>,<span class="string">'0'</span>,1);   <span class="comment">%-Screen size (of the current monitor)</span>
+0071     <span class="keyword">if</span> ispc
+0072         PF=<span class="string">'MS Sans Serif'</span>;
+0073     <span class="keyword">else</span>
+0074         PF= spm_platform(<span class="string">'fonts'</span>);     <span class="comment">%-Font names (for this platform)</span>
+0075         PF=PF.helvetica;
+0076     <span class="keyword">end</span>
+0077     tmp  = [S0(3)/1280 (S0(4))/800];
+0078     ratio=min(tmp)*[1 1 1 1];
+0079     FS = 1 + 0.85*(min(ratio)-1);  <span class="comment">%factor to scale the fonts</span>
+0080     x=get(handles.figure1,<span class="string">'Position'</span>);
+0081     set(handles.figure1,<span class="string">'DefaultTextFontSize'</span>,FS*12,<span class="keyword">...</span>
+0082         <span class="string">'DefaultUicontrolFontSize'</span>,FS*12,<span class="keyword">...</span>
+0083         <span class="string">'DefaultTextFontName'</span>,PF,<span class="keyword">...</span>
+0084         <span class="string">'DefaultAxesFontName'</span>,PF,<span class="keyword">...</span>
+0085         <span class="string">'DefaultUicontrolFontName'</span>,PF)
+0086     set(handles.figure1,<span class="string">'Position'</span>,ratio.*x)
+0087     set(handles.figure1,<span class="string">'Resize'</span>,<span class="string">'on'</span>)
+0088     
+0089     <span class="comment">% Choose the color of the different backgrounds and figure parameters</span>
+0090     color=<a href="prt_get_defaults.html" class="code" title="function varargout = prt_get_defaults(defstr, varargin)">prt_get_defaults</a>(<span class="string">'color'</span>);
+0091     set(handles.figure1,<span class="string">'Color'</span>,color.bg1)
+0092     aa=get(handles.figure1,<span class="string">'children'</span>);
+0093     <span class="keyword">for</span> i=1:length(aa)
+0094         <span class="keyword">if</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uipanel'</span>)
+0095             set(aa(i),<span class="string">'BackgroundColor'</span>,color.bg2)
+0096             bb=get(aa(i),<span class="string">'children'</span>);
+0097             <span class="keyword">if</span> ~isempty(bb)
+0098                 <span class="keyword">for</span> j=1:length(bb)
+0099                     <span class="keyword">if</span> ~isempty(find(strcmpi(get(bb(j),<span class="string">'Style'</span>),{<span class="string">'text'</span>,<span class="keyword">...</span>
+0100                             <span class="string">'radiobutton'</span>,<span class="string">'checkbox'</span>})))
+0101                         set(bb(j),<span class="string">'BackgroundColor'</span>,color.bg2)
+0102                     <span class="keyword">elseif</span> ~isempty(find(strcmpi(get(bb(j),<span class="string">'Style'</span>),<span class="string">'pushbutton'</span>)))
+0103                         set(bb(j),<span class="string">'BackgroundColor'</span>,color.fr)
+0104                     <span class="keyword">end</span>
+0105                     set(bb(j),<span class="string">'FontUnits'</span>,<span class="string">'pixel'</span>)
+0106                     xf=get(bb(j),<span class="string">'FontSize'</span>);
+0107                     set(bb(j),<span class="string">'FontSize'</span>,ceil(FS*xf),<span class="string">'FontName'</span>,PF,<span class="keyword">...</span>
+0108                         <span class="string">'FontUnits'</span>,<span class="string">'normalized'</span>,<span class="string">'Units'</span>,<span class="string">'normalized'</span>)
+0109                 <span class="keyword">end</span>
+0110             <span class="keyword">end</span>
+0111         <span class="keyword">elseif</span> strcmpi(get(aa(i),<span class="string">'type'</span>),<span class="string">'uicontrol'</span>)
+0112             <span class="keyword">if</span> ~isempty(find(strcmpi(get(aa(i),<span class="string">'Style'</span>),{<span class="string">'text'</span>,<span class="keyword">...</span>
+0113                     <span class="string">'radiobutton'</span>,<span class="string">'checkbox'</span>,<span class="string">'listbox'</span>})))
+0114                 set(aa(i),<span class="string">'BackgroundColor'</span>,color.bg1)
+0115             <span class="keyword">elseif</span> ~isempty(find(strcmpi(get(aa(i),<span class="string">'Style'</span>),<span class="string">'pushbutton'</span>)))
+0116                 set(aa(i),<span class="string">'BackgroundColor'</span>,color.fr)
+0117             <span class="keyword">end</span>
+0118         <span class="keyword">end</span>
+0119         set(aa(i),<span class="string">'FontUnits'</span>,<span class="string">'pixel'</span>)
+0120         xf=get(aa(i),<span class="string">'FontSize'</span>);
+0121         set(aa(i),<span class="string">'FontSize'</span>,ceil(FS*xf),<span class="string">'FontName'</span>,PF,<span class="keyword">...</span>
+0122             <span class="string">'Units'</span>,<span class="string">'normalized'</span>)
+0123     <span class="keyword">end</span>
+0124 
+0125 
+0126 <span class="comment">% Choose default command line output for prt_text_input</span>
+0127 handles.output = 0;
+0128 
+0129 <span class="comment">% Update handles structure</span>
+0130 guidata(hObject, handles);
+0131 
+0132 
+0133 <span class="keyword">end</span>
+0134 <span class="comment">% Update handles structure</span>
+0135 guidata(hObject, handles);
+0136 
+0137 <span class="comment">%UIWAIT makes prt_text_input wait for user response (see UIRESUME)</span>
+0138 uiwait(handles.figure1);
+0139 
+0140 <span class="comment">% UIWAIT makes prt_ui_sure wait for user response (see UIRESUME)</span>
+0141 <span class="comment">% uiwait(handles.figure1);</span>
+0142 
+0143 
+0144 <span class="comment">% --- Outputs from this function are returned to the command line.</span>
+0145 <a name="_sub2" href="#_subfunctions" class="code">function varargout = prt_ui_sure_OutputFcn(hObject, eventdata, handles) </a>
+0146 <span class="comment">% varargout  cell array for returning output args (see VARARGOUT);</span>
+0147 <span class="comment">% hObject    handle to figure</span>
+0148 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0149 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0150 
+0151 <span class="comment">% Get default command line output from handles structure</span>
+0152 <span class="keyword">if</span> isfield(handles,<span class="string">'output'</span>) &amp;&amp; ~isempty(handles.output)
+0153     varargout{1} = handles.output;
+0154 <span class="keyword">else</span>
+0155     varargout{1}=[];
+0156 <span class="keyword">end</span>
+0157 
+0158 <span class="comment">% The figure can be deleted now</span>
+0159 <span class="keyword">if</span> isfield(handles,<span class="string">'figure1'</span>)
+0160     delete(handles.figure1);
+0161 <span class="keyword">end</span>
+0162 
+0163 
+0164 <span class="comment">% --- Executes on button press in yesbutt.</span>
+0165 <a name="_sub3" href="#_subfunctions" class="code">function yesbutt_Callback(hObject, eventdata, handles)</a>
+0166 <span class="comment">% hObject    handle to yesbutt (see GCBO)</span>
+0167 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0168 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0169 handles.output = 1;
+0170 
+0171 <span class="comment">% Update handles structure</span>
+0172 guidata(hObject, handles);
+0173 uiresume(handles.figure1);
+0174 
+0175 <span class="comment">% --- Executes on button press in nobutt.</span>
+0176 <a name="_sub4" href="#_subfunctions" class="code">function nobutt_Callback(hObject, eventdata, handles)</a>
+0177 <span class="comment">% hObject    handle to nobutt (see GCBO)</span>
+0178 <span class="comment">% eventdata  reserved - to be defined in a future version of MATLAB</span>
+0179 <span class="comment">% handles    structure with handles and user data (see GUIDATA)</span>
+0180 handles.output =0;
+0181 
+0182 <span class="comment">% Update handles structure</span>
+0183 guidata(hObject, handles);
+0184 uiresume(handles.figure1);</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

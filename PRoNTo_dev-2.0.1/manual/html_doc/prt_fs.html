@@ -1,0 +1,491 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_fs</title>
+  <meta name="keywords" content="prt_fs">
+  <meta name="description" content="Function to build file arrays containing the (linearly detrended) data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_fs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_fs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Function to build file arrays containing the (linearly detrended) data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [outfile] = prt_fs(PRT,in) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Function to build file arrays containing the (linearly detrended) data
+ and compute a linear (dot product) kernel from them
+
+ Inputs:
+ -------
+ in.fname:      filename for the PRT.mat (string)
+ in.fs_name:    name of fs and relative path filename for the kernel matrix
+
+ in.mod(m).mod_name:  name of modality to include in this kernel (string)
+ in.mod(m).detrend:   detrend (scalar: 0 = none, 1 = linear)
+ in.mod(m).param_dt:  parameters for the kernel detrend (e.g. DCT bases)
+ in.mod(m).mode:      'all_cond' or 'all_scans' (string)
+ in.mod(m).mask:      mask file used to create the kernel
+ in.mod(m).normalise: 0 = none, 1 = normalise_kernel, 2 = scale modality
+ in.mod(m).matnorm:   filename for scaling matrix
+ in.mod(m).multroi    1 if one kernel per region required
+ in.mod(m).atlasroi   name of the atlas to build one kernel per region
+
+ in.flag_mm:   Perform multi-kernel learning (1) or not (0)? If yes, the
+ kernel is saved as a cell vector, with one kernel per modality
+
+ Outputs:
+ --------
+ Calls prt_init_fs to populate basic fields in PRT.fs(f)...
+ Writes PRT.mat
+ Writes the kernel matrix to the path indicated by in.fs_name
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>	Function to build file arrays containing the (linearly detrended) data</li><li><a href="prt_init_fs.html" class="code" title="function [fid,PRT,tocomp] = prt_init_fs(PRT, in, mids,mask,precmask,headers)">prt_init_fs</a>	function to initialise the kernel data structure</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_ui_prepare_data.html" class="code" title="function varargout = prt_ui_prepare_data(varargin)">prt_ui_prepare_data</a>	PRT_UI_KERNEL MATLAB code for prt_ui_kernel.fig</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [mask, precmask, headers,PRT, ratl] = load_masks(PRT, prt_dir, in, mids)</a></li><li><a href="#_sub2" class="code">function [PRT,Phi,igd,nroi] = prt_compute_ROI_kernels(PRT,in,fid,mids,atl,addin,ind_mod)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [outfile] = prt_fs(PRT,in)</a>
+0002 <span class="comment">% Function to build file arrays containing the (linearly detrended) data</span>
+0003 <span class="comment">% and compute a linear (dot product) kernel from them</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">% -------</span>
+0007 <span class="comment">% in.fname:      filename for the PRT.mat (string)</span>
+0008 <span class="comment">% in.fs_name:    name of fs and relative path filename for the kernel matrix</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% in.mod(m).mod_name:  name of modality to include in this kernel (string)</span>
+0011 <span class="comment">% in.mod(m).detrend:   detrend (scalar: 0 = none, 1 = linear)</span>
+0012 <span class="comment">% in.mod(m).param_dt:  parameters for the kernel detrend (e.g. DCT bases)</span>
+0013 <span class="comment">% in.mod(m).mode:      'all_cond' or 'all_scans' (string)</span>
+0014 <span class="comment">% in.mod(m).mask:      mask file used to create the kernel</span>
+0015 <span class="comment">% in.mod(m).normalise: 0 = none, 1 = normalise_kernel, 2 = scale modality</span>
+0016 <span class="comment">% in.mod(m).matnorm:   filename for scaling matrix</span>
+0017 <span class="comment">% in.mod(m).multroi    1 if one kernel per region required</span>
+0018 <span class="comment">% in.mod(m).atlasroi   name of the atlas to build one kernel per region</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% in.flag_mm:   Perform multi-kernel learning (1) or not (0)? If yes, the</span>
+0021 <span class="comment">% kernel is saved as a cell vector, with one kernel per modality</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% Outputs:</span>
+0024 <span class="comment">% --------</span>
+0025 <span class="comment">% Calls prt_init_fs to populate basic fields in PRT.fs(f)...</span>
+0026 <span class="comment">% Writes PRT.mat</span>
+0027 <span class="comment">% Writes the kernel matrix to the path indicated by in.fs_name</span>
+0028 <span class="comment">%__________________________________________________________________________</span>
+0029 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0030 
+0031 <span class="comment">% Written by A. Marquand and J. Schrouff</span>
+0032 <span class="comment">% $Id$</span>
+0033 
+0034 <span class="comment">% Configure some variables and get defaults</span>
+0035 <span class="comment">% -------------------------------------------------------------------------</span>
+0036 prt_dir  = regexprep(in.fname,<span class="string">'PRT.mat'</span>, <span class="string">''</span>); <span class="comment">% or: fileparts(fname);</span>
+0037 
+0038 <span class="comment">% get the index of the modalities for which the user wants a kernel/data</span>
+0039 n_mods=length(in.mod);
+0040 mids=[];
+0041 <span class="keyword">for</span> i=1:n_mods
+0042     <span class="keyword">if</span> ~isempty(in.mod(i).mod_name)
+0043         mids = [mids, i];
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 n_mods=length(mids);
+0047 
+0048 <span class="comment">% Load mask(s) and resize if necessary</span>
+0049 <span class="comment">%force second-level masking by atlas if provided</span>
+0050 <span class="keyword">for</span> i=1:length(in.mod)
+0051     <span class="keyword">if</span> isfield(in.mod(i),<span class="string">'atlasroi'</span>)
+0052         <span class="keyword">if</span> ~isempty(in.mod(i).atlasroi) &amp;&amp; isempty(in.mod(i).mask)
+0053             in.mod(i).mask = in.mod(i).atlasroi;    <span class="comment">%option only available for one modality</span>
+0054         <span class="keyword">end</span>
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 [mask,precmask,headers,PRT,ratl] = <a href="#_sub1" class="code" title="subfunction [mask, precmask, headers,PRT, ratl] = load_masks(PRT, prt_dir, in, mids)">load_masks</a>(PRT, prt_dir, in, mids);
+0059 
+0060 <span class="comment">% Initialize the file arrays, kernel and feature set parameters</span>
+0061 [fid,PRT,tocomp] = <a href="prt_init_fs.html" class="code" title="function [fid,PRT,tocomp] = prt_init_fs(PRT, in, mids,mask,precmask,headers)">prt_init_fs</a>(PRT,in,mids,mask,precmask,headers);
+0062 
+0063 in.tocomp = tocomp;
+0064 in.precmask = precmask;
+0065 in.fid = fid;
+0066 
+0067 <span class="comment">% Build the feature set and kernel</span>
+0068 <span class="comment">%--------------------------------------------------------------------------</span>
+0069 
+0070 Phi = [];
+0071 igd = [];
+0072 PRT.fs(fid).multkernelROI = 0; <span class="comment">% Multiple kernels with an atlas</span>
+0073 PRT.fs(fid).multkernel = 0;    <span class="comment">% Multiple kernels from different modalities</span>
+0074 nroi = 0;
+0075 
+0076 <span class="keyword">if</span> in.flag_mm   <span class="comment">% One kernel per modality so need to treat them independently</span>
+0077     <span class="keyword">for</span> i = 1:n_mods  <span class="comment">% multiple modalities</span>
+0078         <span class="comment">% For each modality, get the corresponding ID mat and sample index</span>
+0079         idtk = PRT.fs(fid).id_mat(:,3) == mids(i);
+0080         nimm = length(unique(PRT.fs(fid).id_mat(:,3) == mids(i)));
+0081         
+0082         <span class="comment">%check that modalities have the same dimensions in terms of samples</span>
+0083         nim1 =length(unique(PRT.fs(fid).id_mat(:,3) == mids(1)));
+0084         <span class="keyword">if</span> nimm~= nim1
+0085             error(<span class="string">'prt_fs:MultKernMod_DifIm'</span>,<span class="keyword">...</span>
+0086                 <span class="string">'Modalities should have the same number of samples to be considered for MKL'</span>)
+0087         <span class="keyword">end</span>
+0088         addin.ID = PRT.fs(fid).id_mat(idtk,:);
+0089         
+0090         <span class="comment">% If second-level, i.e. atlas-based kernels as well</span>
+0091         <span class="keyword">if</span> isfield(in.mod(mids(i)),<span class="string">'multroi'</span>) <span class="keyword">...</span>
+0092                 &amp;&amp; in.mod(mids(i)).multroi
+0093             atl=spm_vol(ratl{i});
+0094             <span class="comment">%Initialize all fields and compute the feature sets if needed</span>
+0095             <span class="keyword">if</span> any(in.tocomp)
+0096                 [PRT] = <a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>(PRT,in,1,addin);
+0097             <span class="keyword">end</span>
+0098             nroiprev = nroi;
+0099             [PRT,Phim,igk,nroi] = <a href="#_sub2" class="code" title="subfunction [PRT,Phi,igd,nroi] = prt_compute_ROI_kernels(PRT,in,fid,mids,atl,addin,ind_mod)">prt_compute_ROI_kernels</a>(PRT,in,fid,mids(i),atl,addin,i);
+0100             PRT.fs(fid).atlas_name = ratl;            
+0101             igd = [igd,igk+nroiprev];
+0102         <span class="keyword">else</span>
+0103             [PRT,Phim] = <a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>(PRT,in,1,addin);
+0104             [d1,idmax] = max(Phim);
+0105             [d1,idmin] = min(Phim);
+0106             min_max = find(idmax==idmin);
+0107             <span class="keyword">if</span> isempty(min_max) || unique(Phim(:,min_max))~=0 <span class="comment">%Kernel does not contain a whole line of zeros</span>
+0108                 igd = [igd,i];
+0109             <span class="keyword">else</span>
+0110                 beep
+0111                 disp(<span class="string">'No overlap between data and mask/atlas for at least one sample'</span>)
+0112                 disp([<span class="string">'Kernel '</span>,num2str(i),<span class="string">' will be removed from further analysis'</span>])
+0113             <span class="keyword">end</span>
+0114             Phim = {Phim};
+0115             PRT.fs(fid).atlas_name = {};
+0116         <span class="keyword">end</span>
+0117         Phi = [Phi, Phim];
+0118     <span class="keyword">end</span>
+0119     <span class="comment">%post-hoc: the ID mat should be the same for all modalities involved,</span>
+0120     <span class="comment">%so only the first one will be saved</span>
+0121     <span class="keyword">if</span> ~isempty(igd) &amp;&amp; isempty(PRT.fs(fid).atlas_name)
+0122         PRT.fs(fid).modality = PRT.fs(fid).modality(igd);
+0123     <span class="keyword">end</span>
+0124     indm=PRT.fs(fid).fas.im==1;
+0125     PRT.fs(fid).id_mat=PRT.fs(fid).id_mat(indm,:);
+0126     PRT.fs(fid).multkernel = 1;
+0127 <span class="keyword">else</span>
+0128     <span class="comment">% Concatenate the modalities in samples or only one modality</span>
+0129     <span class="comment">% Does the same as before without playing with the ID matrix</span>
+0130     <span class="comment">% If second-level, i.e. atlas-based kernels as well</span>
+0131     
+0132     <span class="comment">% First check that all concatenated modalitlies have the same flag and</span>
+0133     <span class="comment">% atlas, or no atlas</span>
+0134     <span class="keyword">if</span> n_mods&gt;1
+0135         mult = zeros(n_mods,1);
+0136         <span class="keyword">for</span> i = 1:n_mods
+0137             <span class="keyword">if</span> isfield(in.mod(mids(i)),<span class="string">'multroi'</span>) <span class="keyword">...</span>
+0138                     &amp;&amp; in.mod(mids(i)).multroi
+0139                 mult(i) = 1;
+0140                 atl = ratl{i};
+0141                 <span class="keyword">if</span> i ==1
+0142                     atlmod = atl;
+0143                 <span class="keyword">end</span>
+0144                 <span class="keyword">if</span> ~strcmpi(atl,atlmod)
+0145                     error(<span class="string">'prt_fs:ConcatenatingWithDifferentAtlases'</span>,<span class="keyword">...</span>
+0146                         <span class="string">'Concatenated multiple modalities should have the same atlas'</span>);
+0147                 <span class="keyword">end</span>
+0148             <span class="keyword">end</span>
+0149         <span class="keyword">end</span>
+0150         <span class="keyword">if</span> length(unique(mult))~=1
+0151             error(<span class="string">'prt_fs:ConcatenateModalitiesWithandWithoutAtlas'</span>,<span class="keyword">...</span>
+0152                 <span class="string">'Modalities cannot be concatenated unless they all have no or the same atlas'</span>)
+0153         <span class="keyword">end</span>
+0154     <span class="keyword">end</span>
+0155     
+0156     atl=spm_vol(ratl{1});
+0157     addin = struct();
+0158     <span class="comment">%Initialize all fields and compute the feature sets if needed</span>
+0159     <span class="keyword">if</span> isfield(in.mod(mids(1)),<span class="string">'multroi'</span>) <span class="keyword">...</span>
+0160             &amp;&amp; in.mod(mids(1)).multroi
+0161         <span class="keyword">if</span> any(in.tocomp)
+0162             [PRT] = <a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>(PRT,in,0,[]);
+0163         <span class="keyword">end</span>
+0164         [PRT,Phim,igd] = <a href="#_sub2" class="code" title="subfunction [PRT,Phi,igd,nroi] = prt_compute_ROI_kernels(PRT,in,fid,mids,atl,addin,ind_mod)">prt_compute_ROI_kernels</a>(PRT,in,fid,mids(1),atl,addin,1);
+0165         PRT.fs(fid).atlas_name{1} = ratl{1};
+0166         Phi = Phim;
+0167     <span class="keyword">else</span> <span class="comment">% Simply concatenate the modalities in samples</span>
+0168         [PRT,Phim] = <a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>(PRT,in,0,[]);
+0169         PRT.fs(fid).multkernel = 0;
+0170         PRT.fs(fid).atlas_name = {};
+0171         [d1,idmax] = max(Phim);
+0172         [d1,idmin] = min(Phim);
+0173         min_max = find(idmax==idmin);
+0174         <span class="keyword">if</span> isempty(min_max) || unique(Phim(:,min_max))~=0 <span class="comment">%Kernel does not contain a whole line of zeros</span>
+0175             igd = 1;
+0176         <span class="keyword">else</span>
+0177             error(<span class="string">'prt_fs:NoDataInMask'</span>,<span class="keyword">...</span>
+0178                 <span class="string">'No overlap between data and mask/atlas for at least one sample, cannot create kernel'</span>)
+0179         <span class="keyword">end</span>
+0180         Phi{1}=Phim;
+0181     <span class="keyword">end</span>
+0182 <span class="keyword">end</span>
+0183 
+0184 
+0185 clear Phim
+0186 
+0187 <span class="keyword">if</span> isempty(igd)
+0188     error(<span class="string">'prt_fs:NoDataInMask'</span>,<span class="keyword">...</span>
+0189         <span class="string">'No overlap between data and mask/atlas for at least one sample, cannot create kernel'</span>)
+0190 <span class="keyword">else</span>
+0191     Phi = Phi(igd);
+0192     PRT.fs(fid).igood_kerns = igd;
+0193 <span class="keyword">end</span>
+0194 
+0195 
+0196 <span class="comment">% Save kernel and function output</span>
+0197 <span class="comment">% -------------------------------------------------------------------------</span>
+0198 outfile = in.fname;
+0199 disp(<span class="string">'Saving feature set to: PRT.mat.......&gt;&gt;'</span>)
+0200 disp([<span class="string">'Saving kernel to: '</span>,in.fs_name,<span class="string">'.mat.......&gt;&gt;'</span>])
+0201 fs_file = [prt_dir,in.fs_name];
+0202 <span class="keyword">if</span> spm_check_version(<span class="string">'MATLAB'</span>,<span class="string">'7'</span>) &lt; 0
+0203     save(outfile,<span class="string">'-V6'</span>,<span class="string">'PRT'</span>);
+0204     save(fs_file,<span class="string">'-V6'</span>,<span class="string">'Phi'</span>);
+0205 <span class="keyword">else</span>
+0206     save(outfile,<span class="string">'PRT'</span>);
+0207     save(fs_file,<span class="string">'Phi'</span>);
+0208 <span class="keyword">end</span>
+0209 disp(<span class="string">'Done.'</span>)
+0210 
+0211 <span class="comment">%--------------------------------------------------------------------------</span>
+0212 <span class="comment">%------------------------- Private function -------------------------------</span>
+0213 <span class="comment">%--------------------------------------------------------------------------</span>
+0214 
+0215 <a name="_sub1" href="#_subfunctions" class="code">function [mask, precmask, headers,PRT, ratl] = load_masks(PRT, prt_dir, in, mids)</a>
+0216 <span class="comment">% function to load the mask for each modality</span>
+0217 <span class="comment">% -------------------------------------------</span>
+0218 n_mods   = length(mids);
+0219 mask     = cell(1,n_mods);
+0220 precmask = cell(1,n_mods);
+0221 headers  = cell(1,n_mods);
+0222 ratl     = cell(1,n_mods);
+0223 <span class="keyword">for</span> m = 1:n_mods
+0224     mid = mids(m);
+0225     
+0226     <span class="comment">% get mask for the within-brain voxels (from data and design)</span>
+0227     ddmask = PRT.masks(mid).fname;
+0228     <span class="keyword">try</span>
+0229         M = nifti(ddmask);
+0230     <span class="keyword">catch</span> <span class="comment">%#ok&lt;*CTCH&gt;</span>
+0231         error(<span class="string">'prt_fs:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0232             <span class="string">'Could not load mask file'</span>);
+0233     <span class="keyword">end</span>
+0234     
+0235     <span class="comment">% get mask for the kernel if one was specified</span>
+0236     mfile = in.mod(mid).mask;
+0237     <span class="keyword">if</span> ~isempty(mfile) <span class="comment">%&amp;&amp;  mfile ~= 0</span>
+0238         <span class="keyword">try</span>
+0239             precM = spm_vol(char(mfile));
+0240         <span class="keyword">catch</span>
+0241             error(<span class="string">'prt_fs:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0242                 <span class="string">'Could not load mask file for preprocessing'</span>);
+0243         <span class="keyword">end</span>
+0244     <span class="keyword">end</span>
+0245     
+0246     <span class="comment">% get atlas for the ROI based kernel if one was specified</span>
+0247     <span class="keyword">if</span> isfield(in.mod(mid),<span class="string">'atlasroi'</span>)
+0248         alfile = in.mod(mid).atlasroi;
+0249         <span class="keyword">if</span> ~isempty(alfile) <span class="comment">%&amp;&amp;  mfile ~= 0</span>
+0250             <span class="keyword">try</span>
+0251                 precA = spm_vol(char(alfile));
+0252             <span class="keyword">catch</span>
+0253                 error(<span class="string">'prt_fs:CouldNotLoadFile'</span>,<span class="keyword">...</span>
+0254                     <span class="string">'Could not load mask file for preprocessing'</span>);
+0255             <span class="keyword">end</span>
+0256         <span class="keyword">end</span>
+0257     <span class="keyword">else</span>
+0258         alfile=[];
+0259     <span class="keyword">end</span>
+0260     
+0261     <span class="comment">% get header of the first scan of that modality</span>
+0262     <span class="keyword">if</span> isfield(PRT,<span class="string">'fas'</span>) &amp;&amp; mid&lt;=length(PRT.fas) &amp;&amp; <span class="keyword">...</span>
+0263             ~isempty(PRT.fas(mid).dat)
+0264         N = PRT.fas(mid).hdr;
+0265     <span class="keyword">else</span>
+0266         N = spm_vol(PRT.group(1).subject(1).modality(mid).scans(1,:));
+0267     <span class="keyword">end</span>
+0268     headers{m}=N;
+0269     
+0270     <span class="comment">% compute voxel dimensions and check for equality if n_mod &gt; 1</span>
+0271     <span class="keyword">if</span> m == 1
+0272         n_vox = prod(N.dim(1:3));
+0273     <span class="keyword">elseif</span> n_mods &gt; 1 &amp;&amp; n_vox ~= prod(N.dim(1:3))
+0274         error(<span class="string">'prt_fs:multipleModatlitiesVariableFeatures'</span>,<span class="keyword">...</span>
+0275             <span class="string">'Multiple modalities specified, but have variable numbers of features'</span>);
+0276     <span class="keyword">end</span>
+0277     
+0278     <span class="comment">% resize the different masks if needed</span>
+0279     <span class="keyword">if</span> N.dim(3)==1, Npdim = N.dim(1:2); <span class="keyword">else</span> Npdim = N.dim; <span class="keyword">end</span> <span class="comment">% handling case of 2D images</span>
+0280     <span class="keyword">if</span> any(size(M.dat(:,:,:,1)) ~= Npdim)
+0281         warning(<span class="string">'prt_fs:maskAndImagesDifferentDim'</span>,<span class="keyword">...</span>
+0282             <span class="string">'Mask has different dimensions to the image files. Resizing...'</span>);
+0283         
+0284         V2 = spm_vol(char(ddmask));
+0285         <span class="comment">% reslicing V2</span>
+0286         fl_res = struct(<span class="string">'mean'</span>,false,<span class="string">'interp'</span>,0,<span class="string">'which'</span>,1,<span class="string">'prefix'</span>,<span class="string">'tmp_'</span>);
+0287         spm_reslice([N V2],fl_res)
+0288         <span class="comment">% now renaming the file</span>
+0289         [V2_pth,V2_fn,V2_ext] = spm_fileparts(V2.fname);
+0290         rV2_fn = [fl_res.prefix,V2_fn];
+0291         <span class="keyword">if</span> strcmp(V2_ext,<span class="string">'.nii'</span>)
+0292             <span class="comment">% turn .nii into .img/.hdr image!</span>
+0293             V_in = spm_vol(fullfile(V2_pth,[rV2_fn,<span class="string">'.nii'</span>]));
+0294             V_out = V_in; V_out.fname = fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]);
+0295             spm_imcalc(V_in,V_out,<span class="string">'i1'</span>);
+0296         <span class="keyword">end</span>
+0297         mfile_new = [<span class="string">'updated_1stlevel_mask_m'</span>,num2str(mid)];
+0298         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]), <span class="keyword">...</span>
+0299             fullfile(prt_dir,[mfile_new,<span class="string">'.img'</span>]));
+0300         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.hdr'</span>]), <span class="keyword">...</span>
+0301             fullfile(prt_dir,[mfile_new,<span class="string">'.hdr'</span>]));
+0302         PRT.masks(mid).fname = fullfile(prt_dir,[mfile_new,<span class="string">'.img'</span>]);
+0303         mask{m} = PRT.masks(mid).fname;
+0304     <span class="keyword">else</span>
+0305         mask{m} = ddmask;
+0306     <span class="keyword">end</span>
+0307     <span class="keyword">if</span> ~isempty(mfile) &amp;&amp; any((precM.dim~= N.dim)) <span class="comment">% &amp;&amp; mfile ~= 0</span>
+0308         warning(<span class="string">'prt_fs:maskAndImagesDifferentDim'</span>,<span class="keyword">...</span>
+0309             <span class="string">'Preprocessing mask has different dimensions to the image files. Resizing...'</span>);
+0310         V2 = spm_vol(char(mfile));
+0311         <span class="comment">% reslicing V2</span>
+0312         fl_res = struct(<span class="string">'mean'</span>,false,<span class="string">'interp'</span>,0,<span class="string">'which'</span>,1,<span class="string">'prefix'</span>,<span class="string">'tmp_'</span>);
+0313         spm_reslice([N V2],fl_res)
+0314         <span class="comment">% now renaming the file</span>
+0315         [V2_pth,V2_fn,V2_ext] = spm_fileparts(V2.fname);
+0316         rV2_fn = [fl_res.prefix,V2_fn];
+0317         <span class="keyword">if</span> strcmp(V2_ext,<span class="string">'.nii'</span>)
+0318             <span class="comment">% turn .nii into .img/.hdr image!</span>
+0319             V_in = spm_vol(fullfile(V2_pth,[rV2_fn,<span class="string">'.nii'</span>]));
+0320             V_out = V_in; V_out.fname = fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]);
+0321             spm_imcalc(V_in,V_out,<span class="string">'i1'</span>);
+0322         <span class="keyword">end</span>
+0323         <span class="comment">% if more than one 2nd level mask to resize</span>
+0324         nummask = 1;
+0325         <span class="keyword">while</span> exist(fullfile( <span class="keyword">...</span>
+0326                 prt_dir,[<span class="string">'updated_2ndlevel_mask_m'</span>,num2str(mid),<span class="string">'_'</span>,<span class="keyword">...</span>
+0327                 num2str(nummask),<span class="string">'.img'</span>]),<span class="string">'file'</span>)
+0328             nummask = nummask+1;
+0329         <span class="keyword">end</span>
+0330         mfile_new = [<span class="string">'updated_2ndlevel_mask_m'</span>,num2str(mid),<span class="keyword">...</span>
+0331             <span class="string">'_'</span>,num2str(nummask)];
+0332         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]), <span class="keyword">...</span>
+0333             fullfile(prt_dir,[mfile_new,<span class="string">'.img'</span>]));
+0334         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.hdr'</span>]), <span class="keyword">...</span>
+0335             fullfile(prt_dir,[mfile_new,<span class="string">'.hdr'</span>]));
+0336         precmask{m} = fullfile(prt_dir,[mfile_new,<span class="string">'.img'</span>]);
+0337     <span class="keyword">else</span>
+0338         precmask{m} = mfile;
+0339     <span class="keyword">end</span>
+0340     <span class="keyword">if</span> ~isempty(alfile) &amp;&amp; any((precA.dim~= N.dim))
+0341         warning(<span class="string">'prt_fs:atlasAndImagesDifferentDim'</span>,<span class="keyword">...</span>
+0342             <span class="string">'Atlas has different dimensions to the image files. Resizing...'</span>);
+0343         V2 = spm_vol(char(alfile));
+0344         <span class="comment">% reslicing V2</span>
+0345         fl_res = struct(<span class="string">'mean'</span>,false,<span class="string">'interp'</span>,0,<span class="string">'which'</span>,1,<span class="string">'prefix'</span>,<span class="string">'tmp_'</span>);
+0346         spm_reslice([N V2],fl_res)
+0347         <span class="comment">% now renaming the file</span>
+0348         [V2_pth,V2_fn,V2_ext] = spm_fileparts(V2.fname);
+0349         rV2_fn = [fl_res.prefix,V2_fn];
+0350         <span class="keyword">if</span> strcmp(V2_ext,<span class="string">'.nii'</span>)
+0351             <span class="comment">% turn .nii into .img/.hdr image!</span>
+0352             V_in = spm_vol(fullfile(V2_pth,[rV2_fn,<span class="string">'.nii'</span>]));
+0353             V_out = V_in; V_out.fname = fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]);
+0354             spm_imcalc(V_in,V_out,<span class="string">'i1'</span>);
+0355         <span class="keyword">end</span>
+0356         alfile_new = [<span class="string">'updated_atlas_'</span>,V2_fn];
+0357         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.img'</span>]), <span class="keyword">...</span>
+0358             fullfile(prt_dir,[alfile_new,<span class="string">'.img'</span>]));
+0359         movefile(fullfile(V2_pth,[rV2_fn,<span class="string">'.hdr'</span>]), <span class="keyword">...</span>
+0360             fullfile(prt_dir,[alfile_new,<span class="string">'.hdr'</span>]));
+0361         ratl{m} = fullfile(prt_dir,[alfile_new,<span class="string">'.img'</span>]);
+0362     <span class="keyword">else</span>
+0363         ratl{m} = alfile;
+0364     <span class="keyword">end</span>
+0365     clear M N precM V1 V2 mfile mfile_new
+0366 <span class="keyword">end</span>
+0367 
+0368 
+0369 <a name="_sub2" href="#_subfunctions" class="code">function [PRT,Phi,igd,nroi] = prt_compute_ROI_kernels(PRT,in,fid,mids,atl,addin,ind_mod)</a>
+0370 <span class="comment">% function to load the mask for each modality</span>
+0371 <span class="comment">% -------------------------------------------</span>
+0372 
+0373 <span class="comment">%For each region, get the indexes of the voxels in the 2nd level mask</span>
+0374 h=spm_read_vols(atl);
+0375 <span class="keyword">if</span> ~isempty(PRT.fs(fid).modality(ind_mod).idfeat_fas)
+0376     idt = PRT.fs(fid).modality(ind_mod).idfeat_fas; <span class="comment">%indexes of voxels in second-level mask</span>
+0377 <span class="keyword">else</span>
+0378     idt = 1:length(PRT.fas(mids).idfeat_img);
+0379 <span class="keyword">end</span>
+0380 idm1 = PRT.fas(mids).idfeat_img(idt); <span class="comment">%indexes of voxels in first level mask</span>
+0381 interh = h(idm1);
+0382 roi = unique(interh(interh&gt;0));
+0383 nroi = length(roi);
+0384 Phi=cell(nroi,1);
+0385 in.tocomp = zeros(1,length(in.tocomp));
+0386 <span class="comment">%For each region, compute kernel and save the indexes in the image for</span>
+0387 <span class="comment">%further computation of the weights</span>
+0388 PRT.fs(fid).modality(ind_mod).idfeat_img = cell(nroi,1);
+0389 igd = []; <span class="comment">%indexes of non 0 kernels</span>
+0390 <span class="keyword">for</span> i=1:nroi
+0391     disp ([<span class="string">' &gt; Computing kernel: '</span>, num2str(i),<span class="string">' of '</span>,num2str(nroi),<span class="string">' ...'</span>])
+0392     addin.idvox_fas = idt(interh == roi(i));
+0393     [PRT,Phim] = <a href="prt_fs_modality.html" class="code" title="function [PRT,Phi] = prt_fs_modality(PRT,in, flag, addin)">prt_fs_modality</a>(PRT,in,1,addin);
+0394     [d1,idmax] = max(Phim);
+0395     [d1,idmin] = min(Phim);
+0396     min_max = find(idmax==idmin);
+0397     <span class="keyword">if</span> isempty(min_max) || unique(Phim(:,min_max))~=0 <span class="comment">%Kernel does not contain a whole line of zeros</span>
+0398         igd = [igd,i];
+0399     <span class="keyword">else</span>
+0400         beep
+0401         disp(<span class="string">'No overlap between data and mask/atlas for at least one sample'</span>)
+0402         disp([<span class="string">'Region '</span>,num2str(i),<span class="string">' will be removed from further analysis'</span>])
+0403     <span class="keyword">end</span>
+0404     Phi{i}=Phim;
+0405     <span class="comment">%         idts = idt(interh == roi(i));</span>
+0406     PRT.fs(fid).modality(ind_mod).idfeat_img{i} = find(interh == roi(i)) ;
+0407 <span class="keyword">end</span>
+0408 PRT.fs(fid).multkernelROI = 1;
+0409 <span class="keyword">if</span> ~isempty(igd)
+0410     PRT.fs(fid).modality(ind_mod).idfeat_img = PRT.fs(fid).modality(ind_mod).idfeat_img(igd);
+0411     PRT.fs(fid).modality(ind_mod).num_ROI = roi(igd);
+0412 <span class="keyword">end</span>
+0413 
+0414 
+0415 <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

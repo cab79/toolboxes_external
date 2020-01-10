@@ -1,0 +1,360 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_struct</title>
+  <meta name="keywords" content="prt_struct">
+  <meta name="description" content="% Function to load the PRT.mat and check its integrity regarding the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">.</a> &gt; prt_struct.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for .&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_struct
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>% Function to load the PRT.mat and check its integrity regarding the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [PRT,flag] = prt_struct(PRT,prtdir) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Function to load the PRT.mat and check its integrity regarding the 
+ fields that it is supposed to contain. Updates the PRT if needed.
+
+ input  : PRT structure to check
+
+ output : PRT structure updated
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_load.html" class="code" title="function PRT = prt_load(fname,flag)">prt_load</a>	Function to load the PRT.mat and check its integrity regarding the</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [PRT,flag] = prt_struct(PRT,prtdir)</a>
+0002 <span class="comment">%% Function to load the PRT.mat and check its integrity regarding the</span>
+0003 <span class="comment">% fields that it is supposed to contain. Updates the PRT if needed.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% input  : PRT structure to check</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% output : PRT structure updated</span>
+0008 <span class="comment">%_______________________________________________________________________</span>
+0009 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0010 
+0011 <span class="comment">% Written by J. Schrouff</span>
+0012 <span class="comment">% $Id: prt_struct.m 803 2013-06-11 11:46:24Z cphillip $</span>
+0013 
+0014 flag = 1; <span class="comment">% If any essential fields are missing, change flag and error</span>
+0015 flagch = 0; <span class="comment">% 1 if structure is updated</span>
+0016 <span class="comment">% Data and Design</span>
+0017 <span class="comment">%--------------------------------------------------------------------------</span>
+0018 <span class="comment">% Group</span>
+0019 ng = {<span class="string">'gr_name'</span>,<span class="string">'subject'</span>,<span class="string">'hrfoverlap'</span>,<span class="string">'hrfdelay'</span>};
+0020 np = fieldnames(PRT.group(1));
+0021 cg = ismember(ng,np);
+0022 <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0023     flag = 0;
+0024 <span class="comment">%     ita = find(cg==0);  Repair</span>
+0025 <span class="comment">%     for i = 1:length(ita)</span>
+0026 <span class="comment">%         for j=1:length(PRT.group)</span>
+0027 <span class="comment">%             PRT.group(j).(ng{ita(i)}) = [];</span>
+0028 <span class="comment">%             if ita(i)==1</span>
+0029 <span class="comment">%                 PRT.group(j).gr_name = '';</span>
+0030 <span class="comment">%             elseif ita(i)==3</span>
+0031 <span class="comment">%                 PRT.group(j).hrfoverlap = 0;</span>
+0032 <span class="comment">%             elseif ita(i)==4</span>
+0033 <span class="comment">%                 PRT.group(j).hrfdelay = 0;</span>
+0034 <span class="comment">%             end</span>
+0035 <span class="comment">%         end</span>
+0036 <span class="comment">%     end</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="comment">% Subject</span>
+0040 ng = {<span class="string">'subj_name'</span>,<span class="string">'modality'</span>};
+0041 np = fieldnames(PRT.group(1).subject(1));
+0042 cg = ismember(ng,np);
+0043 <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0044     flag = 0;
+0045 <span class="comment">%     ita = find(cg==0);</span>
+0046 <span class="comment">%     for i = 1:length(ita)</span>
+0047 <span class="comment">%         for j=1:length(PRT.group)</span>
+0048 <span class="comment">%             for k  = 1:length(PRT.group(j).subject)</span>
+0049 <span class="comment">%                 PRT.group(j).subject(k).(ng{ita(i)}) = [];</span>
+0050 <span class="comment">%                 if ita(i)==1</span>
+0051 <span class="comment">%                     PRT.group(j).subject(k).subj_name = '';</span>
+0052 <span class="comment">%                 end</span>
+0053 <span class="comment">%             end</span>
+0054 <span class="comment">%         end</span>
+0055 <span class="comment">%     end</span>
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="comment">%Modality</span>
+0059 ng = {<span class="string">'mod_name'</span>,<span class="string">'detrend'</span>,<span class="string">'covar'</span>,<span class="string">'rt_subj'</span>,<span class="string">'design'</span>,<span class="string">'scans'</span>};
+0060 np = fieldnames(PRT.group(1).subject(1).modality(1));
+0061 cg = ismember(ng,np);
+0062 <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0063     flagch = 1;
+0064     ita = find(cg==0);
+0065     <span class="keyword">for</span> i = 1:length(ita)
+0066         <span class="keyword">for</span> j=1:length(PRT.group)
+0067             <span class="keyword">for</span> k  = 1:length(PRT.group(j).subject)
+0068                 <span class="keyword">for</span> l = 1:length(PRT.group(j).subject(k).modality)
+0069                     PRT.group(j).subject(k).modality(l).(ng{ita(i)}) = [];
+0070                     <span class="keyword">if</span> ita(i) == 2
+0071                         PRT.group(j).subject(k).modality(l).detrend = 0;
+0072                     <span class="keyword">elseif</span> ita(i)==1
+0073                         PRT.group(j).subject(k).modality(l).mod_name = <span class="string">''</span>;
+0074                     <span class="keyword">end</span>
+0075                 <span class="keyword">end</span>
+0076             <span class="keyword">end</span>
+0077         <span class="keyword">end</span>
+0078     <span class="keyword">end</span>
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">% Masks</span>
+0082 <span class="comment">%--------------------------------------------------------------------------</span>
+0083 ng = {<span class="string">'mod_name'</span>,<span class="string">'fname'</span>};
+0084 np = fieldnames(PRT.masks(1));
+0085 cg = ismember(ng,np);
+0086 <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0087     flagch = 1;
+0088     ita = find(cg==0);
+0089     <span class="keyword">for</span> i = 1:length(ita)
+0090         <span class="keyword">for</span> j=1:length(PRT.masks)
+0091             PRT.masks(j).(ng{ita(i)}) = [];
+0092         <span class="keyword">end</span>
+0093     <span class="keyword">end</span>
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">% Feature set</span>
+0097 <span class="comment">%--------------------------------------------------------------------------</span>
+0098 <span class="keyword">if</span> isfield(PRT,<span class="string">'fs'</span>)
+0099     <span class="comment">% Feature set .fs</span>
+0100     ng = {<span class="string">'fs_name'</span>,<span class="string">'k_file'</span>,<span class="string">'id_col_names'</span>,<span class="string">'fas'</span>,<span class="string">'modality'</span>,<span class="string">'id_mat'</span>,<span class="string">'multkernel'</span>,<span class="keyword">...</span>
+0101         <span class="string">'atlas_name'</span>,<span class="string">'igood_kerns'</span>,<span class="string">'multkernelROI'</span>};
+0102     np = fieldnames(PRT.fs(1));
+0103     cg = ismember(ng,np);
+0104     <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0105         flagch = 1;
+0106         ita = find(cg==0);
+0107         <span class="keyword">for</span> i = 1:length(ita)
+0108             <span class="keyword">for</span> j=1:length(PRT.fs)
+0109                 PRT.fs(j).(ng{ita(i)}) = [];
+0110                 <span class="keyword">if</span> ita(i)== 7
+0111                     PRT.fs(j).multkernel = 0;
+0112                 <span class="keyword">elseif</span> ita(i) == 9
+0113                     PRT.fs(j).igood_kerns = 1;
+0114                 <span class="keyword">elseif</span> ita(i) == 1
+0115                     PRT.fs(j).fs_name = <span class="string">''</span>;
+0116                 <span class="keyword">elseif</span> ita(i) == 10
+0117                     PRT.fs(j).multkernelROI = 0;
+0118                 <span class="keyword">end</span>
+0119             <span class="keyword">end</span>
+0120         <span class="keyword">end</span>
+0121     <span class="keyword">end</span>
+0122     
+0123     <span class="comment">% fs.fas: indexes in the file array</span>
+0124     ng = {<span class="string">'im'</span>,<span class="string">'ifa'</span>};
+0125     np = fieldnames(PRT.fs(1).fas);
+0126     cg = ismember(ng,np);
+0127     <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0128         flagch = 1;
+0129         ita = find(cg==0);
+0130         <span class="keyword">for</span> i = 1:length(ita)
+0131             <span class="keyword">for</span> j=1:length(PRT.fs)
+0132                 <span class="keyword">for</span> k = 1:length(PRT.fs(j).fas)
+0133                     PRT.fs(j).fas(k).(ng{ita(i)}) = [];
+0134                 <span class="keyword">end</span>
+0135             <span class="keyword">end</span>
+0136         <span class="keyword">end</span>
+0137     <span class="keyword">end</span>
+0138     
+0139     <span class="comment">% fs.modality: parameters selected for each modality in GUI</span>
+0140     ng = {<span class="string">'mod_name'</span>,<span class="string">'detrend'</span>,<span class="string">'param_dt'</span>,<span class="string">'mode'</span>,<span class="string">'idfeat_fas'</span>,<span class="string">'normalise'</span>};
+0141     np = fieldnames(PRT.fs(1).modality);
+0142     cg = ismember(ng,np);
+0143     <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0144         flagch = 1;
+0145         ita = find(cg==0);
+0146         <span class="keyword">for</span> i = 1:length(ita)
+0147             <span class="keyword">for</span> j=1:length(PRT.fs)
+0148                 <span class="keyword">for</span> k = 1:length(PRT.fs(j).modality)
+0149                     PRT.fs(j).modality(k).(ng{ita(i)}) = [];
+0150                     <span class="keyword">if</span> ita(i)==1
+0151                         PRT.fs(j).modality(k).mod_name = <span class="string">''</span>;
+0152                     <span class="keyword">elseif</span> ita(i)==2
+0153                         PRT.fs(j).modality(k).detrend = 0;
+0154                     <span class="keyword">elseif</span> ita(i)==4
+0155                         PRT.fs(j).modality(k).mode = <span class="string">'all_scans'</span>;
+0156                     <span class="keyword">elseif</span> ita(i) == 6
+0157                         PRT.fs(j).modality(k).normalise.type = 0;
+0158                         PRT.fs(j).modality(k).normalise.scaling = [];
+0159                     <span class="keyword">end</span>
+0160                 <span class="keyword">end</span>
+0161             <span class="keyword">end</span>
+0162         <span class="keyword">end</span>
+0163     <span class="keyword">end</span>
+0164 
+0165 <span class="keyword">end</span>
+0166 
+0167 
+0168 <span class="comment">% File array</span>
+0169 <span class="comment">%--------------------------------------------------------------------------</span>
+0170 <span class="keyword">if</span> isfield(PRT,<span class="string">'fas'</span>)
+0171     ng = {<span class="string">'mod_name'</span>,<span class="string">'dat'</span>,<span class="string">'detrend'</span>,<span class="string">'param_dt'</span>,<span class="string">'hdr'</span>,<span class="string">'idfeat_img'</span>};
+0172     np = fieldnames(PRT.fas(1));
+0173     cg = ismember(ng,np);
+0174     <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0175         flagch = 1;
+0176         ita = find(cg==0);
+0177         <span class="keyword">for</span> i = 1:length(ita)
+0178             <span class="keyword">for</span> j=1:length(PRT.fas)
+0179                 PRT.fas(j).(ng{ita(i)}) = [];
+0180                 <span class="keyword">if</span> ita(i)== 3
+0181                     PRT.fas(j).detrend = 0;
+0182                 <span class="keyword">elseif</span> ita(i) == 1
+0183                     PRT.fas(j).mod_name = <span class="string">''</span>;
+0184                 <span class="keyword">end</span>
+0185             <span class="keyword">end</span>
+0186         <span class="keyword">end</span>
+0187     <span class="keyword">end</span>   
+0188 <span class="keyword">end</span>
+0189 
+0190 <span class="comment">% Model</span>
+0191 <span class="comment">%--------------------------------------------------------------------------</span>
+0192 
+0193 <span class="keyword">if</span> isfield(PRT,<span class="string">'model'</span>)
+0194     ng = {<span class="string">'model_name'</span>,<span class="string">'input'</span>,<span class="string">'output'</span>};
+0195     np = fieldnames(PRT.model(1));
+0196     cg = ismember(ng,np);
+0197     <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0198         flagch = 1;
+0199         ita = find(cg==0);
+0200         <span class="keyword">for</span> i = 1:length(ita)
+0201             <span class="keyword">for</span> j=1:length(PRT.model)
+0202                 PRT.model(j).(ng{ita(i)}) = [];
+0203                 <span class="keyword">if</span> ita(i) == 1
+0204                     PRT.model(j).model_name = <span class="string">''</span>;
+0205                 <span class="keyword">end</span>
+0206             <span class="keyword">end</span>
+0207         <span class="keyword">end</span>
+0208     <span class="keyword">end</span>
+0209     
+0210     <span class="comment">%model.input</span>
+0211     ng = {<span class="string">'use_kernel'</span>,<span class="string">'type'</span>,<span class="string">'machine'</span>,<span class="string">'fs'</span>,<span class="string">'samp_idx'</span>,<span class="string">'include_allscans'</span>,<span class="keyword">...</span>
+0212         <span class="string">'targets'</span>,<span class="string">'targ_allscans'</span>,<span class="string">'cv_mat'</span>,<span class="string">'cv_type'</span>,<span class="string">'cv_k'</span>,<span class="string">'use_nested_cv'</span>,<span class="keyword">...</span>
+0213         <span class="string">'nested_param'</span>,<span class="string">'operations'</span>};
+0214     <span class="keyword">for</span> j=1:length(PRT.model)
+0215         <span class="keyword">if</span>  ~isempty(PRT.model(j).input)
+0216             np = fieldnames(PRT.model(j).input);
+0217             cg = ismember(ng,np);
+0218             <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0219                 flagch = 1;
+0220                 ita = find(cg==0);
+0221                 <span class="keyword">for</span> i = 1:length(ita)
+0222                     <span class="keyword">for</span> k= length(PRT.model(j).input)
+0223                         PRT.model(j).input(k).(ng{ita(i)}) = [];
+0224                         <span class="keyword">if</span> ita(i) == 1
+0225                             PRT.model(j).input(k).use_kernel = 0;
+0226                         <span class="keyword">elseif</span> ita(i)== 3
+0227                             PRT.model(j).input(k).machine.function = <span class="string">''</span>;
+0228                             PRT.model(j).input(k).machine.args=[];
+0229                         <span class="keyword">elseif</span> ita(i) ==4
+0230                             PRT.model(j).input(k).fs(1).fs_name = <span class="string">''</span>;
+0231                         <span class="keyword">elseif</span> ita(i) == 6
+0232                             PRT.model(j).input(k).include_allscans = 0;
+0233                         <span class="keyword">elseif</span> ita(i) == 11
+0234                             PRT.model(j).input(k).cv_k = 0;
+0235                         <span class="keyword">elseif</span> ita(i) == 12
+0236                             PRT.model(j).input(k).use_nested_cv = 0;
+0237                         <span class="keyword">end</span>
+0238                     <span class="keyword">end</span>
+0239                 <span class="keyword">end</span>
+0240             <span class="keyword">end</span>
+0241         <span class="keyword">end</span>
+0242     <span class="keyword">end</span>
+0243     
+0244 <span class="comment">%   Dealing with model outputs</span>
+0245     <span class="comment">% model.output</span>
+0246     ng = {<span class="string">'fold'</span>,<span class="string">'stats'</span>,<span class="string">'weight_ROI'</span>,<span class="string">'weight_img'</span>};
+0247     <span class="keyword">for</span> j=1:length(PRT.model)
+0248         <span class="keyword">if</span> ~isempty(PRT.model(j).output)
+0249             np = fieldnames(PRT.model(j).output(1));
+0250             cg = ismember(ng,np);
+0251             <span class="keyword">if</span> ~all(cg) <span class="comment">% missing fields</span>
+0252                 flagch = 1;
+0253                 ita = find(cg==0);
+0254                 <span class="keyword">for</span> i = 1:length(ita)                    
+0255                     <span class="keyword">for</span> k = 1:length(PRT.model(j).output)
+0256                         PRT.model(j).output(k).(ng{ita(i)}) = [];
+0257                         <span class="keyword">if</span> isfield(PRT.model(j).input,<span class="string">'class'</span>)
+0258                             nclass = length(PRT.model(j).input.class);
+0259                         <span class="keyword">else</span>
+0260                             nclass=1; <span class="comment">%regression</span>
+0261                         <span class="keyword">end</span>
+0262                         winame = [prtdir,filesep,<span class="string">'weights_'</span>,PRT.model(j).model_name]; <span class="comment">%potential weight image name</span>
+0263                         <span class="keyword">if</span> nclass&gt;2
+0264                             <span class="keyword">for</span> nc=1:nclass
+0265                                 <span class="keyword">if</span> exist([winame,<span class="string">'_'</span>,num2str(nc),<span class="string">'.img'</span>],<span class="string">'file'</span>)
+0266                                     PRT.model(j).output(k).(ng{ita(i)})(nc) = {<span class="string">'weights_'</span>,PRT.model(j).model_name,<span class="string">'_'</span>,num2str(nc)};
+0267                                 <span class="keyword">end</span>
+0268                             <span class="keyword">end</span>
+0269                         <span class="keyword">else</span>
+0270                             <span class="keyword">if</span> exist(winame,<span class="string">'file'</span>)
+0271                                 PRT.model(j).output(k).(ng{ita(i)}) = {<span class="string">'weights_'</span>,PRT.model(j).model_name};
+0272                             <span class="keyword">end</span>
+0273                         <span class="keyword">end</span>
+0274                     <span class="keyword">end</span>
+0275                 <span class="keyword">end</span>
+0276             <span class="keyword">end</span>
+0277         <span class="keyword">end</span>
+0278     <span class="keyword">end</span>
+0279 <span class="keyword">end</span> 
+0280 
+0281 <span class="keyword">if</span> flagch
+0282     disp(<span class="string">'PRT structure has been updated and saved'</span>)
+0283 <span class="keyword">end</span>
+0284 
+0285 
+0286 
+0287 <span class="comment">%</span>
+0288 <span class="comment">% %     ng = {'targets','predictions','stats','func_val',...</span>
+0289 <span class="comment">% %         'alpha','b'};</span>
+0290 <span class="comment">% %     np = fieldnames(PRT.model(1).output(1).fold(1));</span>
+0291 <span class="comment">% %     cg = ismember(ng,np);</span>
+0292 <span class="comment">% %     if ~all(cg) % missing fields</span>
+0293 <span class="comment">% %         ita = find(cg==0);</span>
+0294 <span class="comment">% %         for i = 1:length(ita)</span>
+0295 <span class="comment">% %             for j=1:length(PRT.model)</span>
+0296 <span class="comment">% %                 for k = 1:length(PRT.model(j).output(k))</span>
+0297 <span class="comment">% %                     for l = 1:length(PRT.model(j).output(k).fold(l))</span>
+0298 <span class="comment">% %                         PRT.model(j).output(k).fold(l).(ng{ita(i)}) = [];</span>
+0299 <span class="comment">% %                     end</span>
+0300 <span class="comment">% %                 end</span>
+0301 <span class="comment">% %             end</span>
+0302 <span class="comment">% %         end</span>
+0303 <span class="comment">% %     end</span>
+0304 
+0305 
+0306</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

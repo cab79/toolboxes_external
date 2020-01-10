@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_run_cv_model</title>
+  <meta name="keywords" content="prt_run_cv_model">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_run_cv_model.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_run_cv_model
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function out = prt_run_cv_model(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ PRONTO job execution function
+
+ INPUT
+   job    - harvested job data structure (see matlabbatch help)
+
+ OUTPUT
+   out    - filename of saved data structure (1 file per group, per 
+            subject, per modality, per condition 
+__________________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_cv_model.html" class="code" title="function cv_model = prt_cfg_cv_model">prt_cfg_cv_model</a>	Preprocessing of the data.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function out = prt_run_cv_model(varargin)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% PRONTO job execution function</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% INPUT</span>
+0006 <span class="comment">%   job    - harvested job data structure (see matlabbatch help)</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% OUTPUT</span>
+0009 <span class="comment">%   out    - filename of saved data structure (1 file per group, per</span>
+0010 <span class="comment">%            subject, per modality, per condition</span>
+0011 <span class="comment">%__________________________________________________________________________</span>
+0012 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0013 
+0014 <span class="comment">% Written by A Marquand</span>
+0015 <span class="comment">% $Id$</span>
+0016 
+0017 job   = varargin{1};
+0018 
+0019 <span class="comment">% Load PRT.mat</span>
+0020 <span class="comment">% -------------------------------------------------------------------------</span>
+0021 fname = char(job.infile);
+0022 <span class="keyword">if</span> exist(<span class="string">'PRT'</span>,<span class="string">'var'</span>)
+0023     clear PRT
+0024 <span class="keyword">end</span>
+0025 load(fname);
+0026 
+0027 <span class="comment">% -------------------------------------------------------------------------</span>
+0028 <span class="comment">% Input file</span>
+0029 <span class="comment">% -------------------------------------------------------------------------</span>
+0030 
+0031 in.fname      = job.infile;
+0032 in.model_name = job.model_name;
+0033 mid = prt_init_model(PRT, in);
+0034 
+0035 <span class="comment">% Special cross-validation for MCKR</span>
+0036 <span class="keyword">if</span> strcmp(PRT.model(mid).input.machine.function,<span class="string">'prt_machine_mckr'</span>)
+0037     fname = prt_cv_mckr(PRT,in);
+0038 <span class="keyword">else</span>
+0039     fname = prt_cv_model(PRT, in);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% Permutation test, required.</span>
+0043 load(fname) <span class="comment">% reload updated PRT!</span>
+0044 <span class="keyword">if</span> isfield(job,<span class="string">'perm_test'</span>) <span class="comment">% to ensure back compatibility with older batch</span>
+0045     <span class="keyword">if</span> isfield(job.perm_test,<span class="string">'perm_t'</span>)
+0046         <span class="keyword">if</span> isfield(job.perm_test.perm_t,<span class="string">'flag_sw'</span>) <span class="comment">%keep compatibility</span>
+0047             flag = job.perm_test.perm_t.flag_sw;
+0048         <span class="keyword">else</span>
+0049             flag = 0;
+0050         <span class="keyword">end</span>
+0051         prt_permutation(PRT, job.perm_test.perm_t.N_perm, mid, <span class="keyword">...</span>
+0052             spm_str_manip(fname,<span class="string">'h'</span>),flag);
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% -------------------------------------------------------------------------</span>
+0057 <span class="comment">% Function output</span>
+0058 <span class="comment">% -------------------------------------------------------------------------</span>
+0059 out = []; <span class="comment">%prevent warning of overwriting 'char' class</span>
+0060 disp(<span class="string">'Model execution complete.'</span>)
+0061 out.files{1} = in.fname{1};
+0062 disp(<span class="string">'Done'</span>)
+0063 
+0064  <span class="keyword">return</span></pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

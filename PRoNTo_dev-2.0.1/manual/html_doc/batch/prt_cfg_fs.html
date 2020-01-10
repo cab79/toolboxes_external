@@ -1,0 +1,370 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of prt_cfg_fs</title>
+  <meta name="keywords" content="prt_cfg_fs">
+  <meta name="description" content="Data &amp; design configuration file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="#">batch</a> &gt; prt_cfg_fs.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for ./batch&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>prt_cfg_fs
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Data &amp; design configuration file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function fs = prt_cfg_fs </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Data &amp; design configuration file
+ This configures the fs construction for each modality.
+_______________________________________________________________________
+ Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_run_fs.html" class="code" title="function out = prt_run_fs(varargin)">prt_run_fs</a>	PRONTO job execution function</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="prt_cfg_batch.html" class="code" title="function prt = prt_cfg_batch">prt_cfg_batch</a>	Pattern Recognition for Neuroimaging Toolbox, PRoNTo.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function cdep = vout_data(job)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fs = prt_cfg_fs</a>
+0002 <span class="comment">% Data &amp; design configuration file</span>
+0003 <span class="comment">% This configures the fs construction for each modality.</span>
+0004 <span class="comment">%_______________________________________________________________________</span>
+0005 <span class="comment">% Copyright (C) 2011 Machine Learning &amp; Neuroimaging Laboratory</span>
+0006 
+0007 <span class="comment">% Written by Andre Marquand</span>
+0008 <span class="comment">% $Id$</span>
+0009 
+0010 <span class="comment">% ---------------------------------------------------------------------</span>
+0011 <span class="comment">% filename Filename(s) of data</span>
+0012 <span class="comment">% ---------------------------------------------------------------------</span>
+0013 infile        = cfg_files;
+0014 infile.tag    = <span class="string">'infile'</span>;
+0015 infile.name   = <span class="string">'Load PRT.mat'</span>;
+0016 infile.ufilter = <span class="string">'PRT.mat'</span>;
+0017 infile.num    = [1 1];
+0018 infile.help   = {<span class="string">'Select data/design structure file (PRT.mat).'</span>};
+0019 
+0020 <span class="comment">% ---------------------------------------------------------------------</span>
+0021 <span class="comment">% k_file Name</span>
+0022 <span class="comment">% ---------------------------------------------------------------------</span>
+0023 k_file         = cfg_entry;
+0024 k_file.tag     = <span class="string">'k_file'</span>;
+0025 k_file.name    = <span class="string">'Feature/kernel name'</span>;
+0026 k_file.help    = {[<span class="string">'Target name for kernel matrix. This should contain'</span> <span class="keyword">...</span>
+0027                    <span class="string">'only alphanumerical characters or underscores (_).'</span>]};
+0028 k_file.strtype = <span class="string">'s'</span>;
+0029 k_file.num     = [1 Inf];
+0030 
+0031 <span class="comment">% % ---------------------------------------------------------------------</span>
+0032 <span class="comment">% % use_mkl Use MKL?</span>
+0033 <span class="comment">% % ---------------------------------------------------------------------</span>
+0034 <span class="comment">% use_mkl         = cfg_menu;</span>
+0035 <span class="comment">% use_mkl.tag     = 'use_mkl';</span>
+0036 <span class="comment">% use_mkl.name    = 'Generate Multiple Kernels?';</span>
+0037 <span class="comment">% use_mkl.labels  = {</span>
+0038 <span class="comment">%                'Yes'</span>
+0039 <span class="comment">%                'No'</span>
+0040 <span class="comment">% }';</span>
+0041 <span class="comment">% use_mkl.values  = {1 0};</span>
+0042 <span class="comment">% use_mkl.val     = {0};</span>
+0043 <span class="comment">% use_mkl.help    = {'Do you wish to generate Multiple Kernels?'};</span>
+0044 
+0045 <span class="comment">% ---------------------------------------------------------------------</span>
+0046 <span class="comment">% multkernflag Use multiple modality kernels</span>
+0047 <span class="comment">% ---------------------------------------------------------------------</span>
+0048 flag_mm         = cfg_menu;
+0049 flag_mm.tag     = <span class="string">'flag_mm'</span>;
+0050 flag_mm.name    = <span class="string">'Use one kernel per modality'</span>;
+0051 flag_mm.help    = {<span class="string">'Select &quot;Yes&quot; to use one kernel per modality.'</span>};
+0052 flag_mm.labels  = {
+0053     <span class="string">'Yes'</span>
+0054     <span class="string">'No'</span>
+0055     }';
+0056 flag_mm.values  = {1 0};
+0057 flag_mm.val     = {0};
+0058 
+0059 <span class="comment">% ---------------------------------------------------------------------</span>
+0060 <span class="comment">% atlasroi Filename(s) of atlas for ROI MKL</span>
+0061 <span class="comment">% ---------------------------------------------------------------------</span>
+0062 atlasroi         = cfg_files;
+0063 atlasroi.tag     = <span class="string">'atlasroi'</span>;
+0064 atlasroi.name    = <span class="string">'Use atlas to build ROI specific kernels'</span>;
+0065 atlasroi.ufilter = <span class="string">'.*'</span>;
+0066 atlasroi.filter  = <span class="string">'image'</span>;
+0067 atlasroi.num     = [0 1];
+0068 atlasroi.val     = {{<span class="string">''</span>}};
+0069 <span class="comment">% atlasroi.def     = @(val)prt_get_defaults('fs.atlasroi', val{:});</span>
+0070 atlasroi.help    = {[<span class="string">'Select an atlas file to build one kernel per ROI. '</span>, <span class="keyword">...</span>
+0071     <span class="string">'The AAL atlas (named ''aal_79x91x69.img'') is available in the ''atlas'' subdirectory of PRoNTo'</span>]};
+0072            
+0073 <span class="comment">% ---------------------------------------------------------------------</span>
+0074 <span class="comment">% cond_name Name</span>
+0075 <span class="comment">% ---------------------------------------------------------------------</span>
+0076 cond_name         = cfg_entry;
+0077 cond_name.tag     = <span class="string">'cond_name'</span>;
+0078 cond_name.name    = <span class="string">'Condition'</span>;
+0079 cond_name.help    = {<span class="string">'Name of condition to include.'</span>};
+0080 cond_name.strtype = <span class="string">'s'</span>;
+0081 cond_name.num     = [1 Inf];
+0082 
+0083 <span class="comment">% ---------------------------------------------------------------------</span>
+0084 <span class="comment">% all_cond All conditions</span>
+0085 <span class="comment">% ---------------------------------------------------------------------</span>
+0086 all_cond         = cfg_const;
+0087 all_cond.tag     = <span class="string">'all_cond'</span>;
+0088 all_cond.name    = <span class="string">'All Conditions'</span>;
+0089 all_cond.val     = {1};
+0090 all_cond.help    = {<span class="string">'Include all conditions in this kernel matrix'</span>};
+0091 
+0092 <span class="comment">% ---------------------------------------------------------------------</span>
+0093 <span class="comment">% all_scans All scans</span>
+0094 <span class="comment">% ---------------------------------------------------------------------</span>
+0095 all_scans         = cfg_const;
+0096 all_scans.tag     = <span class="string">'all_scans'</span>;
+0097 all_scans.name    = <span class="string">'All scans'</span>;
+0098 all_scans.val     = {1};
+0099 all_scans.help    = {[<span class="string">'No design specified. This option can be used '</span><span class="keyword">...</span>
+0100                      <span class="string">'for modalities (e.g. structural scans) that do not '</span><span class="keyword">...</span>
+0101                      <span class="string">'have an experimental design or for an fMRI design'</span>,<span class="keyword">...</span>
+0102                      <span class="string">'where you want to include all scans in the timeseries'</span>]};
+0103                  
+0104 <span class="comment">% ---------------------------------------------------------------------</span>
+0105 <span class="comment">% conditions Conditions</span>
+0106 <span class="comment">% ---------------------------------------------------------------------</span>
+0107 conditions        = cfg_choice;
+0108 conditions.tag    = <span class="string">'conditions'</span>;
+0109 conditions.name   = <span class="string">'Scans / Conditions'</span>;
+0110 conditions.values = {all_scans, all_cond};
+0111 conditions.val    = {all_scans};
+0112 conditions.help   = {<span class="keyword">...</span>
+0113 [<span class="string">'Which task conditions do you want to include in the kernel matrix? '</span><span class="keyword">...</span>
+0114  <span class="string">'Select conditions: select specific conditions from the timeseries. '</span>, <span class="keyword">...</span>
+0115  <span class="string">'All conditions: include all conditions extracted from the timeseries. '</span>, <span class="keyword">...</span>
+0116  <span class="string">'All scans: include all scans for each subject. This may be used for '</span>, <span class="keyword">...</span>
+0117  <span class="string">'modalities with only one scan per subject (e.g. PET), '</span>, <span class="keyword">...</span><span class="comment"> </span>
+0118  <span class="string">'if you want to include all scans from an fMRI timeseries (assumes you '</span>,<span class="keyword">...</span>
+0119  <span class="string">'have not already detrended the timeseries and extracted task components)'</span>]};
+0120 
+0121 <span class="comment">% % ---------------------------------------------------------------------</span>
+0122 <span class="comment">% % detrend Detrend</span>
+0123 <span class="comment">% % ---------------------------------------------------------------------</span>
+0124 <span class="comment">% detrend         = cfg_menu;</span>
+0125 <span class="comment">% detrend.tag     = 'detrend';</span>
+0126 <span class="comment">% detrend.name    = 'Detrend';</span>
+0127 <span class="comment">% detrend.help    = {'Type of temporal detrending to apply'};</span>
+0128 <span class="comment">% detrend.labels  = {</span>
+0129 <span class="comment">%                'None'</span>
+0130 <span class="comment">%                'Linear'</span>
+0131 <span class="comment">% }';</span>
+0132 <span class="comment">% detrend.values  = {0 1};</span>
+0133 <span class="comment">% detrend.val     = {0};</span>
+0134 
+0135 <span class="comment">% ---------------------------------------------------------------------</span>
+0136 <span class="comment">% param_dt Name</span>
+0137 <span class="comment">% ---------------------------------------------------------------------</span>
+0138 param_dt         = cfg_entry;
+0139 param_dt.tag     = <span class="string">'param_dt'</span>;
+0140 param_dt.name    = <span class="string">'Cutoff of high-pass filter (second)'</span>;
+0141 param_dt.help    = {[<span class="keyword">...</span>
+0142     <span class="string">'The default high-pass filter cutoff is 128 seconds (same as SPM)'</span>]};
+0143 param_dt.strtype = <span class="string">'e'</span>;
+0144 param_dt.val     = {128};
+0145 param_dt.num     = [1 1];
+0146 
+0147 <span class="comment">% ---------------------------------------------------------------------</span>
+0148 <span class="comment">% dct_dt DCT</span>
+0149 <span class="comment">% ---------------------------------------------------------------------</span>
+0150 dct_dt      = cfg_branch;
+0151 dct_dt.tag  = <span class="string">'dct_dt'</span>;
+0152 dct_dt.name = <span class="string">'Discrete cosine transform'</span>;
+0153 dct_dt.val  = {param_dt};
+0154 dct_dt.help = {<span class="string">'Use a discrete cosine basis set to detrend the data.'</span>};
+0155 
+0156 <span class="comment">% ---------------------------------------------------------------------</span>
+0157 <span class="comment">% no_dt No detrend</span>
+0158 <span class="comment">% ---------------------------------------------------------------------</span>
+0159 no_dt         = cfg_const;
+0160 no_dt.tag     = <span class="string">'no_dt'</span>;
+0161 no_dt.name    = <span class="string">'None'</span>;
+0162 no_dt.val     = {1};
+0163 no_dt.help    = {[<span class="string">'Do not detrend the data '</span>]};
+0164 
+0165 <span class="comment">% ---------------------------------------------------------------------</span>
+0166 <span class="comment">% paramPoly_dt Name</span>
+0167 <span class="comment">% ---------------------------------------------------------------------</span>
+0168 paramPoly_dt         = cfg_entry;
+0169 paramPoly_dt.tag     = <span class="string">'paramPoly_dt'</span>;
+0170 paramPoly_dt.name    = <span class="string">'Order'</span>;
+0171 paramPoly_dt.help    = {[<span class="keyword">...</span>
+0172     <span class="string">'Enter the order for polynomial detrend (1 is linear detrend)'</span>]};
+0173 paramPoly_dt.strtype = <span class="string">'e'</span>;
+0174 paramPoly_dt.val     = {1};
+0175 paramPoly_dt.num     = [1 1];
+0176 
+0177 <span class="comment">% ---------------------------------------------------------------------</span>
+0178 <span class="comment">% linear_dt Polynomial detrend</span>
+0179 <span class="comment">% ---------------------------------------------------------------------</span>
+0180 linear_dt         = cfg_branch;
+0181 linear_dt.tag     = <span class="string">'linear_dt'</span>;
+0182 linear_dt.name    = <span class="string">'Polynomial detrend '</span>;
+0183 linear_dt.val     = {paramPoly_dt};
+0184 linear_dt.help    = {<span class="string">'Perform a voxel-wise polynomial detrend on the data (1 is linear detrend) '</span>};
+0185 
+0186 <span class="comment">% ---------------------------------------------------------------------</span>
+0187 <span class="comment">% detrend Conditions</span>
+0188 <span class="comment">% ---------------------------------------------------------------------</span>
+0189 detrend        = cfg_choice;
+0190 detrend.tag    = <span class="string">'detrend'</span>;
+0191 detrend.name   = <span class="string">'Detrend'</span>;
+0192 detrend.values = {no_dt, linear_dt, dct_dt};
+0193 detrend.val    = {no_dt};
+0194 detrend.help   = {<span class="keyword">...</span>
+0195 [<span class="string">'Type of temporal detrending to apply'</span>]};
+0196 
+0197 <span class="comment">% ---------------------------------------------------------------------</span>
+0198 <span class="comment">% fmask File name</span>
+0199 <span class="comment">% ---------------------------------------------------------------------</span>
+0200 fmask        = cfg_files;
+0201 fmask.tag    = <span class="string">'fmask'</span>;
+0202 fmask.name   = <span class="string">'Specify mask file'</span>;
+0203 fmask.filter = <span class="string">'image'</span>;
+0204 fmask.ufilter = <span class="string">'.*'</span>;
+0205 fmask.num    = [1 1];
+0206 fmask.help   = {<span class="string">'Select a mask for the selected modality.'</span>};
+0207 
+0208 <span class="comment">% ---------------------------------------------------------------------</span>
+0209 <span class="comment">% mod_name Name</span>
+0210 <span class="comment">% ---------------------------------------------------------------------</span>
+0211 mod_name         = cfg_entry;
+0212 mod_name.tag     = <span class="string">'mod_name'</span>;
+0213 mod_name.name    = <span class="string">'Modality name'</span>;
+0214 mod_name.help    = {<span class="string">'Name of modality. Example: ''BOLD''. Must match design specification'</span>};
+0215 mod_name.strtype = <span class="string">'s'</span>;
+0216 mod_name.num     = [1 Inf];
+0217 
+0218 <span class="comment">% ---------------------------------------------------------------------</span>
+0219 <span class="comment">% no_gms No normalisation</span>
+0220 <span class="comment">% ---------------------------------------------------------------------</span>
+0221 no_gms         = cfg_const;
+0222 no_gms.tag     = <span class="string">'no_gms'</span>;
+0223 no_gms.name    = <span class="string">'No scaling'</span>;
+0224 no_gms.val     = {1};
+0225 no_gms.help    = {<span class="string">'Do not scale the input scans'</span>};
+0226 
+0227 <span class="comment">% ---------------------------------------------------------------------</span>
+0228 <span class="comment">% mat_norm File name</span>
+0229 <span class="comment">% ---------------------------------------------------------------------</span>
+0230 mat_gms        = cfg_files;
+0231 mat_gms.tag    = <span class="string">'mat_gms'</span>;
+0232 mat_gms.name   = <span class="string">'Specify from *.mat'</span>;
+0233 mat_gms.filter = <span class="string">'mat'</span>;
+0234 mat_gms.ufilter = <span class="string">'^*.mat'</span>;
+0235 mat_gms.num    = [1 1];
+0236 mat_gms.help   = {[<span class="keyword">...</span>
+0237     <span class="string">'Specify a mat file containing the scaling parameters for each modality.'</span>]};
+0238 
+0239 <span class="comment">% ---------------------------------------------------------------------</span>
+0240 <span class="comment">% normalise</span>
+0241 <span class="comment">% ---------------------------------------------------------------------</span>
+0242 normalise        = cfg_choice;
+0243 normalise.tag    = <span class="string">'normalise'</span>;
+0244 normalise.name   = <span class="string">'Scale input scans'</span>;
+0245 normalise.values = {no_gms, mat_gms};
+0246 normalise.val    = {no_gms};
+0247 normalise.help   = {<span class="keyword">...</span>
+0248     [<span class="string">'Do you want to scale the input scans to have a fixed mean '</span><span class="keyword">...</span>
+0249     <span class="string">'(i.e. grand mean scaling)?'</span>]};
+0250 
+0251 <span class="comment">% ---------------------------------------------------------------------</span>
+0252 <span class="comment">% all_voxels All voxels</span>
+0253 <span class="comment">% ---------------------------------------------------------------------</span>
+0254 all_voxels         = cfg_const;
+0255 all_voxels.tag     = <span class="string">'all_voxels'</span>;
+0256 all_voxels.name    = <span class="string">'All voxels'</span>;
+0257 all_voxels.val     = {1};
+0258 all_voxels.help    = {<span class="string">'Use all voxels in the design mask for this modality'</span>};
+0259 
+0260 <span class="comment">% ---------------------------------------------------------------------</span>
+0261 <span class="comment">% voxels</span>
+0262 <span class="comment">% ---------------------------------------------------------------------</span>
+0263 voxels        = cfg_choice;
+0264 voxels.tag    = <span class="string">'voxels'</span>;
+0265 voxels.name   = <span class="string">'Voxels to include'</span>;
+0266 voxels.values = {all_voxels, fmask};
+0267 voxels.val    = {all_voxels};
+0268 voxels.help   = {<span class="keyword">...</span>
+0269     [<span class="string">'Specify which voxels from the current modality you would like to include'</span>]};
+0270 
+0271 <span class="comment">% ---------------------------------------------------------------------</span>
+0272 <span class="comment">% modality Modality</span>
+0273 <span class="comment">% ---------------------------------------------------------------------</span>
+0274 modality      = cfg_branch;
+0275 modality.tag  = <span class="string">'modality'</span>;
+0276 modality.name = <span class="string">'Modality'</span>;
+0277 modality.val  = {mod_name, conditions, voxels, detrend, normalise, atlasroi};
+0278 modality.help = {<span class="string">'Specify modality, such as name and data.'</span>};
+0279 
+0280 <span class="comment">% ---------------------------------------------------------------------</span>
+0281 <span class="comment">% modalities Groups</span>
+0282 <span class="comment">% ---------------------------------------------------------------------</span>
+0283 modalities         = cfg_repeat;
+0284 modalities.tag     = <span class="string">'modalities'</span>;
+0285 modalities.name    = <span class="string">'Modalities'</span>;
+0286 modalities.help    = {<span class="string">'Add modalities'</span>};
+0287 modalities.num     = [1 Inf];
+0288 modalities.values  = {modality};
+0289 
+0290 <span class="comment">% ---------------------------------------------------------------------</span>
+0291 <span class="comment">% Configure Feature set</span>
+0292 <span class="comment">% ---------------------------------------------------------------------</span>
+0293 fs        = cfg_exbranch;
+0294 fs.tag    = <span class="string">'fs'</span>;
+0295 fs.name   = <span class="string">'Feature set/Kernel'</span>;
+0296 <span class="comment">% fs.val    = {infile, k_file, modalities, use_mkl, flag_mm};</span>
+0297 fs.val    = {infile, k_file, modalities, flag_mm};
+0298 fs.help   = {<span class="string">'Compute feature set according to the design specified'</span>};
+0299 fs.prog   = @<a href="prt_run_fs.html" class="code" title="function out = prt_run_fs(varargin)">prt_run_fs</a>;
+0300 fs.vout   = @<a href="#_sub1" class="code" title="subfunction cdep = vout_data(job)">vout_data</a>;
+0301 
+0302 <span class="comment">%------------------------------------------------------------------------</span>
+0303 <span class="comment">%% Output function</span>
+0304 <span class="comment">%------------------------------------------------------------------------</span>
+0305 <a name="_sub1" href="#_subfunctions" class="code">function cdep = vout_data(job)</a>
+0306 <span class="comment">% Specifies the output from this modules, i.e. the filename of the mat file</span>
+0307 
+0308 cdep(1)            = cfg_dep;
+0309 cdep(1).sname      = <span class="string">'PRT.mat file'</span>;
+0310 cdep(1).src_output = substruct(<span class="string">'.'</span>,<span class="string">'fname'</span>);
+0311 cdep(1).tgt_spec   = cfg_findspec({{<span class="string">'filter'</span>,<span class="string">'mat'</span>,<span class="string">'strtype'</span>,<span class="string">'e'</span>}});
+0312 cdep(2)            = cfg_dep;
+0313 cdep(2).sname      = <span class="string">'Feature/kernel name'</span>;
+0314 cdep(2).src_output = substruct(<span class="string">'.'</span>,<span class="string">'fs_name'</span>);
+0315 cdep(2).tgt_spec   = cfg_findspec({{<span class="string">'strtype'</span>,<span class="string">'s'</span>}});
+0316 
+0317 <span class="comment">%------------------------------------------------------------------------</span>
+0318</pre></div>
+<hr><address>Generated on Tue 10-Feb-2015 18:16:33 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
