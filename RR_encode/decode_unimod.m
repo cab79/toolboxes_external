@@ -44,11 +44,12 @@ nfeatures = size(Y,2);
 nvoxels = size(X,2);
 
 % scale everything
-[X1,mu1,sigma1] = zscore(X(trainidx,:));
-X2 = bsxfun(@rdivide,bsxfun(@minus,X(testidx,:),mu1),sigma1); % correct test data to mean and std of training data
-[I1,mu2,sigma2] = zscore(Y(trainidx,:));
-I2 = bsxfun(@rdivide,bsxfun(@minus,Y(testidx,:),mu2),sigma2);
-%I2(isnan(I2(:))) = 0; I2(isinf(I2(:))) = 0;
+% [X1,mu1,sigma1] = zscore(X(trainidx,:));
+% X2 = bsxfun(@rdivide,bsxfun(@minus,X(testidx,:),mu1),sigma1); % correct test data to mean and std of training data
+% [I1,mu2,sigma2] = zscore(Y(trainidx,:));
+% I2 = bsxfun(@rdivide,bsxfun(@minus,Y(testidx,:),mu2),sigma2);
+X2 = X(testidx,:); % correct test data to mean and std of training data
+I2 = Y(testidx,:);
 
 clear X Y
 
@@ -84,8 +85,9 @@ end
  
 %% rescale everything back to the original
 
-orig = bsxfun(@plus,bsxfun(@times,I2,sigma2),mu2);
-recons = bsxfun(@plus,bsxfun(@times,D2,sigma2),mu2);
-
+% orig = bsxfun(@plus,bsxfun(@times,I2,sigma2),mu2);
+% recons = bsxfun(@plus,bsxfun(@times,D2,sigma2),mu2);
+orig = I2;
+recons = D2;
 
 end
