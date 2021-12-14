@@ -15,8 +15,15 @@ size=size/(2^30);           % bytes --> Gbytes
 nfiles=numel(fopen('all')); % number of open files
 
 if nargout == 0
-    disp(['Gbytes used: ', num2str(size), ', open files: ', num2str(nfiles)]);
+    ST=dbstack;
+    if numel(ST)>1;
+        disp(['Gbytes used: ', num2str(size), ', open files: ', num2str(nfiles), ...
+            ', ', ST(2).file,' line ', num2str(ST(2).line)]);
+    else
+        disp(['Gbytes used: ', num2str(size), ', open files: ', num2str(nfiles)]);
+    end
 else
     varargout{1}=size;
     varargout{2}=nfiles;
 end
+

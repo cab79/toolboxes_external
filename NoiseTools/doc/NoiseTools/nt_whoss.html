@@ -40,7 +40,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags)">nt_cca_crossvalidate</a>	[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation</li><li><a href="nt_dataview.html" class="code" title="function [p,data]=nt_dataview(data,p)">nt_dataview</a>	[p,data]=nt_dataview(data,p) - view data sets</li></ul>
+<li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)">nt_cca_crossvalidate</a>	[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</li><li><a href="nt_cca_crossvalidate2.html" class="code" title="function [A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts)">nt_cca_crossvalidate2</a>	[A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts) - CCA with cross-validation</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose, depth,N)">nt_cluster_jd</a>	[IDX,todss,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_dataview.html" class="code" title="function [p,data]=nt_dataview(data,p)">nt_dataview</a>	[p,data]=nt_dataview(data,p) - view data sets</li><li><a href="nt_idxx.html" class="code" title="function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)">nt_idxx</a>	nt_idxx(fname,p) - create an index file to summarize large data file</li><li><a href="nt_index.html" class="code" title="function [status,p]=nt_index(name,p,forceUpdate)">nt_index</a>	[status,p]=nt_index(name,p,forceUpdate) - index data files & directories</li></ul>
 <!-- crossreference -->
 
 
@@ -63,11 +63,18 @@ This function is called by:
 0015 nfiles=numel(fopen(<span class="string">'all'</span>)); <span class="comment">% number of open files</span>
 0016 
 0017 <span class="keyword">if</span> nargout == 0
-0018     disp([<span class="string">'Gbytes used: '</span>, num2str(size), <span class="string">', open files: '</span>, num2str(nfiles)]);
-0019 <span class="keyword">else</span>
-0020     varargout{1}=size;
-0021     varargout{2}=nfiles;
-0022 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0018     ST=dbstack;
+0019     <span class="keyword">if</span> numel(ST)&gt;1;
+0020         disp([<span class="string">'Gbytes used: '</span>, num2str(size), <span class="string">', open files: '</span>, num2str(nfiles), <span class="keyword">...</span>
+0021             <span class="string">', '</span>, ST(2).file,<span class="string">' line '</span>, num2str(ST(2).line)]);
+0022     <span class="keyword">else</span>
+0023         disp([<span class="string">'Gbytes used: '</span>, num2str(size), <span class="string">', open files: '</span>, num2str(nfiles)]);
+0024     <span class="keyword">end</span>
+0025 <span class="keyword">else</span>
+0026     varargout{1}=size;
+0027     varargout{2}=nfiles;
+0028 <span class="keyword">end</span>
+0029</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

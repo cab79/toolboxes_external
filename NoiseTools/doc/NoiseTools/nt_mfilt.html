@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_mfilt</title>
+  <meta name="keywords" content="nt_mfilt">
+  <meta name="description" content="y=nt_mfilt(x,M,B,A,expand) - multichannel filter">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_mfilt.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_mfilt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>y=nt_mfilt(x,M,B,A,expand) - multichannel filter</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function y=nt_mfilt(x,M,B,A,expand) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">y=nt_mfilt(x,M,B,A,expand) - multichannel filter
+
+  y: filtered data 
+
+  x: data to filter (time X channel) 
+  M: multichannel impulse response
+  B, A: bank of filters 
+  expand: if true output 3D matrix, one band per page (else add)
+
+ Output is sum of spatially and temporally filtered inputs, one for each band. 
+ For each band, the spatial filter is defined by one page of M, and the
+ temporal filter by one column of B (and A if IIR).
+ 
+ Default filters are B=eye(nbands) and A=ones(1,nbands);
+
+  Data can be 2D matrix or cell array of 2D matrices.
+
+  M is 3D matrix ( inchannels X outchannels X bands )
+
+  Examples:
+  Filter with multichannel FIR filter M:
+       y=nt_mfilt(x,M)
+
+  Same, but lags replaced by FIR filters:
+       y=nt_mfilt(x,M,B)
+
+  Same, but filters are IIR:
+       y=nt_mfilt(x,M,B,A);
+
+  Examples of filter bases:
+  Basis of lags (default): 
+       B=eye(nbands);
+  Basis of nbands cosines of duration 100 samples:
+       B=cos(2*pi*(1:100)'*(1:nbands)/100)
+  Basis of 6 dyadic filters:
+       b=zeros(32,1); B=nt_multismooth(b,[1 2 4 8 16 32],[],1);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>	y=nt_mfilt(x,M,B,A,expand) - multichannel filter</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>	y=nt_mfilt(x,M,B,A,expand) - multichannel filter</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y=nt_mfilt(x,M,B,A,expand)</a>
+0002 <span class="comment">%y=nt_mfilt(x,M,B,A,expand) - multichannel filter</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  y: filtered data</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%  x: data to filter (time X channel)</span>
+0007 <span class="comment">%  M: multichannel impulse response</span>
+0008 <span class="comment">%  B, A: bank of filters</span>
+0009 <span class="comment">%  expand: if true output 3D matrix, one band per page (else add)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Output is sum of spatially and temporally filtered inputs, one for each band.</span>
+0012 <span class="comment">% For each band, the spatial filter is defined by one page of M, and the</span>
+0013 <span class="comment">% temporal filter by one column of B (and A if IIR).</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Default filters are B=eye(nbands) and A=ones(1,nbands);</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%  Data can be 2D matrix or cell array of 2D matrices.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%  M is 3D matrix ( inchannels X outchannels X bands )</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%  Examples:</span>
+0022 <span class="comment">%  Filter with multichannel FIR filter M:</span>
+0023 <span class="comment">%       y=nt_mfilt(x,M)</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">%  Same, but lags replaced by FIR filters:</span>
+0026 <span class="comment">%       y=nt_mfilt(x,M,B)</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">%  Same, but filters are IIR:</span>
+0029 <span class="comment">%       y=nt_mfilt(x,M,B,A);</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">%  Examples of filter bases:</span>
+0032 <span class="comment">%  Basis of lags (default):</span>
+0033 <span class="comment">%       B=eye(nbands);</span>
+0034 <span class="comment">%  Basis of nbands cosines of duration 100 samples:</span>
+0035 <span class="comment">%       B=cos(2*pi*(1:100)'*(1:nbands)/100)</span>
+0036 <span class="comment">%  Basis of 6 dyadic filters:</span>
+0037 <span class="comment">%       b=zeros(32,1); B=nt_multismooth(b,[1 2 4 8 16 32],[],1);</span>
+0038 <span class="comment">%</span>
+0039 
+0040 
+0041 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0042 <span class="keyword">if</span> nargin&lt;3; B=[]; <span class="keyword">end</span>
+0043 <span class="keyword">if</span> nargin&lt;4; A=[]; <span class="keyword">end</span>
+0044 <span class="keyword">if</span> nargin&lt;5; expand=0; <span class="keyword">end</span>
+0045 
+0046 <span class="comment">% handle cell array data</span>
+0047 <span class="keyword">if</span> iscell(x)
+0048     y={};
+0049     <span class="keyword">for</span> iCell=1:numel(x)
+0050         y{iCell}=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x{iCell},M,B,A,expand);
+0051     <span class="keyword">end</span>
+0052     <span class="keyword">return</span>;
+0053 <span class="keyword">end</span>
+0054 <span class="keyword">if</span> ndims(x)&gt;2; error(<span class="string">'2D only - pass higher dim data as cell array'</span>); <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% sizes consistent?</span>
+0057 [nchans_i,nchans_o,nbands]=size(M);
+0058 <span class="keyword">if</span> size(x,2) ~= nchans_i ; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0059 
+0060 <span class="comment">% default filters</span>
+0061 <span class="keyword">if</span> isempty(B); B=eye(nbands); <span class="keyword">end</span>
+0062 <span class="keyword">if</span> isempty(A); A=ones(1,nbands); <span class="keyword">end</span>
+0063 <span class="comment">% check sizes</span>
+0064 <span class="keyword">if</span> size(B,2) ~= nbands;  error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0065 <span class="keyword">if</span> size(A,2) ~= nbands;  error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0066     
+0067 <span class="comment">% filter</span>
+0068 y=zeros(size(x,1),nchans_o,nbands);
+0069 <span class="keyword">for</span> iBand=1:nbands
+0070     xx=filter(B(:,iBand),A(:,iBand),x);
+0071     y(:,:,iBand)=xx*M(:,:,iBand);
+0072 <span class="keyword">end</span>
+0073 
+0074 <span class="keyword">if</span> ~expand
+0075     y=sum(y,3);
+0076 <span class="keyword">end</span>
+0077 
+0078 <span class="comment">% tests/examples</span>
+0079 <span class="keyword">if</span> 0
+0080     <span class="comment">% basic tests</span>
+0081     x=rand(100,1); <span class="comment">% single channel data</span>
+0082     M=ones(1,1,1);
+0083     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M);
+0084     
+0085     B=1;
+0086     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B);
+0087     
+0088     A=1;
+0089     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B,A);
+0090     
+0091     M=ones(1,1,10); <span class="comment">% 10-tap FIR</span>
+0092     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M); 
+0093     
+0094     M=ones(1,5,1); <span class="comment">% fanout to 5 channels</span>
+0095     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M); 
+0096     
+0097     M=ones(1,5,10); <span class="comment">% fanout to 5, 10-tap FIR</span>
+0098     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M); 
+0099     
+0100     x=randn(100,15); <span class="comment">% 15-channel data</span>
+0101     M=ones(15,5,1); <span class="comment">% fanin to 5</span>
+0102     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M); 
+0103     
+0104     M=ones(15,5,10); <span class="comment">% fanin to 5, 10-tap FIR</span>
+0105     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M); 
+0106     
+0107     B=eye(10); <span class="comment">% basis is lags (default)</span>
+0108     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B); 
+0109 
+0110     B=ones(11,10); <span class="comment">% basis is 10-channel filterbank made of FIRs of order 11</span>
+0111     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B); 
+0112 
+0113     B=ones(3,10); A=ones(2,10); <span class="comment">% basis is 10-channel filterbank made of IIRs of order 3</span>
+0114     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B,A);    
+0115 <span class="keyword">end</span>
+0116     
+0117 <span class="keyword">if</span> 0
+0118     x=zeros(100,1); x(1)=1.1; <span class="comment">%</span>
+0119     M=zeros(1,1,6); M(1,1,6)=1; <span class="comment">% delay by 5 samples</span>
+0120     figure(1); clf; plot(<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M));
+0121     
+0122     M=zeros(1,6,6); 
+0123     <span class="keyword">for</span> k=1:6;M(1,k,k)=1; <span class="keyword">end</span>; <span class="comment">% delay by 0:5 samples</span>
+0124     figure(1); clf; plot(<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M));
+0125 
+0126     B=zeros(61,6); 
+0127     <span class="keyword">for</span> k=1:6; B((k-1)*10+1,k)=1; <span class="keyword">end</span>;  <span class="comment">% basis consists of set of larger delays</span>
+0128     figure(1); clf; plot(<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B));    
+0129     
+0130     B=[]; A=[];
+0131     <span class="keyword">for</span> k=1:6;
+0132         [B(k,:),A(k,:)]=butter(2,[k,k+1]/(2*10),<span class="string">'bandpass'</span>); <span class="comment">% basis consists of bandpass filters</span>
+0133     <span class="keyword">end</span>
+0134     B=B'; A=A';
+0135     figure(1); clf; plot(<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B,A));   
+0136     
+0137     x=randn(100,3); <span class="comment">% 3-channel</span>
+0138     M=randn(3,4,6); <span class="comment">% fanout to 4, order-6 'FIR'</span>
+0139     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,M,B,A);  <span class="comment">% apply using bandpass basis</span>
+0140     figure(1); clf; plot(y);
+0141     <span class="comment">% The output here is the sum of 6 4-channel signals, each produced by</span>
+0142     <span class="comment">% applying a 3X4 transform matrix to input signals filtered by the</span>
+0143     <span class="comment">% corresponding basis.</span>
+0144     
+0145 <span class="keyword">end</span>
+0146 
+0147 
+0148 <span class="keyword">if</span> 0
+0149     <span class="comment">% equivalent of nt_multishift</span>
+0150     x=zeros(100,1);
+0151     x(1,:)=1;
+0152     expand=true;
+0153     y=<a href="nt_mfilt.html" class="code" title="function y=nt_mfilt(x,M,B,A,expand)">nt_mfilt</a>(x,ones(1,1,10),eye(10),[],expand);
+0154     disp(size(y))
+0155     figure(1); clf; plot(squeeze(y*1.1));
+0156 <span class="keyword">end</span>
+0157 
+0158</pre></div>
+<hr><address>Generated on Wed 17-Jul-2019 11:56:13 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

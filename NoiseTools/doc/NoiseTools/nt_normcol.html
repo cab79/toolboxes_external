@@ -41,6 +41,8 @@
  Weight should be either a column vector, or a matrix (2D or 3D) of same
  size as data.
 
+ See nt_normrow, nt_normpage, nt_normpagecol.
+
  NoiseTools</pre></div>
 
 <!-- crossreference -->
@@ -50,7 +52,7 @@ This function calls:
 <li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>	y=nt_vecmult(x,v) - multiply all rows or columns of matrix by vector</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_bias_cluster.html" class="code" title="function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)">nt_bias_cluster</a>	[c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags) - cluster covariance</li><li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags)">nt_cca_crossvalidate</a>	[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose)">nt_cluster_jd</a>	[IDX,todss,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_cluster_jd_old.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd2(x,dsr,flags,init)">nt_cluster_jd_old</a>	[IDX,todss,SCORE]=nt_cluster_jd2(x,dsr,flags,init) - cluster with joint diagonalization</li><li><a href="nt_hi_amp.html" class="code" title="function y=nt_hi_amp(x,exponent)">nt_hi_amp</a>	y=nt_hi_amp(x) - decompose into high-amplitude components</li><li><a href="nt_narrowband_scan.html" class="code" title="function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag,yulewalk_order)">nt_narrowband_scan</a>	A=nt_narrowband_scan(x,freqs,sr,Q,plotflag) - scan for narrowband components using DSS</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_normpage.html" class="code" title="function y=nt_normpage(x,w)">nt_normpage</a>	y=nt_normpage(x,w) - normalize each page so its weighted msq is 1</li><li><a href="nt_normpagecol.html" class="code" title="function y=nt_normpagecol(x,w)">nt_normpagecol</a>	y=nt_normpagecol(x,w) - normalize each column of each page so its weighted msq is 1</li><li><a href="nt_sns1.html" class="code" title="function x=nt_sns1(x,nneighbors,skip,w,threshold)">nt_sns1</a>	y=nt_sns1(x,nneigbors,skip,w,threshold) - sensor noise suppression</li><li><a href="nt_spect_plot2.html" class="code" title="function varargout=nt_spect_plot2(x,varargin)">nt_spect_plot2</a>	nt_spect_plot2 - plot power spectrum</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li><li><a href="nt_star.html" class="code" title="function [x,w,ww]=nt_star(x,thresh,closest,depth)">nt_star</a>	[y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression, new version</li><li><a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>	[y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li><li><a href="nt_tsr_nodemean.html" class="code" title="function [y,idx,w]=nt_tsr_nodemean(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr_nodemean</a>	[y,idx,w]=nt_tsr_nodemean(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li></ul>
+<li><a href="nt_bias_cluster.html" class="code" title="function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)">nt_bias_cluster</a>	[c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags) - cluster covariance</li><li><a href="nt_cca_aad.html" class="code" title="function [D,E,R]=nt_cca_aad(xA,xB,y,ssize)">nt_cca_aad</a>	[D,E,R]=nt_cca_match_aad(xA,xB,y,ssize) - calculate metrics for match-mismatch task</li><li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)">nt_cca_crossvalidate</a>	[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</li><li><a href="nt_cca_crossvalidate2.html" class="code" title="function [A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts)">nt_cca_crossvalidate2</a>	[A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts) - CCA with cross-validation</li><li><a href="nt_cca_mm.html" class="code" title="function [D,E,R]=nt_cca_mm(x,y,ssize,flipflag)">nt_cca_mm</a>	[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose, depth,N)">nt_cluster_jd</a>	[IDX,todss,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_inpaint.html" class="code" title="function [y,yy]=nt_inpaint(x,w)">nt_inpaint</a>	function y=nt_inpaint(x,w) - weighted interpolation based on correlation structure</li><li><a href="nt_narrowband_scan.html" class="code" title="function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag)">nt_narrowband_scan</a>	A=nt_narrowband_scan(x,freqs,sr,Q,plotflag) - scan for narrowband components using DSS</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_normpage.html" class="code" title="function y=nt_normpage(x,w)">nt_normpage</a>	y=nt_normpage(x,w) - normalize each page so its weighted msq is 1</li><li><a href="nt_normpagecol.html" class="code" title="function y=nt_normpagecol(x,w)">nt_normpagecol</a>	y=nt_normpagecol(x,w) - normalize each column of each page so its weighted msq is 1</li><li><a href="nt_outliers.html" class="code" title="function [w,y]=nt_outliers(x,w,thresh,niter)">nt_outliers</a>	[w,y]=nt_outliers(x,w,thresh,niter) - detect outliers based on weighted correlation structure</li><li><a href="nt_sns1.html" class="code" title="function x=nt_sns1(x,nneighbors,skip,w,threshold)">nt_sns1</a>	y=nt_sns1(x,nneigbors,skip,w,threshold) - sensor noise suppression</li><li><a href="nt_spect_plot2.html" class="code" title="function varargout=nt_spect_plot2(x,varargin)">nt_spect_plot2</a>	nt_spect_plot2 - plot power spectrum</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li><li><a href="nt_star.html" class="code" title="function [x,w,ww]=nt_star(x,thresh,closest,depth)">nt_star</a>	[y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression</li><li><a href="nt_star2.html" class="code" title="function [x,w,ww]=nt_star2(x,thresh,closest,w)">nt_star2</a>	[y,w,ww]=nt_star2(x,thresh,closest,w) - sensor noise suppression</li><li><a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>	[y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li><li><a href="nt_tsr_nodemean.html" class="code" title="function [y,idx,w]=nt_tsr_nodemean(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr_nodemean</a>	[y,idx,w]=nt_tsr_nodemean(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li></ul>
 <!-- crossreference -->
 
 
@@ -71,81 +73,93 @@ This function is called by:
 0013 <span class="comment">% Weight should be either a column vector, or a matrix (2D or 3D) of same</span>
 0014 <span class="comment">% size as data.</span>
 0015 <span class="comment">%</span>
-0016 <span class="comment">% NoiseTools</span>
-0017 
-0018 <span class="keyword">if</span> nargin&lt;2; w=[]; <span class="keyword">end</span>
+0016 <span class="comment">% See nt_normrow, nt_normpage, nt_normpagecol.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% NoiseTools</span>
 0019 
-0020 <span class="keyword">if</span> isempty(x); error(<span class="string">'empty x'</span>); <span class="keyword">end</span>
+0020 <span class="keyword">if</span> nargin&lt;2; w=[]; <span class="keyword">end</span>
 0021 
-0022 <span class="keyword">if</span> ndims(x)==4;
-0023     <span class="keyword">if</span> nargin&gt;1; error(<span class="string">'weights not supported for 4D data'</span>); <span class="keyword">end</span>
-0024     [m,n,o,p]=size(x);
-0025     y=zeros(size(x));
-0026     N=zeros(1,n);
-0027     <span class="keyword">for</span> k=1:p
-0028         [y(:,:,:,k),NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x(:,:,:,k));
-0029         N=N+NN.^2;
+0022 <span class="keyword">if</span> isempty(x); error(<span class="string">'empty x'</span>); <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> iscell(x)
+0025     <span class="keyword">if</span> nargin&gt;1; error(<span class="string">'weights not supported for cell array'</span>); <span class="keyword">end</span>
+0026     disp(<span class="string">'warning: normalizing each cell individually'</span>);
+0027     y={};
+0028     <span class="keyword">for</span> iCell=1:numel(x);
+0029         y{iCell}=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x{iCell});
 0030     <span class="keyword">end</span>
 0031     <span class="keyword">return</span>
 0032 <span class="keyword">end</span>
 0033 
-0034 <span class="keyword">if</span> ndims(x)==3;
-0035     
-0036     <span class="comment">% 3D: unfold, apply normcol on 2D, fold</span>
-0037     [m,n,o]=size(x);
-0038     x=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(x);
-0039     <span class="keyword">if</span> isempty(w);
-0040         <span class="comment">% no weight</span>
-0041         [y,NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x);
-0042         N=NN.^2;
-0043         y=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(y,m);
-0044     <span class="keyword">else</span>
-0045         <span class="comment">% weight</span>
-0046         <span class="keyword">if</span> size(w,1)~=m; error(<span class="string">'weight matrix should have same nrows as data'</span>); <span class="keyword">end</span> 
-0047         <span class="keyword">if</span> ndims(w)==2 &amp;&amp; size(w,2)==1; 
-0048             w=repmat(w,[1,m,o]);
-0049         <span class="keyword">end</span>
-0050         <span class="keyword">if</span> size(w)~=size(w); error(<span class="string">'weight should have same size as data'</span>); <span class="keyword">end</span>
-0051         w=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(w);
-0052         [y,NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x,w);
-0053         N=NN.^2;
-0054         y=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(y,m);
-0055     <span class="keyword">end</span>
-0056 
-0057 <span class="keyword">else</span>
-0058     
-0059     <span class="comment">% 2D</span>
-0060     [m,n]=size(x);
-0061     <span class="keyword">if</span> isempty(w)
-0062 
-0063         <span class="comment">% no weight</span>
-0064         <span class="comment">%N=sqrt(sum(x.^2)/m);</span>
-0065         <span class="comment">%y=vecmult(x,1./N);</span>
-0066         N=(sum(x.^2)/m);
-0067         NN=N.^-0.5;
-0068         NN(find(N==0))=0;
-0069         y=<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(x,NN);
-0070        
-0071     <span class="keyword">else</span>
-0072 
-0073         <span class="comment">% weight</span>
-0074         <span class="keyword">if</span> size(w,1)~=size(x,1); error(<span class="string">'weight matrix should have same ncols as data'</span>); <span class="keyword">end</span> 
-0075         <span class="keyword">if</span> ndims(w)==2 &amp;&amp; size(w,2)==1; 
-0076             w=repmat(w,1,n);
-0077         <span class="keyword">end</span>
-0078         <span class="keyword">if</span> size(w)~=size(w); error(<span class="string">'weight should have same size as data'</span>); <span class="keyword">end</span>
-0079         <span class="keyword">if</span> size(w,2)==1; w=repmat(w,1,n);<span class="keyword">end</span>
-0080         <span class="comment">%N=sqrt(sum((x.^2).*w)./sum(w));</span>
-0081         <span class="comment">%y=vecmult(x,1./N);</span>
-0082         N=(sum((x.^2).*w)./sum(w));
-0083         NN=N.^-0.5;
-0084         NN(find(N==0))=0;
-0085         y=<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(x, NN);
-0086         
-0087     <span class="keyword">end</span>
-0088 <span class="keyword">end</span>
-0089 
-0090 norm=N.^0.5;</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0034 <span class="keyword">if</span> ndims(x)==4;
+0035     <span class="keyword">if</span> nargin&gt;1; error(<span class="string">'weights not supported for 4D data'</span>); <span class="keyword">end</span>
+0036     [m,n,o,p]=size(x);
+0037     y=zeros(size(x));
+0038     N=zeros(1,n);
+0039     <span class="keyword">for</span> k=1:p
+0040         [y(:,:,:,k),NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x(:,:,:,k));
+0041         N=N+NN.^2;
+0042     <span class="keyword">end</span>
+0043     <span class="keyword">return</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="keyword">if</span> ndims(x)==3;
+0047     
+0048     <span class="comment">% 3D: unfold, apply normcol on 2D, fold</span>
+0049     [m,n,o]=size(x);
+0050     x=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(x);
+0051     <span class="keyword">if</span> isempty(w);
+0052         <span class="comment">% no weight</span>
+0053         [y,NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x);
+0054         N=NN.^2;
+0055         y=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(y,m);
+0056     <span class="keyword">else</span>
+0057         <span class="comment">% weight</span>
+0058         <span class="keyword">if</span> size(w,1)~=m; error(<span class="string">'weight matrix should have same nrows as data'</span>); <span class="keyword">end</span> 
+0059         <span class="keyword">if</span> ndims(w)==2 &amp;&amp; size(w,2)==1; 
+0060             w=repmat(w,[1,m,o]);
+0061         <span class="keyword">end</span>
+0062         <span class="keyword">if</span> size(w)~=size(w); error(<span class="string">'weight should have same size as data'</span>); <span class="keyword">end</span>
+0063         w=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(w);
+0064         [y,NN]=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x,w);
+0065         N=NN.^2;
+0066         y=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(y,m);
+0067     <span class="keyword">end</span>
+0068 
+0069 <span class="keyword">else</span>
+0070     
+0071     <span class="comment">% 2D</span>
+0072     [m,n]=size(x);
+0073     <span class="keyword">if</span> isempty(w)
+0074 
+0075         <span class="comment">% no weight</span>
+0076         <span class="comment">%N=sqrt(sum(x.^2)/m);</span>
+0077         <span class="comment">%y=vecmult(x,1./N);</span>
+0078         N=(sum(x.^2)/m);
+0079         NN=N.^-0.5;
+0080         NN(find(N==0))=0;
+0081         y=<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(x,NN);
+0082        
+0083     <span class="keyword">else</span>
+0084 
+0085         <span class="comment">% weight</span>
+0086         <span class="keyword">if</span> size(w,1)~=size(x,1); error(<span class="string">'weight matrix should have same ncols as data'</span>); <span class="keyword">end</span> 
+0087         <span class="keyword">if</span> ndims(w)==2 &amp;&amp; size(w,2)==1; 
+0088             w=repmat(w,1,n);
+0089         <span class="keyword">end</span>
+0090         <span class="keyword">if</span> size(w)~=size(w); error(<span class="string">'weight should have same size as data'</span>); <span class="keyword">end</span>
+0091         <span class="keyword">if</span> size(w,2)==1; w=repmat(w,1,n);<span class="keyword">end</span>
+0092         <span class="comment">%N=sqrt(sum((x.^2).*w)./sum(w));</span>
+0093         <span class="comment">%y=vecmult(x,1./N);</span>
+0094         N=(sum((x.^2).*w)./sum(w));
+0095         NN=N.^-0.5;
+0096         NN(find(N==0))=0;
+0097         y=<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(x, NN);
+0098         
+0099     <span class="keyword">end</span>
+0100 <span class="keyword">end</span>
+0101 
+0102 norm=N.^0.5;</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -1,0 +1,277 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_idxx_old</title>
+  <meta name="keywords" content="nt_idxx_old">
+  <meta name="description" content="nt_idxx(fname,iname,blksize,chunksize,nfft) - create an index file to summarize large data file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_idxx_old.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_idxx_old
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>nt_idxx(fname,iname,blksize,chunksize,nfft) - create an index file to summarize large data file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [bstats,wstats,cstats,sstats]=nt_idxx(fname,iname,blksize,channels_to_keep,nfft,chunksize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">nt_idxx(fname,iname,blksize,chunksize,nfft) - create an index file to summarize large data file
+
+  fname: name of data file to index
+  iname: name of index file to create [default fname with EXT = .idxx in directory i]
+  bsize: size of blocks over which to calculate stats [default: 100]
+  channels_to_keep: ignore other channels
+  nfft: fft size for psd [default: 1024]
+  chunksize: size of chunks to read from disk [default: 500000]
+
+ If blksize is a struct, the following fields are expected:
+   blksize.wav:  blocksize to calculate basic statistics [default: 100]
+   blksize.cov:  blocksize to calculate covariance [default: none]
+   blksize.psd: blocksize to calculate psd [default: none]
+ If blksize is numeric, it refers to basic statistics.
+
+ Usage:
+   nt_idx(fname,...): calculate index structs, store in index file
+
+   [bstats,wstats,cstats,sstats]=nt_idx(fname,...): return index structs:
+     bstats: basic stats (size, etc.)
+     wstats: waveform (min, max, mean, std)
+     cstats: covariance
+     sstats: psd
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>	nt_double2int() - recode/decode double as integer to save space</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>	size=nt_whoss - total Gbytes used by variables</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bstats,wstats,cstats,sstats]=nt_idxx(fname,iname,blksize,channels_to_keep,nfft,chunksize)</a>
+0002 <span class="comment">%nt_idxx(fname,iname,blksize,chunksize,nfft) - create an index file to summarize large data file</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  fname: name of data file to index</span>
+0005 <span class="comment">%  iname: name of index file to create [default fname with EXT = .idxx in directory i]</span>
+0006 <span class="comment">%  bsize: size of blocks over which to calculate stats [default: 100]</span>
+0007 <span class="comment">%  channels_to_keep: ignore other channels</span>
+0008 <span class="comment">%  nfft: fft size for psd [default: 1024]</span>
+0009 <span class="comment">%  chunksize: size of chunks to read from disk [default: 500000]</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% If blksize is a struct, the following fields are expected:</span>
+0012 <span class="comment">%   blksize.wav:  blocksize to calculate basic statistics [default: 100]</span>
+0013 <span class="comment">%   blksize.cov:  blocksize to calculate covariance [default: none]</span>
+0014 <span class="comment">%   blksize.psd: blocksize to calculate psd [default: none]</span>
+0015 <span class="comment">% If blksize is numeric, it refers to basic statistics.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Usage:</span>
+0018 <span class="comment">%   nt_idx(fname,...): calculate index structs, store in index file</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   [bstats,wstats,cstats,sstats]=nt_idx(fname,...): return index structs:</span>
+0021 <span class="comment">%     bstats: basic stats (size, etc.)</span>
+0022 <span class="comment">%     wstats: waveform (min, max, mean, std)</span>
+0023 <span class="comment">%     cstats: covariance</span>
+0024 <span class="comment">%     sstats: psd</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% NoiseTools</span>
+0027 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0028 
+0029 
+0030 
+0031 assert(nargin&gt;0, <span class="string">'!'</span>);
+0032 <span class="keyword">if</span> nargin&lt;2 ; iname=[]; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;3 || isempty(blksize)
+0034     blksize.wav=100;
+0035 <span class="keyword">end</span>
+0036 <span class="keyword">if</span> nargin&lt;4; channels_to_keep=[]; <span class="keyword">end</span>
+0037 <span class="keyword">if</span> nargin&lt;5 || isempty(nfft); nfft=1024; <span class="keyword">end</span>
+0038 <span class="keyword">if</span> nargin&lt;6 || isempty(chunksize); chunksize=500000; <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">if</span> isnumeric(blksize); tmp=blksize; blksize=[]; blksize.wav=tmp; <span class="keyword">end</span>
+0041 <span class="keyword">if</span> ~isempty(iname) &amp;&amp; ~ischar(iname); error(<span class="string">'!'</span>); <span class="keyword">end</span> <span class="comment">% common error</span>
+0042 
+0043 <span class="comment">% check for FieldTrip</span>
+0044 <span class="keyword">try</span>, ft_version; <span class="keyword">catch</span>, disp(<span class="string">'You must download FieldTrip from http://www.fieldtriptoolbox.org'</span>); <span class="keyword">return</span>; <span class="keyword">end</span>
+0045 
+0046 <span class="comment">% use separate structs to make it easy to read just one kind of stats from file</span>
+0047 bstats=[]; <span class="comment">% index structure for basic stats</span>
+0048 wstats=[]; <span class="comment">% index structure for waveform</span>
+0049 cstats=[]; <span class="comment">% index structure for covariance</span>
+0050 sstats=[]; <span class="comment">% index structure for spectrogram</span>
+0051 bstats.fname=fname; 
+0052 
+0053 <span class="comment">% read header</span>
+0054 h=ft_read_header(fname);
+0055 bstats.header=h;
+0056 bstats.sr=h.Fs;
+0057 bstats.nsamples=h.nSamples;
+0058 bstats.label=h.label;
+0059 bstats.nchans=h.nChans;
+0060 
+0061 <span class="keyword">if</span> isempty(channels_to_keep); channels_to_keep=1:bstats.nchans; <span class="keyword">end</span>
+0062 <span class="keyword">if</span> any(channels_to_keep&gt;bstats.nchans); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0063 bstats.channels_to_keep=channels_to_keep;
+0064 bstats.nchans=numel(channels_to_keep);
+0065 
+0066 <span class="comment">% allocate basic stats arrays:</span>
+0067 nbasic=ceil(bstats.nsamples/blksize.wav); <span class="comment">% total number of blocs for basic stats</span>
+0068 wstats.min=zeros(nbasic,bstats.nchans);
+0069 wstats.max=zeros(nbasic,bstats.nchans); 
+0070 wstats.mean=zeros(nbasic,bstats.nchans);
+0071 wstats.rms=zeros(nbasic,bstats.nchans);
+0072 wstats.card=zeros(nbasic,1,<span class="string">'uint32'</span>);
+0073 
+0074 chunksize=floor(chunksize/blksize.wav)*blksize.wav; 
+0075 
+0076 <span class="comment">% allocate covariance array</span>
+0077 <span class="keyword">if</span> isfield(blksize,<span class="string">'cov'</span>)
+0078     tmp=log2(blksize.cov/blksize.wav);
+0079     assert(tmp==round(tmp), <span class="keyword">...</span>
+0080         <span class="string">'blksize.cov should be power of 2 times blksize.wav'</span>);
+0081     ncov=ceil(bstats.nsamples/blksize.cov);
+0082     cstats.cov=zeros(ncov,bstats.nchans,bstats.nchans);
+0083     cstats.card=zeros(ncov,1,<span class="string">'uint32'</span>);
+0084     chunksize=floor(chunksize/blksize.cov)*blksize.cov;
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="comment">% allocate psd array</span>
+0088 <span class="keyword">if</span> isfield(blksize,<span class="string">'psd'</span>) 
+0089     <span class="keyword">if</span> blksize.psd &lt; nfft; error(<span class="string">'!'</span>); <span class="keyword">end</span>;
+0090     tmp=log2(blksize.psd/blksize.wav);
+0091     assert(tmp==round(tmp), <span class="keyword">...</span>
+0092         <span class="string">'blksize.psd should be power of 2 times blksize.wav'</span>);
+0093     npsd=ceil(bstats.nsamples/blksize.psd);
+0094     sstats.psd=zeros(npsd,bstats.nchans,nfft/2+1);
+0095     sstats.card=zeros(npsd,1,<span class="string">'uint32'</span>);
+0096     sstats.nfft=nfft;
+0097     chunksize=floor(chunksize/blksize.psd)*blksize.psd;
+0098 <span class="keyword">end</span>
+0099 
+0100 
+0101 foffset=0;
+0102 boffset=0;
+0103 coffset=0;
+0104 soffset=0;
+0105 
+0106 <span class="keyword">while</span> true
+0107     
+0108     <span class="comment">%if file_offset&gt;=i.nsamples; break; end</span>
+0109     
+0110     <span class="comment">% read chunk from disk</span>
+0111     begsample=foffset+1;
+0112     endsample=min(foffset+chunksize,bstats.nsamples);
+0113     x=ft_read_data(fname, <span class="string">'begsample'</span>,begsample,<span class="string">'endsample'</span>,endsample);
+0114     x=x'; <span class="comment">% --&gt; time X channels</span>
+0115     x=x(:,channels_to_keep);
+0116     
+0117     <span class="comment">% fold chunk into blocks</span>
+0118     n=floor(size(x,1)/blksize.wav); <span class="comment">% number of blocks in this chunk</span>
+0119     xb=x(1:n*blksize.wav,:);
+0120     xb=reshape(xb,[blksize.wav,n,bstats.nchans]);
+0121     wstats.min(boffset+(1:n),:)=min(xb);
+0122     wstats.max(boffset+(1:n),:)=max(xb);
+0123     wstats.mean(boffset+(1:n),:)=mean(xb);
+0124     wstats.rms(boffset+(1:n),:)=sqrt(mean(xb.^2));
+0125     wstats.card(boffset+(1:n),:)=blksize.wav;
+0126     boffset=boffset+n; 
+0127 
+0128     <span class="comment">% extra bit at end of file?</span>
+0129     <span class="keyword">if</span> size(x,1)&gt;n*blksize.wav
+0130         tmp=x(n*blksize.wav+1:<span class="keyword">end</span>,:);
+0131         wstats.min(boffset+1,:)=min(tmp);
+0132         wstats.max(boffset+1,:)=max(tmp);
+0133         wstats.mean(boffset+1,:)=mean(tmp);
+0134         wstats.rms(boffset+1,:)=sqrt(mean(tmp.^2));
+0135         wstats.card(boffset+1,:)=size(tmp,1);
+0136     <span class="keyword">end</span>
+0137     
+0138     
+0139     foffset=foffset+n*blksize.wav;
+0140 
+0141     <span class="keyword">if</span> ~isempty(cstats) &amp;&amp; isfield(cstats, <span class="string">'cov'</span>)
+0142         n=floor(size(x,1)/blksize.cov); <span class="comment">% number of blocks</span>
+0143         xb=x(1:n*blksize.cov,:);        
+0144         xb=reshape(xb,[blksize.cov, n, bstats.nchans]);
+0145         <span class="keyword">for</span> iBlock=1:n
+0146             tmp=squeeze(xb(:,iBlock,:));
+0147             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0148             cstats.cov(coffset+iBlock,:,:) = tmp'*tmp;
+0149             cstats.cardcov(coffset+iBlock,:)=blksize.cov;
+0150         <span class="keyword">end</span>
+0151         coffset=coffset+size(xb,2);
+0152         <span class="keyword">if</span> size(x,1)&gt;n*blksize.cov
+0153             tmp=x(n*blksize.cov+1:<span class="keyword">end</span>,:);
+0154             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0155             cstats.cov(coffset+1,:,:)=tmp'*tmp;
+0156             cstats.cardcov(coffset+1,:)=size(tmp,1);
+0157         <span class="keyword">end</span>              
+0158     <span class="keyword">end</span>
+0159        
+0160     <span class="keyword">if</span> ~isempty(sstats) &amp;&amp; isfield(sstats, <span class="string">'psd'</span>)
+0161         n=floor(size(x,1)/blksize.psd); <span class="comment">% number of blocks</span>
+0162         xb=x(1:n*blksize.psd,:);        
+0163         xb=reshape(xb,[blksize.psd, n, bstats.nchans]);
+0164         <span class="keyword">for</span> iBlock=1:n
+0165             tmp=squeeze(xb(:,iBlock,:));
+0166             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0167             sstats.psd(soffset+iBlock,:,:) = pwelch(tmp, nfft, <span class="string">'power'</span>)';
+0168             sstats.cardpsd(soffset+iBlock,:,:)=blksize.psd;
+0169         <span class="keyword">end</span>
+0170         soffset=soffset+size(xb,2);
+0171         <span class="keyword">if</span> size(x,1)&gt;n*blksize.psd
+0172             tmp=x(n*blksize.psd+1:<span class="keyword">end</span>,:);
+0173             <span class="keyword">if</span> size(tmp,1)&lt;nfft; <span class="keyword">break</span>; <span class="keyword">end</span>
+0174             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0175             sstats.psd(soffset+1,:,:) = pwelch(tmp, nfft, <span class="string">'power'</span>)';
+0176             sstats.cardpsd(soffset+1,:)=size(tmp,1);
+0177         <span class="keyword">end</span>              
+0178     <span class="keyword">end</span>
+0179     
+0180     <a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>
+0181     disp([num2str(foffset), <span class="string">'/'</span>, num2str(h.nSamples), <span class="string">' ('</span>, num2str(foffset/h.nSamples*100), <span class="string">'%)'</span>]);
+0182     disp([boffset, coffset, soffset]);
+0183     
+0184     <span class="keyword">if</span> endsample&gt;=bstats.nsamples; <span class="keyword">break</span>; <span class="keyword">end</span>;
+0185 <span class="keyword">end</span>
+0186    
+0187 <span class="keyword">if</span> ~nargout
+0188     <span class="keyword">if</span> isempty(iname)
+0189         [FILEPATH,NAME,EXT]=fileparts(fname);
+0190         <span class="keyword">if</span> isempty(FILEPATH); FILEPATH=pwd; <span class="keyword">end</span>
+0191         <span class="keyword">if</span> ~exist([FILEPATH,filesep,<span class="string">'idxx'</span>], <span class="string">'dir'</span>)
+0192             mkdir([FILEPATH,filesep,<span class="string">'idxx'</span>]);
+0193         <span class="keyword">end</span>        
+0194         iname=[FILEPATH,filesep,<span class="string">'idxx'</span>,filesep,NAME,EXT,<span class="string">'.idxx'</span>];
+0195     <span class="keyword">end</span>
+0196     wstats.min=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.min); 
+0197     wstats.max=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.max);
+0198     wstats.mean=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.mean);
+0199     wstats.rms=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.rms);
+0200     save(iname, <span class="string">'bstats'</span>, <span class="string">'wstats'</span>,<span class="string">'cstats'</span>, <span class="string">'sstats'</span>,<span class="string">'-v7.3'</span>);
+0201     clear bstats wstats cstats sstats;
+0202 <span class="keyword">end</span>
+0203 
+0204 
+0205     
+0206</pre></div>
+<hr><address>Generated on Wed 27-Nov-2019 09:49:00 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

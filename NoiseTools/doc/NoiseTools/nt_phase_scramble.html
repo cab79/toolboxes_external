@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_phase_scramble</title>
+  <meta name="keywords" content="nt_phase_scramble">
+  <meta name="description" content="y=nt_phase_scramble(x,allsameflag) - scramble time but preserve autocorrelation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_phase_scramble.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_phase_scramble
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>y=nt_phase_scramble(x,allsameflag) - scramble time but preserve autocorrelation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function y=nt_phase_scramble(x,allsameflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">y=nt_phase_scramble(x,allsameflag) - scramble time but preserve autocorrelation
+
+  y: scrambled data
+
+  x: data to scramble (time X channels, or time X channels X trials
+  allsameflag: if true, same random phasor to all channels [default: true]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y=nt_phase_scramble(x,allsameflag)</a>
+0002 <span class="comment">%y=nt_phase_scramble(x,allsameflag) - scramble time but preserve autocorrelation</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  y: scrambled data</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%  x: data to scramble (time X channels, or time X channels X trials</span>
+0007 <span class="comment">%  allsameflag: if true, same random phasor to all channels [default: true]</span>
+0008 <span class="comment">%</span>
+0009 
+0010 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0011 <span class="keyword">if</span> nargin&lt;1||isempty(allsameflag); allsameflat=1; <span class="keyword">end</span>
+0012 
+0013 
+0014 
+0015 
+0016 [nsample,nchan,ntrial]=size(x);
+0017 <span class="keyword">if</span> rem(nsample,2)~=0 <span class="comment">% pad to multiple of 2</span>
+0018     x(nsample+1,:,:)=x(nsample,:,:); 
+0019 <span class="keyword">end</span>
+0020 
+0021 <span class="keyword">for</span> iTrial=1:ntrial
+0022     xx=x(:,:,iTrial);
+0023     yy=fft(xx);
+0024     <span class="keyword">if</span> allsameflag
+0025          phasor=exp(-2*pi*j*rand(size(x,1)/2-1,1)); <span class="comment">% same for all channels</span>
+0026          yy=yy.*repmat([1;phasor; 1; conj(flipud(phasor))],1,nchan);
+0027     <span class="keyword">else</span>
+0028         phasor=exp(-2*pi*j*rand(size(x,1)/2-1,nchan)); <span class="comment">% channel-specific</span>
+0029         yy=yy.*[ones(1,nchan);phasor; ones(1,nchan); conj(flipud(phasor))];
+0030     <span class="keyword">end</span>
+0031     yy=real(ifft(yy));
+0032     y(:,:,iTrial)=yy;
+0033 <span class="keyword">end</span>
+0034 
+0035 y=y(1:nsample,:,:); <span class="comment">% remove padding if need</span>
+0036</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

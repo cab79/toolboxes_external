@@ -9,9 +9,9 @@ function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)
 %  dsr: downsample ratio for cross product series
 %  flags: 'norm': give each dsr-sized slice the same weight
 %
-%  See: nt_cluster1D, nt_cluster_JD.
+%  See: nt_cluster1D, nt_cluster_jd.
 
-SMOOTH=1%2; % smooth the time series of cross products
+SMOOTH=1;%2; % smooth the time series of cross products
 
 if nargin<3 ||isempty(flags); flags=[]; end
 if nargin<2; error('!'); end
@@ -113,8 +113,8 @@ if nargout==0;
     plot([e1',e2'], '.-'); legend('cluster A', 'cluster B'); title ('power per component');
     
     figure(104);
-    subplot 121; imagescc(c0); title('cluster A'); 
-    subplot 122; imagescc(c1); title('cluster B');
+    subplot 121; nt_imagescc(c0); title('cluster A'); 
+    subplot 122; nt_imagescc(c1); title('cluster B');
     
     if 0 
         figure(105); clf

@@ -3,7 +3,7 @@ function  [y, h] = resample( x, p, q, N, bta )
 %
 %!!!!! 
 % Lower LP corner than Matlab's resample (Matlab's gives inadequate
-% antialias filtering. 
+% antialias filtering). 
 % Works with multidimensional arrays (Matlab's doesn't).
 %!!!!!
 %

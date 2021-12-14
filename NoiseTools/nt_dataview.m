@@ -93,6 +93,8 @@ if isnumeric(data)
     
         % plot summary statistics for all dimensions
         plot_params.bottom=0.35; plot_params.height=0.5;
+        
+        %%%%%%%%%%%%%%%%%%  HERE's where we plot %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         nt_statmatrix(data,plot_params);
         
         if isfield(p,'return') && p.return; break; end

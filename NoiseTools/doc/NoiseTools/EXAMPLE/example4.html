@@ -57,9 +57,9 @@ This function is called by:
 0009 help(mfilename)
 0010 
 0011 <span class="comment">% load data</span>
-0012 FNAME=<span class="string">'../DATA/example_data.mat'</span>;
+0012 FNAME=[fileparts(which(<span class="string">'nt_version'</span>)), <span class="string">'/DATA/example_data.mat'</span>];
 0013 <span class="keyword">if</span> ~exist(FNAME); 
-0014     disp(<span class="string">'file ''../DATA/example_data.mat'' not found, get it at http://cognition.ens.fr/Audition/adc/NoiseTools/DATA/'</span>);
+0014     disp([<span class="string">'file '</span>, FNAME, <span class="string">' not found, get it at http://cognition.ens.fr/Audition/adc/NoiseTools/DATA/'</span>]);
 0015     <span class="keyword">return</span>
 0016 <span class="keyword">end</span>
 0017 load(FNAME)  <span class="comment">% loads 'meg', 'sr'</span>
@@ -102,7 +102,7 @@ This function is called by:
 0054 set(gca,<span class="string">'ygrid'</span>,<span class="string">'on'</span>);
 0055 hold on
 0056 nt_spect_plot(clean,1024,[],[],sr);
-0057 nt_colorlines([],[3 1]);
+0057 nt_linecolors([],[3 1]);
 0058 title(<span class="string">'power spectra, average over channels'</span>);
 0059 legend(<span class="string">'before'</span>,<span class="string">'after'</span>); legend boxoff
 0060 set(gca,<span class="string">'ygrid'</span>,<span class="string">'on'</span>);
@@ -113,6 +113,6 @@ This function is called by:
 0065 
 0066 
 0067</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 29-Nov-2017 23:17:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

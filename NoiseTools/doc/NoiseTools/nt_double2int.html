@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_double2int</title>
+  <meta name="keywords" content="nt_double2int">
+  <meta name="description" content="nt_double2int() - recode/decode double as integer to save space">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_double2int.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_double2int
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>nt_double2int() - recode/decode double as integer to save space</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function z=nt_double2int(x,param) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">nt_double2int() - recode/decode double as integer to save space
+
+ z=nt_double2int(x,intsize): recode double as integer
+   z: coded data
+   x: data to code (matrix or array of matrices)
+   intsize: [default: 'int16']
+
+ x=nt_double2int(z,indices): decode back to double
+   x: decoded data
+   z: coded data
+   indices: indices of rows/columns [default: all]
+     indices{1}: rows to keep
+     indices{2}: columns to keep
+
+ Data are coded as a structure including a matrix of integers together with
+ min and max of each column:
+   z.ints: data scaled and coded as ints
+   z.min: min of original data
+   z.max: max of original data
+   z.intsize: integer type (e.g. 'int16')
+
+ They can also consist of a cell array of such structures.
+ 
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>	nt_double2int() - recode/decode double as integer to save space</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>	nt_double2int() - recode/decode double as integer to save space</li><li><a href="nt_idxx.html" class="code" title="function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)">nt_idxx</a>	nt_idxx(fname,p) - create an index file to summarize large data file</li><li><a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>	nt_plotxx(fname,bounds,chans) - plot using index file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function z=nt_double2int(x,param)</a>
+0002 <span class="comment">%nt_double2int() - recode/decode double as integer to save space</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% z=nt_double2int(x,intsize): recode double as integer</span>
+0005 <span class="comment">%   z: coded data</span>
+0006 <span class="comment">%   x: data to code (matrix or array of matrices)</span>
+0007 <span class="comment">%   intsize: [default: 'int16']</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% x=nt_double2int(z,indices): decode back to double</span>
+0010 <span class="comment">%   x: decoded data</span>
+0011 <span class="comment">%   z: coded data</span>
+0012 <span class="comment">%   indices: indices of rows/columns [default: all]</span>
+0013 <span class="comment">%     indices{1}: rows to keep</span>
+0014 <span class="comment">%     indices{2}: columns to keep</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Data are coded as a structure including a matrix of integers together with</span>
+0017 <span class="comment">% min and max of each column:</span>
+0018 <span class="comment">%   z.ints: data scaled and coded as ints</span>
+0019 <span class="comment">%   z.min: min of original data</span>
+0020 <span class="comment">%   z.max: max of original data</span>
+0021 <span class="comment">%   z.intsize: integer type (e.g. 'int16')</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% They can also consist of a cell array of such structures.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% NoiseTools</span>
+0026 
+0027 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0028 
+0029 
+0030 <span class="keyword">if</span> iscell(x)
+0031     <span class="keyword">for</span> iChunk=1:numel(x)
+0032         z{iChunk}=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(x{iChunk},param);
+0033     <span class="keyword">end</span>
+0034     <span class="keyword">return</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> isfloat(x) <span class="comment">% code to integer</span>
+0038 
+0039     <span class="keyword">if</span> nargin&lt;2; param=<span class="string">'int16'</span>; <span class="keyword">end</span>
+0040     intsize=param;
+0041     sz=size(x);
+0042     <span class="keyword">if</span> ndims(x)&gt;2; x=x(:,:); <span class="keyword">end</span>
+0043    
+0044     z.ints=zeros(size(x),intsize);
+0045     z.min=zeros(1,size(x,2));
+0046     z.max=zeros(1,size(x,2));
+0047     z.intsize=intsize;
+0048     
+0049     <span class="comment">% recode columns individually</span>
+0050     <span class="keyword">for</span> iCol=1:size(x,2);
+0051         z.min(iCol)=min(x(:,iCol));        
+0052         z.max(iCol)=max(x(:,iCol));
+0053         z.ints(:,iCol)= double(intmin(intsize)) + <span class="keyword">...</span>
+0054             (x(:,iCol) - z.min(iCol)) * <span class="keyword">...</span>
+0055             ( double(intmax(intsize))-double(intmin(intsize)) ) /<span class="keyword">...</span>
+0056             ( z.max(iCol)-z.min(iCol) ); <span class="comment">% automatically coerced to intsize</span>
+0057     <span class="keyword">end</span>
+0058     z.ints=reshape(z.ints,sz);
+0059     
+0060 <span class="keyword">else</span> <span class="comment">% decode back to double</span>
+0061     
+0062     assert(isstruct(x), <span class="string">'!'</span>);
+0063     intsize=x.intsize;
+0064     sz=size(x.ints);
+0065     <span class="keyword">if</span> ndims(x.ints)&gt;2; x.ints=x.ints(:,:); <span class="keyword">end</span>
+0066 
+0067     <span class="keyword">if</span> nargin&lt;2; param=[]; <span class="keyword">end</span>
+0068     indices=param;
+0069     
+0070     <span class="keyword">if</span> isempty(indices); 
+0071         
+0072         <span class="comment">% default: decode all</span>
+0073         z=zeros(size(x.ints));
+0074         <span class="keyword">for</span> iCol=1:size(x.ints,2)
+0075             z(:,iCol) = x.min(iCol) + <span class="keyword">...</span>
+0076                 (x.max(iCol)-x.min(iCol)) / (double(intmax(intsize))-double(intmin(intsize))) * (double(x.ints(:,iCol))-double(intmin(intsize)));
+0077         <span class="keyword">end</span>
+0078         z=reshape(z,sz);
+0079         
+0080     <span class="keyword">else</span>
+0081         <span class="comment">% select rows and/or columns</span>
+0082         <span class="keyword">if</span> numel(indices)&lt;2; indices{2}=[]; <span class="keyword">end</span>
+0083         <span class="keyword">if</span> isempty(indices{1}); indices{1}=1:size(x.ints,1); <span class="keyword">end</span>
+0084         <span class="keyword">if</span> isempty(indices{2}); indices{2}=1:size(x.ints,2); <span class="keyword">end</span>
+0085         
+0086         z=zeros(numel(indices{1}),numel(indices{2}));
+0087         
+0088         <span class="keyword">for</span> idx=1:numel(indices{2})
+0089             iCol=indices{2}(idx);
+0090             z(:,idx) = x.min(iCol) + <span class="keyword">...</span>
+0091                 (x.max(iCol)-x.min(iCol)) / (double ( double(intmax(intsize))-double(intmin(intsize)))) * (double(x.ints(indices{1},iCol))-double(intmin(intsize)));
+0092         <span class="keyword">end</span>
+0093         
+0094         
+0095         <span class="keyword">if</span> numel(sz)&gt;2 &amp;&amp; numel(indices{2})&lt;size(x.ints,2)
+0096             warning(<span class="string">'output data has not been reshaped'</span>);
+0097         <span class="keyword">else</span>
+0098             z=reshape(z,[numel(indices{1}),numel(indices{2})]);
+0099         <span class="keyword">end</span>
+0100         
+0101     <span class="keyword">end</span>
+0102     
+0103 <span class="keyword">end</span>
+0104 
+0105 
+0106 
+0107 
+0108</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

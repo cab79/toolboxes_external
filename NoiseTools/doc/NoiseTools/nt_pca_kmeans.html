@@ -44,7 +44,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_multishift.html" class="code" title="function z=nt_multishift(x,shifts)">nt_multishift</a>	z=nt_multishift(x,shifts,amplitudes) - apply multiple shifts to matrix</li><li><a href="nt_pca0.html" class="code" title="function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>	[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li></ul>
+<li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_multishift.html" class="code" title="function z=nt_multishift(x,shifts)">nt_multishift</a>	z=nt_multishift(x,shifts,amplitudes) - apply multiple shifts to matrix</li><li><a href="nt_pca0.html" class="code" title="function [topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>	[topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -97,7 +97,7 @@ This function is called by:
 0042 idx=0;
 0043 <span class="keyword">for</span> k=1:nclusters
 0044     <span class="comment">%[nclusters k numel(find(A==k))]</span>
-0045     [m,p]=<a href="nt_pca0.html" class="code" title="function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(x(:,find(A==k)));
+0045     [m,p]=<a href="nt_pca0.html" class="code" title="function [topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(x(:,find(A==k)));
 0046     topcs1(find(A==k),idx+(1:size(m,2))) = m;
 0047     pwr(idx+(1:size(m,2)))=p;
 0048     idx=idx+size(m,2);
@@ -106,7 +106,7 @@ This function is called by:
 0051 <span class="comment">% sort by decreasing power</span>
 0052 [~,idx]=sort(pwr,<span class="string">'descend'</span>);
 0053 
-0054 topcs2=<a href="nt_pca0.html" class="code" title="function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(x,topcs1(:,idx(1:nkeep))));
+0054 topcs2=<a href="nt_pca0.html" class="code" title="function [topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(x,topcs1(:,idx(1:nkeep))));
 0055 
 0056 topcs=tonrm*(topcs1(:,idx(1:nkeep))*topcs2);
 0057 
@@ -117,6 +117,6 @@ This function is called by:
 0062 
 0063 
 0064</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

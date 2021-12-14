@@ -22,50 +22,41 @@ function [c,tw]=nt_cov(x,shifts,w);
 %
 % NoiseTools
 
-if nargin<4||isempty(demean_flag); demean_flag=0; end
+%% arguments
 if nargin<3; w=[]; end;
 if nargin<2||isempty(shifts); shifts=0; end;
 if prod(size(x))==0; error('data empty'); end
-
-if min(shifts)<0; error('shifts should be non-negative'); end
-
 shifts=shifts(:);           % --> column vector
 nshifts=numel(shifts); 
 
 
-if isempty(w)
-    % no weights
-
+if isempty(w) 
+    %% no weights
     if isnumeric(x)
+        %% matrix
         [m,n,o]=size(x);
         c=zeros(n*nshifts);
         for k=1:o
             xx=nt_multishift(x(:,:,k),shifts);
-            if demean_flag
-                xx=nt_demean(xx);
-            end
             c=c+xx'*xx;
         end
         tw=size(xx,1)*o;
-    else
+    elseif iscell(x)
+        %% cell array
         [m,n]=size(x{1});
         o=length(x);
         c=zeros(n*nshifts);
         for k=1:o;
+            if size(x{k},2)~=n;  disp([size(x{k}),n, k]); error('!'); end
             xx=nt_multishift(x{k}(:,:),shifts);
-            if demean_flag
-                xx=nt_demean(xx);
-            end
             c=c+xx'*xx;
         end
         tw=size(xx,1)*o;
-    end
-    
+    else error('!'); end   
 else
-    % weights
-    if size(w,2)>1; error('w should have single column'); end
-    
+    %% weights
     if isnumeric(x)
+        %% matrix
         [m,n,o]=size(x);
         c=zeros(n*nshifts);
         for k=1:o
@@ -77,11 +68,11 @@ else
                 xx=x(:,:,k); ww=w(:,:,k);
             end
             xx=nt_vecmult(xx,ww);
-            if demean_flag; xx=nt_demean(xx); end
             c=c+xx'*xx;
         end
         tw=sum(w(:));
     else
+        %% cell array
         c=zeros(n*nshifts);
         [m,n]=size(x{1});
         o=length(x);
@@ -94,7 +85,6 @@ else
                 xx=x{k}(:,:); ww=w{k}(:,:);
             end
             xx=nt_vecmult(xx,ww);
-            if demean_flag; xx=nt_demean(xx); end
             c=c+xx'*xx;
         end
         tw=sum(w(:));

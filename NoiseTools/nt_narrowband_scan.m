@@ -1,4 +1,4 @@
-function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag,yulewalk_order)
+function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag)
 %A=nt_narrowband_scan(x,freqs,sr,Q,plotflag) - scan for narrowband components using DSS
 %
 %  A: cell array of DSS matrices
@@ -8,14 +8,12 @@ function A=nt_narrowband_scan(x,freqs,sr,Q,plotflag,yulewalk_order)
 %  sr: Hz, sampling rate
 %  Q: quality factors of scanning filter (default: [8 4])
 %  plotflag: if true plot (default: 1)
-%  yulewalk_order: if present apply inverse filtering with this order
 %
 % If no output arguments, plots spectra of first DSS components for each
 % bias
 %
 nt_greetings;
 
-if nargin<6; yulewalk_order=[]; end
 if nargin<5; plotflag=[]; end
 if nargin<4||isempty(Q); Q=[8 4]; end
 if nargin<3; error('!'); end

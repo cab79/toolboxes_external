@@ -1,21 +1,22 @@
-function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)
-%[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation
+function [A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag)
+%[A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag) - canonical correlation
 %
 %  A, B: transform matrices
 %  R: r scores
 %
 %  x,y: column matrices
-%  lags: array of lags to apply to y relative to x (can be negative)
+%  shifts: positive lag means y delayed relative to x
 %  C: covariance matrix of [x, y]
 %  m: number of columns of x
 %  thresh: discard PCs below this 
+%  demeanflag: if true remove means [default: true]
 %
 %  Usage 1:
 %   [A,B,R]=nt_cca(x,y); % CCA of x, y
 %
 %  Usage 2: 
-%   [A,B,R]=nt_cca(x,y,lags); % CCA of x, y for each value of lags.
-%   A positive lag indicates that y is delayed relative to x.
+%   [A,B,R]=nt_cca(x,y,shifts); % CCA of x, y for each value of shifts.
+%   A positive shift indicates that y is delayed relative to x.
 %
 %  Usage 3:
 %   C=[x,y]'*[x,y]; % covariance
@@ -35,6 +36,8 @@ function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)
 
 nt_greetings; 
 
+if nargin<7||isempty(nodemeanflag); demeanflag=1; end
+
 if ~exist('thresh','var');
     thresh=10.^-12; 
 end
@@ -42,21 +45,33 @@ end
 if exist('x','var') && ~isempty(x)
     % Calculate covariance of [x,y]
     if ~exist('y','var'); error('!'); end
-    if ~exist('lags','var')||isempty('lags'); lags=[0]; end
-    if numel(lags)==1 && lags==0 && isnumeric(x) && ndims(x)==2; 
+    if ~exist('shifts','var')||isempty('shifts'); shifts=[0]; end
+    if numel(shifts)==1 && shifts==0 && isnumeric(x) && ndims(x)==2; 
+        if demeanflag
+            x=nt_demean(x);
+            y=nt_demean(y);
+        end
         C=[x,y]'*[x,y]; % simple case
         m=size(x,2); 
-    else
-        [C,~,m]=nt_cov_lags(x,y,lags); % lags, multiple trials, etc.
+    else        
+        [C,~,m]=nt_cov_lags(x,y,shifts,demeanflag); % lags, multiple trials, etc.
     end
     [A,B,R]=nt_cca([],[],[],C,m,thresh);
+    
+    if nargout==0 
+        % plot something nice
+        if length(shifts)>1;
+            figure(1); clf;
+            plot(R'); title('correlation for each CC'); xlabel('lag'); ylabel('correlation');
+        end
+     end
     return
 end % else keep going 
 
 if ~exist('C','var') || isempty(C) ; error('!'); end
 if ~exist('m','var'); error('!'); end
 if size(C,1)~=size(C,2); error('!'); end
-if ~isempty(x) || ~isempty(y) || ~isempty(lags)  ; error('!'); end
+if ~isempty(x) || ~isempty(y) || ~isempty(shifts)  ; error('!'); end
 if ndims(C)>3; error('!'); end
 
 if ndims(C) == 3
@@ -129,6 +144,7 @@ i.e. they should map to the first PCs.
 To obtain CCs we just select the first N PCs. 
 %}
 
+%%
 
 %%
 % test code
@@ -146,9 +162,9 @@ if 0
     subplot 321; imagesc(A); title('A');
     subplot 322; imagesc(B); title('B');
     subplot 323; plot(R, '.-'); title('R')
-    subplot 324; imagescc((x*A)'*(x*A)); title ('covariance of x*A');
-    subplot 325; imagescc((y*B)'*(y*B)); title ('covariance of y*B');
-    subplot 326; imagescc([x*A,y*B]'*[x*A,y*B]); title ('covariance of [x*A,y*B]');
+    subplot 324; nt_imagescc((x*A)'*(x*A)); title ('covariance of x*A');
+    subplot 325; nt_imagescc((y*B)'*(y*B)); title ('covariance of y*B');
+    subplot 326; nt_imagescc([x*A,y*B]'*[x*A,y*B]); title ('covariance of [x*A,y*B]');
 end
 
 if 0 
@@ -170,9 +186,9 @@ if 0
     plot(([x*A1(:,1),x*A2(:,1)])); title('first component'); legend({'canoncorr', 'nt_cca'}, 'Interpreter','none'); 
     figure(2); clf;set(gcf,'defaulttextinterpreter','none')
     subplot 121; 
-    imagescc([x*A1,y*B1]'*[x*A1,y*B1]); title('canoncorr'); 
+    nt_imagescc([x*A1,y*B1]'*[x*A1,y*B1]); title('canoncorr'); 
     subplot 122; 
-    imagescc([x*A2,y*B2]'*[x*A2,y*B2]); title('nt_cca');
+    nt_imagescc([x*A2,y*B2]'*[x*A2,y*B2]); title('nt_cca');
 end
 
 if 0
@@ -185,20 +201,20 @@ if 0
     [A,B,R]=canoncorr(x,x); 
     disp('canoncorr time: ');
     toc
-    [A,B,R]=cca(x,x); 
-    disp('cca time: ');
-    toc
+%     [A,B,R]=cca(x,x); 
+%     disp('cca time: ');
+%     toc
 end
 
 if 0
-    % lags
+    % shifts
     x=randn(1000,10);
     y=randn(1000,10);
     y(:,1:3)=x(:,1:3);
-    lags=-10:10;
-    [A1,B1,R1]=nt_cca(x,y,lags);
+    shifts=-10:10;
+    [A1,B1,R1]=nt_cca(x,y,shifts);
     figure(1); clf
-    plot(lags,R1'); xlabel('lag'); ylabel('R');
+    plot(shifts,R1'); xlabel('lag'); ylabel('R');
 end
 
 if 0
@@ -207,7 +223,7 @@ if 0
     y=randn(1000,10); y=x(:,randperm(10)); %+0.000001*y;
     [A1,B1,R1]=nt_cca(x,y);
     figure(1); clf
-    imagescc([x*A1,y*B1]'*[x*A1,y*B1]);
+    nt_imagescc([x*A1,y*B1]'*[x*A1,y*B1]);
 end    
 
 if 0
@@ -219,7 +235,5 @@ if 0
     disp('seems to work...');
 end
 
-%%
-% joint covariance of [x,y] - handles 3D and cell array
-
+    
 

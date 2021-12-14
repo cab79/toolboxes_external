@@ -1,4 +1,4 @@
-function y=nt_sns(x,nneighbors,skip,w)
+ function y=nt_sns(x,nneighbors,skip,w)
 % y=nt_sns(x,nneigbors,skip,w) - sensor noise suppression
 %
 %   y: denoised matrix

@@ -60,9 +60,9 @@ This function is called by:
 0010 disp(mfilename);
 0011 help(mfilename)
 0012 
-0013 FNAME=<span class="string">'../DATA/Fichier_1815_lfp.mat'</span>;
+0013 FNAME=[fileparts(which(<span class="string">'nt_version'</span>)), <span class="string">'/DATA/Fichier_1815_lfp.mat'</span>];
 0014 <span class="keyword">if</span> ~exist(FNAME); 
-0015     disp(<span class="string">'file ''../DATA/Fichier_1815_lfp.mat'' not found, get it at http://cognition.ens.fr/Audition/adc/NoiseTools/DATA/'</span>);
+0015     disp([<span class="string">'file '</span>,FNAME,<span class="string">' not found, get it at http://cognition.ens.fr/Audition/adc/NoiseTools/DATA/'</span>]);
 0016     <span class="keyword">return</span>
 0017 <span class="keyword">end</span>
 0018 
@@ -124,12 +124,12 @@ This function is called by:
 0074 
 0075 figure(1); clf
 0076 subplot 211
-0077 imagescc(xx'); title(<span class="string">'electrode tuning curves'</span>);
+0077 nt_imagescc(xx'); title(<span class="string">'electrode tuning curves'</span>);
 0078 xlabel(<span class="string">'stim freq (.56 - 36 kHz)'</span>);
 0079 ylabel(<span class="string">'electrode'</span>);
 0080 
 0081 subplot 212
-0082 imagescc(zz); title(<span class="string">'optimally tuned components'</span>);
+0082 nt_imagescc(zz); title(<span class="string">'optimally tuned components'</span>);
 0083 xlabel(<span class="string">'stim freq (.56 - 36 kHz)'</span>);
 0084 ylabel(<span class="string">'bias freq (.56 - 36 kHz)'</span>);
 0085 
@@ -137,28 +137,28 @@ This function is called by:
 0087 figure(2); clf
 0088 plot([xx(:,11), zz(:,70)]);
 0089 xlabel(<span class="string">'stim freq (.56 - 36 kHz)'</span>);
-0090 nt_colorlines([],[1 3]);
+0090 nt_linecolors([],[1 3]);
 0091 legend(<span class="string">'electrode #11'</span>,<span class="string">'component #70'</span>, <span class="string">'location'</span>, <span class="string">'northwest'</span>); legend boxoff
 0092 title(<span class="string">'example tuning curves'</span>);
 0093 
 0094 figure(3); clf
 0095 subplot 121; 
-0096 imagescc(squeeze(x(:,11,:)))
+0096 nt_imagescc(squeeze(x(:,11,:)))
 0097 xlabel(<span class="string">'stim freq (.56 - 36 kHz)'</span>);
 0098 ylabel(<span class="string">'time (0-100ms)'</span>);
 0099 title(<span class="string">'electrode 11'</span>);
 0100 subplot 122; 
-0101 imagescc(squeeze(otc(:,72,:)))
+0101 nt_imagescc(squeeze(otc(:,72,:)))
 0102 xlabel(<span class="string">'stim freq (.56 - 36 kHz)'</span>);
 0103 ylabel(<span class="string">'time (0-100ms)'</span>);
 0104 title(<span class="string">'component 72'</span>);
 0105 
 0106 figure(4); clf
-0107 imagescc(to_otc)
+0107 nt_imagescc(to_otc)
 0108 xlabel(<span class="string">'bias freq (.56 - 36 kHz)'</span>);
 0109 ylabel(<span class="string">'electrode'</span>); 
 0110 title(<span class="string">'weights for each component'</span>);
 0111</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 29-Nov-2017 23:17:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

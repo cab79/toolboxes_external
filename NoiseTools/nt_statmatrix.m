@@ -6,22 +6,24 @@ function stats=nt_statMatrix(x,plot_params)
 %  x: data to stat
 %  plot_params: parameters
 
+%% arguments
 if nargin<1; error('!'); end
 if nargin<2;
     plot_params.bottom=0.1;
     plot_params.height=0.8;
 end
 
-% count true number of dimensions
+%% count true number of dimensions
 nDims=ndims(x);
 sizeX=size(x);
 if nDims==2 && (sizeX(1)==1 || sizeX(2)==1)
     nDims=1;
 end
-
 % if we're plotting, concatenate dimensions beyond 4th
 if nargout==0 && ndims(x)>4; x=x(:,:,:,:); nDims=4; end
 
+
+%% statistics on data
 stats={}; 
 if 0
     % computationally expensive
@@ -81,7 +83,7 @@ else
 end
 
 
-% plot the statistics
+%% No arguments: put up a window and plot the statistics
 if nargout==0;
     if isempty(get(0,'currentfigure'));
         figH=figure;
@@ -139,6 +141,7 @@ if nargout==0;
 end
             
 
+%%
 function nt_plotstats(stats)
 %h=nt_plotstats(stats)
 %  
@@ -153,7 +156,7 @@ if isfield(stats,'var')
     sd=sqrt(stats.var);
     nt_plot2(1:size(stats.mean,1), [stats.mean+sd,stats.mean-sd], [1 1 1]* 0.5);
 end
-nt_plot2(1:size(stats.mean,1),[stats.mean,stats.mean], [0 0 0]);
+nt_plot2(1:size(stats.mean,1),[stats.mean,stats.mean], [1 0 0]);
 stats.mean(find(stats.min~=stats.max))=nan;
 plot(1:size(stats.mean,1),[stats.mean,stats.mean], '.b');
 if holdStatus;
@@ -162,6 +165,7 @@ else
     hold off
 end
 
+%%
 function h=nt_plot2(x,y,c)
 %h=nt_plot2(x,y,c) - color region between two plots
 %
@@ -199,7 +203,7 @@ else
 end
 x=x(:);
 
-if 1
+if 0
 % make sure that y(:,1)<y(:,2);
     yy=y;
     yy(:,1)=min(y,[],2);
@@ -224,13 +228,15 @@ if 1
 end
 
 % draw plot
-h=fill([x;flipud(x)],[y(:,1);flipud(y(:,2))],c, 'edgecolor', c);
+yy=flipud(y(:,2));
+yy=yy+0.000001*max(abs(y(:))); % workaround for fill bug
+h=fill([x;flipud(x)],[y(:,1);yy],c, 'edgecolor', c);
 if x(end)>x(1); 
     xlim([x(1)-1,x(end)+1]);
 end
 set(gca,'box','on');
 
-% from stats toolbox
+%% from stats toolbox
 function m = nanmean(x,dim)
 %% 
 

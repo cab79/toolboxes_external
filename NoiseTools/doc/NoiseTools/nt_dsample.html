@@ -4,7 +4,7 @@
 <head>
   <title>Description of nt_dsample</title>
   <meta name="keywords" content="nt_dsample">
-  <meta name="description" content="y=nt_dsample(x,factor) - downsample by averaging neighboring samples">
+  <meta name="description" content="[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,27 +21,34 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>y=nt_dsample(x,factor) - downsample by averaging neighboring samples</strong></div>
+<div class="box"><strong>[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function x=nt_dsample(x,factor) </strong></div>
+<div class="box"><strong>function [y,yy,yyy]=nt_dsample(x,dsr,method) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment">y=nt_dsample(x,factor) - downsample by averaging neighboring samples
+<div class="fragment"><pre class="comment">[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples
 
   y: downsampled data
+  yy: instantaneous power of residual
+  yyy: original minus downsampled
  
   x: data to downsample (2 or 3D)
-  factor: downsampling factor
+  dsr: downsampling ratio (must be integer)
+  method: 'smooth' or 'resample' [default: 'smooth']
 
  Downsampling is performed along columns.  If size(x,1) is not multiple of
  factor, it is truncated.
  
- The data are lowpass filtered by convolution with a square window, which
- ensures minimal temporal distortion of the waveform. However it does not
+ If method=smooth, data are lowpass filtered by convolution with a square window.
+ This ensures minimal temporal distortion of the waveform. However it does not
  strongly attenuate frequency components beyond the Nyquist frequency, so
- it is not optimal from a frequency-domain point of view. If this is a
- concern, uses nt_resample() instead.
+ it is not optimal from a frequency-domain point of view. 
+ 
+ If method=resample, downsampling is performed with a version of
+ resample() modified so that the lowpass corner is 0.8 times Nyquist.
+ 
+ If output is not assigned, plot downsampled signal and residual power.
 
  NoiseTools</pre></div>
 
@@ -49,64 +56,143 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_dsample.html" class="code" title="function x=nt_dsample(x,factor)">nt_dsample</a>	y=nt_dsample(x,factor) - downsample by averaging neighboring samples</li></ul>
+<li><a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>	[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_dsample.html" class="code" title="function x=nt_dsample(x,factor)">nt_dsample</a>	y=nt_dsample(x,factor) - downsample by averaging neighboring samples</li><li><a href="nt_xprod.html" class="code" title="function [y,ind]=nt_xprod(x,flag,dsratio,normrow_flag)">nt_xprod</a>	[y,ind]=nt_xprod(x,flag,dsratio,normrow_flag) - form all crossproducts</li><li><a href="nt_xprod2.html" class="code" title="function [y]=nt_xprod2(x1,x2,dsratio)">nt_xprod2</a>	[y,ind]=nt_xprod(x1,x2,dsratio) - form all crossproducts</li></ul>
+<li><a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>	[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples</li><li><a href="nt_xprod.html" class="code" title="function [y,ind]=nt_xprod(x,flag,dsratio,normrow_flag)">nt_xprod</a>	[y,ind]=nt_xprod(x,flag,dsratio,normrow_flag) - form all crossproducts</li><li><a href="nt_xprod2.html" class="code" title="function [y]=nt_xprod2(x1,x2,dsratio)">nt_xprod2</a>	[y,ind]=nt_xprod(x1,x2,dsratio) - form all crossproducts</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function x=nt_dsample(x,factor)</a>
-0002 <span class="comment">%y=nt_dsample(x,factor) - downsample by averaging neighboring samples</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,yy,yyy]=nt_dsample(x,dsr,method)</a>
+0002 <span class="comment">%[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%  y: downsampled data</span>
-0005 <span class="comment">%</span>
-0006 <span class="comment">%  x: data to downsample (2 or 3D)</span>
-0007 <span class="comment">%  factor: downsampling factor</span>
-0008 <span class="comment">%</span>
-0009 <span class="comment">% Downsampling is performed along columns.  If size(x,1) is not multiple of</span>
-0010 <span class="comment">% factor, it is truncated.</span>
+0005 <span class="comment">%  yy: instantaneous power of residual</span>
+0006 <span class="comment">%  yyy: original minus downsampled</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%  x: data to downsample (2 or 3D)</span>
+0009 <span class="comment">%  dsr: downsampling ratio (must be integer)</span>
+0010 <span class="comment">%  method: 'smooth' or 'resample' [default: 'smooth']</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">% The data are lowpass filtered by convolution with a square window, which</span>
-0013 <span class="comment">% ensures minimal temporal distortion of the waveform. However it does not</span>
-0014 <span class="comment">% strongly attenuate frequency components beyond the Nyquist frequency, so</span>
-0015 <span class="comment">% it is not optimal from a frequency-domain point of view. If this is a</span>
-0016 <span class="comment">% concern, uses nt_resample() instead.</span>
-0017 <span class="comment">%</span>
-0018 <span class="comment">% NoiseTools</span>
-0019 
-0020 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
-0021 <span class="keyword">if</span> factor==1; <span class="keyword">return</span>; <span class="keyword">end</span>
-0022 <span class="keyword">if</span> factor ~= round(factor); error(<span class="string">'factor must be integer'</span>); <span class="keyword">end</span>
-0023 
-0024 <span class="keyword">if</span> ndims(x)&gt;2;
-0025     d=size(x);
-0026     x=reshape(x,[d(1),prod(d(2:end))]);
-0027     x=<a href="nt_dsample.html" class="code" title="function x=nt_dsample(x,factor)">nt_dsample</a>(x,factor);
-0028     x=reshape(x,[size(x,1),d(2:end)]);
-0029     <span class="keyword">return</span>
-0030 <span class="keyword">end</span>
-0031 
-0032 [m,n]=size(x);
-0033 a=floor(m/factor);
-0034 b=rem(m,factor);
-0035 
-0036 <span class="keyword">if</span> b&gt;0;
-0037     xx=x((a*factor+1):<span class="keyword">end</span>,:); <span class="comment">% extra bit</span>
-0038     x=x(1:a*factor,:);
-0039 <span class="keyword">end</span>
-0040 
-0041 x=reshape(x,[factor,a,n]);
-0042 x=mean(x,1);
-0043 x=shiftdim(x,1);
-0044 
-0045 <span class="comment">% buggy, dunno why, simpler to remove</span>
-0046 <span class="comment">% if b&gt;0</span>
-0047 <span class="comment">%     x=[x;mean(xx,1)];</span>
-0048 <span class="comment">% end</span>
-0049</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0012 <span class="comment">% Downsampling is performed along columns.  If size(x,1) is not multiple of</span>
+0013 <span class="comment">% factor, it is truncated.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% If method=smooth, data are lowpass filtered by convolution with a square window.</span>
+0016 <span class="comment">% This ensures minimal temporal distortion of the waveform. However it does not</span>
+0017 <span class="comment">% strongly attenuate frequency components beyond the Nyquist frequency, so</span>
+0018 <span class="comment">% it is not optimal from a frequency-domain point of view.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% If method=resample, downsampling is performed with a version of</span>
+0021 <span class="comment">% resample() modified so that the lowpass corner is 0.8 times Nyquist.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% If output is not assigned, plot downsampled signal and residual power.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% NoiseTools</span>
+0026 
+0027 <span class="keyword">if</span> nargin&lt;3||isempty(method); method=<span class="string">'smooth'</span>; <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0029 <span class="keyword">if</span> dsr==1; 
+0030     y=x;
+0031     yy=zeros(size(x));
+0032     yyy=x;
+0033     <span class="keyword">return</span>; 
+0034 <span class="keyword">end</span>
+0035 <span class="keyword">if</span> dsr ~= round(dsr); error(<span class="string">'factor must be integer'</span>); <span class="keyword">end</span>
+0036 
+0037 <span class="keyword">if</span> iscell(x)
+0038     <span class="keyword">switch</span> nargout
+0039         <span class="keyword">case</span> 0
+0040             <span class="keyword">for</span> iTrial=1:numel(x)
+0041                 <a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x{iTrial},dsr,method);
+0042                 pause
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">case</span> 1
+0045            y={};
+0046            <span class="keyword">for</span> iTrial=1:size(x)
+0047                y{iTrial}=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x{iTrial}.factor,method);
+0048            <span class="keyword">end</span>
+0049         <span class="keyword">case</span> 2
+0050            y={};yy={};
+0051            <span class="keyword">for</span> iTrial=1:size(x)
+0052                [y{iTrial},yy{iTrial}]=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x{iTrial}.factor,method);
+0053            <span class="keyword">end</span>
+0054         <span class="keyword">case</span> 3
+0055            y={};yy={};
+0056            <span class="keyword">for</span> iTrial=1:size(x)
+0057                [y{iTrial},yy{iTrial},yyy{iTrial}]=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x{iTrial}.factor,method);
+0058            <span class="keyword">end</span>
+0059         <span class="keyword">otherwise</span>
+0060             error(<span class="string">'!'</span>);
+0061     <span class="keyword">end</span>
+0062     <span class="keyword">return</span>
+0063 <span class="keyword">end</span>
+0064 
+0065 <span class="keyword">if</span> ndims(x)&gt;2
+0066     d=size(x);
+0067     <span class="keyword">switch</span> nargout
+0068         <span class="keyword">case</span> 0
+0069             <span class="keyword">for</span> iTrial=1:size(x(:,:,:),3)
+0070                 <a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x(:,:,iTrial),dsr,method);
+0071                 pause
+0072             <span class="keyword">end</span>
+0073         <span class="keyword">case</span> 1
+0074             x=x(:,:);
+0075             y=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x,dsr);
+0076             y=reshape(y,[size(y,1),d(2:end)]);
+0077         <span class="keyword">case</span> 2
+0078             x=x(:,:);
+0079             [y,yy]=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x,dsr);
+0080             y=reshape(y,[size(y,1),d(2:end)]);
+0081             yy=reshape(yy,[size(yy,1),d(2:end)]);
+0082         <span class="keyword">case</span> 3
+0083             x=x(:,:);
+0084             [y,yy,yyy]=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x,dsr);
+0085             y=reshape(y,[size(y,1),d(2:end)]);
+0086             yy=reshape(yy,[size(yy,1),d(2:end)]);
+0087             yyy=reshape(yyy,[size(yyy,1),d(2:end)]);
+0088         <span class="keyword">otherwise</span>
+0089             error(<span class="string">'!'</span>); 
+0090     <span class="keyword">end</span>
+0091     <span class="keyword">return</span>
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="keyword">if</span> nargout==0
+0095     [y,yy]=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(x,dsr,method);
+0096     figure(100); clf
+0097     subplot 211; 
+0098     plot(y);  xlabel(<span class="string">'sample'</span>); title(<span class="string">'downsampled'</span>);
+0099     subplot 212;
+0100     plot(yy ./ (yy+y.^2)); xlabel(<span class="string">'sample'</span>); title([<span class="string">'proportion power lost (overall: '</span>,num2str(mean(yy(:)/(mean(yy(:))+mean(y(:).^2)))), <span class="string">')'</span>]); 
+0101     ylim([0 1.1]);
+0102     <span class="keyword">if</span> size(x,2)&gt;1;
+0103         hold on; plot(mean(yy ./ (yy+y.^2),2), <span class="string">':k'</span>,<span class="string">'linewidth'</span>, 2);
+0104         figure(101); clf;
+0105         plot(mean(yy(:,:)./(mean(yy(:,:))+mean(y(:,:).^2))), <span class="string">'.-k'</span>)
+0106         xlabel(<span class="string">'channel'</span>); title(<span class="string">'proportion power lost per channel'</span>);
+0107     <span class="keyword">end</span>
+0108     <span class="keyword">return</span>
+0109 <span class="keyword">end</span>
+0110 
+0111 
+0112 [m,n]=size(x);
+0113 a=floor(m/dsr);
+0114 x=x(1:a*dsr,:);
+0115 x=reshape(x,[dsr,a,n]);
+0116 y=mean(x,1);
+0117 
+0118 <span class="keyword">if</span> nargout&gt;=2
+0119     yy=mean(bsxfun(@minus,x,y).^2,1);
+0120     yy=shiftdim(yy,1);
+0121 <span class="keyword">end</span>
+0122 <span class="keyword">if</span> nargout==3
+0123     yyy=reshape(bsxfun(@minus,x,y),[m,n]);
+0124 <span class="keyword">end</span>
+0125     
+0126 y=shiftdim(y,1);
+0127 
+0128</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

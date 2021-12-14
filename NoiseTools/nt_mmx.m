@@ -1,5 +1,5 @@
-function [y,abscissa]=mmx(x,N)
-%[y,abscissa]=mmx(x, N) - calculate min-max pairs
+function [y,abscissa]=nt_mmx(x,N)
+%[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs
 %
 %  y: array or matrix of min-max pairs
 %  
@@ -12,10 +12,10 @@ function [y,abscissa]=mmx(x,N)
 if nargin<2; N=1000; end
 
 if ndims(x)==3; 
-    y=mmx(x(:,1,1)); % to get size
+    y=nt_mmx(x(:,1,1)); % to get size
     y=zeros(size(y,1),size(x,2),size(x,3));
     for k=1:size(x,3)
-        [y(:,:,k),abscissa]=mmx(x(:,:,k),N);
+        [y(:,:,k),abscissa]=nt_mmx(x(:,:,k),N);
     end
     return
 end

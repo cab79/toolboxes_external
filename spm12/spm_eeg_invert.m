@@ -333,6 +333,7 @@ for m = 1:Nmod
     if dp
         spm_figure('GetWin','Lead fields');
         for i = 1:Nl
+            fig
             L  = R{i,m}*spm_eeg_lgainmat(D{i},Is(1:8:end),D{i}.chanlabels(Ic{i,m}));
             subplot(Nl,4,(i - 1)*4 + 1)
             imagesc(A{i,m}*A{i,m}'), axis square

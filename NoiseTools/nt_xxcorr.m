@@ -1,76 +1,62 @@
-function [C,idx]=nt_xxcorr(A,B,MAXLAG)
-%[C,idx]=nt_xxcorr(A,B,MAXLAG) - true unbiased cross-correlation
+function [C,idx]=nt_xxcorr(A,B,centerflag)
+%[C,idx]=nt_xxcorr(A,B,centerflag) - true normalized unbiased cross-correlation function
 %
-%  C: unbiased cross-correlation function
+%  C: normalized unbiased cross-correlation function
 %  idx: index of largest extremum.
 %  
 %  A: first column vector
-%  B: second column vector
-%  MAXLAG: lags are between -MAXLAG and +MAXLAG.
+%  B: second column vector (nsamples < A)
+%  centerflag: if true pad B on both sides [default: false]
 %
+% NoiseTools
 
-if nargin<1; error('!'); end
-if nargin==1; B=A; MAXLAG=[]; end
-if nargin==2;
-    if numel(B)==1;
-        MAXLAG=B; B=A;
-    else
-        MAXLAG=[];
-    end
-end
-if isempty(MAXLAG); MAXLAG=floor(size(B,1)/4); end
-if size(A,1)==1; A=A(:); B=B(:); end
-if size(B,1)<=2*MAXLAG; error('!'); end
-
+if nargin<2; error('!'); end
+if nargin<3||isempty(centerflag); centerflag=0; end
+if size(A,1)==size(B,1); warning('same nrows, output=1'); end
+if size(A,1)<size(B,1); error('should be nrows(A)>nrows(B)'); end
 
 
 if size(A,2)==1 && size(B,2)==1; 
     
     % single channels
-    B=B(MAXLAG:end-MAXLAG);
+    nA=size(A,1);
+    nB=size(B,1);
+    tmp=nA-nB;
+    if ~centerflag
+        B=[zeros(tmp,1);B];
+    else
+        B=[zeros(floor(tmp/2),1);B;zeros(tmp-floor(tmp/2),1)];
+    end
     C=xcorr(A,B);
-    C=C(size(A,1)-1+(0:2*MAXLAG));
-    [~,idx]=max(abs(C));
+    C=C(nB-1+(1:tmp));
+    N=cumsum(A.^2);
+    N(nB+1:end) = N(nB+1:end) - N(1:end-nB);
+    N=N*sum(B.^2); 
+    N=N(nB+1:end);
+    C=C./sqrt(N);
+    C(find(isnan(C)))=0;
+    [~,idx]=max(C);
     
-    % power for normalization
-    a=cumsum(A.^2);
-    a=a(size(B,1)-1:end)-[0;a(1:end-size(B,1)+1)];
-    b=sum(B.^2);
-    d=sqrt(a*b);
-    
-    C=C./d; C(find(isnan(C)))=0;
-
     if nargout==0;
-        abscissa=-MAXLAG:MAXLAG;
-        plot(abscissa,zeros(size(C)), 'k'); hold on
-        plot(abscissa,C);
+        if ~centerflag; 
+            abscissa=0:size(C,1)-1;
+        else
+            abscissa=(0:size(C,1)-1) - ceil(size(C,1)/2);
+        end
+        plot(abscissa,C); hold on
         plot(abscissa(idx),C(idx),'.k'); hold off
         axis tight; xlabel('lag (samples)');
-        lag=idx-MAXLAG-1;
-        if C(idx)>1
-            if lag>0; 
-                title(['X lags Y by ',num2str(lag)]);
-            else
-                title(['Y lags X by ',num2str(-lag)]);
-            end
-        else
-            if lag>0; 
-                title(['X lags -Y by ',num2str(lag)]);
-            else
-                title(['Y lags -X by ',num2str(-lag)]);
-            end
-        end
         C=[];
     end
     
 else
     
     % multiple channels
-    C=zeros(2*MAXLAG+1,size(A,2),size(B,2));
+    C=zeros(size(A,1)-size(B,1),size(A,2),size(B,2));
     idx=zeros(size(A,2),size(B,2));
     for k=1:size(A,2)        
         for j=1:size(B,2)
-            [a,b]=nt_xxcorr(A(:,k),B(:,j),MAXLAG);
+            [a,b]=nt_xxcorr(A(:,k),B(:,j),centerflag);
             C(:,k,j)=a;
             idx(k,j)=b;
         end
@@ -83,3 +69,22 @@ else
     end
     
 end
+
+% tests
+if 0
+    x=ones(1000,1);
+    nt_xxcorr(x,x);
+end
+
+if 0 
+    x=ones(1000,1);
+    y=ones(500,1);
+    nt_xxcorr(x,y);
+end  
+
+if 0 
+    x=randn(1000,1);
+    y=x(1:500);
+    x=x.*(1:1000)'.^2;
+    nt_xxcorr(x,y);
+end  

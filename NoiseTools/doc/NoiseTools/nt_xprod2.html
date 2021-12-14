@@ -38,7 +38,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_dsample.html" class="code" title="function x=nt_dsample(x,factor)">nt_dsample</a>	y=nt_dsample(x,factor) - downsample by averaging neighboring samples</li><li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_xprod2.html" class="code" title="function [y]=nt_xprod2(x1,x2,dsratio)">nt_xprod2</a>	[y,ind]=nt_xprod(x1,x2,dsratio) - form all crossproducts</li></ul>
+<li><a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>	[y,yy,yyy]=nt_dsample(x,dsr,method) - downsample by averaging neighboring samples</li><li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_xprod2.html" class="code" title="function [y]=nt_xprod2(x1,x2,dsratio)">nt_xprod2</a>	[y,ind]=nt_xprod(x1,x2,dsratio) - form all crossproducts</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 <li><a href="nt_xprod2.html" class="code" title="function [y]=nt_xprod2(x1,x2,dsratio)">nt_xprod2</a>	[y,ind]=nt_xprod(x1,x2,dsratio) - form all crossproducts</li></ul>
@@ -70,9 +70,9 @@ This function is called by:
 0021 
 0022     <span class="keyword">for</span> iChan1=1:nchans1
 0023         xx=bsxfun(@times,x2,x1(:,iChan1));
-0024         y(:,(iChan1-1)*nchans2+(1:nchans2))=<a href="nt_dsample.html" class="code" title="function x=nt_dsample(x,factor)">nt_dsample</a>(xx,dsratio);
+0024         y(:,(iChan1-1)*nchans2+(1:nchans2))=<a href="nt_dsample.html" class="code" title="function [y,yy,yyy]=nt_dsample(x,dsr,method)">nt_dsample</a>(xx,dsratio);
 0025     <span class="keyword">end</span>
 0026 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -24,13 +24,13 @@
 <div class="box"><strong>nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag) </strong></div>
+<div class="box"><strong>function nt_bsplot(x,w,style,abscissa,zeroflag,rmsflag) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="fragment"><pre class="comment">nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation
 
   x: data to plot (time * trials, or time * 1 * trials)
-  band: width of band to plot in standard deviations (default: 2)
+  w: weights
   style: 'zerobased' (default) or 'meanbased'
   abscissa: use this vector as plot's abscissa (as in 'plot(abscissa,x)' )
   zeroflag: if 1 draw zero line (default: 1)
@@ -49,20 +49,20 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_bsmean.html" class="code" title="function [mn,sd,all]=nt_bsmean(x,N)">nt_bsmean</a>	[mn,sd,all]=nt_bsmean(x,N) - calculate mean, estimate sd using bootstrap</li><li><a href="nt_bsrms.html" class="code" title="function [rms,sd,all]=nt_bsrms(x,N)">nt_bsrms</a>	[rms,sd,all]=nt_bsrms(x,N) - calculate rms, estimate sd using bootstrap</li></ul>
+<li><a href="nt_bsmean.html" class="code" title="function [mn,sd,all]=nt_bsmean(x,N,w)">nt_bsmean</a>	[mn,sd,all]=nt_bsmean(x,N,w) - calculate mean, estimate sd using bootstrap</li><li><a href="nt_bsrms.html" class="code" title="function [rms,sd,all]=nt_bsrms(x,N,w)">nt_bsrms</a>	[rms,sd,all]=nt_bsrms(x,N,w) - calculate rms, estimate sd using bootstrap</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_qca.html" class="code" title="function [squares,quads,D]=nt_qca(x,npcs,nsmooth,nquads)">nt_qca</a>	[squares,quads,D]=nt_qca(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li></ul>
+<li><a href="nt_dss1.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2)">nt_dss1</a>	[todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2) - evoked-biased DSS denoising</li><li><a href="nt_qca.html" class="code" title="function [squares,quads,D]=nt_qca(x,npcs,nsmooth,nquads)">nt_qca</a>	[squares,quads,D]=nt_qca(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag)</a>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nt_bsplot(x,w,style,abscissa,zeroflag,rmsflag)</a>
 0002 <span class="comment">%nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%  x: data to plot (time * trials, or time * 1 * trials)</span>
-0005 <span class="comment">%  band: width of band to plot in standard deviations (default: 2)</span>
+0005 <span class="comment">%  w: weights</span>
 0006 <span class="comment">%  style: 'zerobased' (default) or 'meanbased'</span>
 0007 <span class="comment">%  abscissa: use this vector as plot's abscissa (as in 'plot(abscissa,x)' )</span>
 0008 <span class="comment">%  zeroflag: if 1 draw zero line (default: 1)</span>
@@ -76,58 +76,61 @@ This function is called by:
 0016 <span class="comment">%  with +/- 2SDs of the bootstrap resampling.</span>
 0017 <span class="comment">%</span>
 0018 <span class="comment">% NoiseTools.</span>
-0019 
-0020 <span class="keyword">if</span> nargin&lt;6 || isempty(rmsflag) ; rmsflag=0; <span class="keyword">end</span>
-0021 <span class="keyword">if</span> nargin&lt;5 || isempty(zeroflag) ; zeroflag=1; <span class="keyword">end</span>
-0022 <span class="keyword">if</span> nargin&lt;4; abscissa=[]; <span class="keyword">end</span>
-0023 <span class="keyword">if</span> nargin&lt;3 || isempty(style); style=<span class="string">'zerobased'</span>; <span class="keyword">end</span>
-0024 <span class="keyword">if</span> nargin&lt;2 || isempty(band); band=2; <span class="keyword">end</span>
-0025 
-0026 x=squeeze(x);
-0027 <span class="keyword">if</span> ndims(x)&gt;2; error(<span class="string">'X should have at most 2 non-singleton dimensions'</span>); <span class="keyword">end</span>
-0028 [m,n]=size(x);
-0029 <span class="keyword">if</span> n&lt;2; error(<span class="string">'bootstrap resampling requires more than 1 column'</span>); <span class="keyword">end</span>
-0030 <span class="keyword">if</span> isempty(abscissa); abscissa=1:m; <span class="keyword">end</span>
-0031 <span class="keyword">if</span> numel(abscissa) ~= size(x,1); error(<span class="string">'abscissa should be same size as x'</span>); <span class="keyword">end</span>
-0032 
-0033 <span class="keyword">if</span> rmsflag
-0034     [a,b]=<a href="nt_bsrms.html" class="code" title="function [rms,sd,all]=nt_bsrms(x,N)">nt_bsrms</a>(x);
-0035 <span class="keyword">else</span>
-0036     N=1000;
-0037     [a,b]=<a href="nt_bsmean.html" class="code" title="function [mn,sd,all]=nt_bsmean(x,N)">nt_bsmean</a>(x,N);
-0038 <span class="keyword">end</span>
-0039 b=b*band;
-0040 
-0041 
-0042 <span class="keyword">if</span> strcmp(style,<span class="string">'zerobased'</span>);
-0043     Y=[b;-flipud(b)]';
-0044 <span class="keyword">elseif</span> strcmp(style,<span class="string">'meanbased'</span>);
-0045     Y=[b+a;flipud(-b+a)]';
-0046 <span class="keyword">else</span>
-0047     error(<span class="string">'!'</span>);
-0048 <span class="keyword">end</span>
-0049 abscissa=abscissa(:);
-0050 X=[abscissa;flipud(abscissa)];
-0051 C=0.7*[1 1 1];
-0052 fill(X,Y,C,<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
-0053 hold on;
-0054 plot(abscissa,a*0,<span class="string">'k'</span>);
-0055 plot(abscissa,a, <span class="string">'b'</span>); 
-0056 hold off
-0057 
-0058 <span class="comment">% return</span>
-0059 <span class="comment">%</span>
-0060 <span class="comment">% abscissa2=linspace(min(abscissa),max(abscissa),m*2);</span>
-0061 <span class="comment">% plot(abscissa2,b,'g');</span>
-0062 <span class="comment">% c=get(gca,'children'); set(c(1),'color',[.7 .7 .7])</span>
-0063 <span class="comment">% hold on;</span>
-0064 <span class="comment">% plot(abscissa,a,'b');</span>
-0065 <span class="comment">% if zeroflag;</span>
-0066 <span class="comment">%     plot(abscissa,0*a,'k');</span>
-0067 <span class="comment">%     c=get(gca,'children'); set(c(1),'color',[.5 .5 .5])</span>
-0068 <span class="comment">% end</span>
-0069 <span class="comment">% %set(gca,'xlim',[1 m])</span>
-0070 <span class="comment">% hold off</span></pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0019 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0020 
+0021 <span class="keyword">if</span> nargin&lt;6 || isempty(rmsflag) ; rmsflag=0; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;5 || isempty(zeroflag) ; zeroflag=1; <span class="keyword">end</span>
+0023 <span class="keyword">if</span> nargin&lt;4; abscissa=[]; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> nargin&lt;3 || isempty(style); style=<span class="string">'zerobased'</span>; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> nargin&lt;2 w=[]; <span class="keyword">end</span>
+0026 BAND=2; <span class="comment">% number of SD in band</span>
+0027 
+0028 x=squeeze(x);
+0029 <span class="keyword">if</span> ~isempty (w); w=squeeze(w); <span class="keyword">end</span>
+0030 <span class="keyword">if</span> ndims(x)&gt;2; error(<span class="string">'X should have at most 2 non-singleton dimensions'</span>); <span class="keyword">end</span>
+0031 [m,n]=size(x);
+0032 <span class="keyword">if</span> n&lt;2; error(<span class="string">'bootstrap resampling requires more than 1 column'</span>); <span class="keyword">end</span>
+0033 <span class="keyword">if</span> isempty(abscissa); abscissa=1:m; <span class="keyword">end</span>
+0034 <span class="keyword">if</span> numel(abscissa) ~= size(x,1); error(<span class="string">'abscissa should be same size as x'</span>); <span class="keyword">end</span>
+0035 
+0036 N=1000;
+0037 <span class="keyword">if</span> rmsflag
+0038     [a,b]=<a href="nt_bsrms.html" class="code" title="function [rms,sd,all]=nt_bsrms(x,N,w)">nt_bsrms</a>(x,N,w);
+0039 <span class="keyword">else</span>
+0040     [a,b]=<a href="nt_bsmean.html" class="code" title="function [mn,sd,all]=nt_bsmean(x,N,w)">nt_bsmean</a>(x,N,w);
+0041 <span class="keyword">end</span>
+0042 b=b*BAND;
+0043 
+0044 
+0045 <span class="keyword">if</span> strcmp(style,<span class="string">'zerobased'</span>);
+0046     Y=[b;-flipud(b)]';
+0047 <span class="keyword">elseif</span> strcmp(style,<span class="string">'meanbased'</span>);
+0048     Y=[b+a;flipud(-b+a)]';
+0049 <span class="keyword">else</span>
+0050     error(<span class="string">'!'</span>);
+0051 <span class="keyword">end</span>
+0052 abscissa=abscissa(:);
+0053 X=[abscissa;flipud(abscissa)];
+0054 C=0.7*[1 1 1];
+0055 fill(X,Y,C,<span class="string">'edgecolor'</span>,<span class="string">'none'</span>);
+0056 hold on;
+0057 plot(abscissa,a*0,<span class="string">'k'</span>);
+0058 plot(abscissa,a, <span class="string">'b'</span>); 
+0059 hold off
+0060 
+0061 <span class="comment">% return</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">% abscissa2=linspace(min(abscissa),max(abscissa),m*2);</span>
+0064 <span class="comment">% plot(abscissa2,b,'g');</span>
+0065 <span class="comment">% c=get(gca,'children'); set(c(1),'color',[.7 .7 .7])</span>
+0066 <span class="comment">% hold on;</span>
+0067 <span class="comment">% plot(abscissa,a,'b');</span>
+0068 <span class="comment">% if zeroflag;</span>
+0069 <span class="comment">%     plot(abscissa,0*a,'k');</span>
+0070 <span class="comment">%     c=get(gca,'children'); set(c(1),'color',[.5 .5 .5])</span>
+0071 <span class="comment">% end</span>
+0072 <span class="comment">% %set(gca,'xlim',[1 m])</span>
+0073 <span class="comment">% hold off</span></pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

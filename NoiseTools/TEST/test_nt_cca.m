@@ -21,7 +21,7 @@ subplot 212; plot(([x*A1(:,1),x*A2(:,1)]));
 
 figure(2); clf
 subplot 121; 
-imagescc(nt_cov([x*A1,y*B1]));
+imagesc(nt_cov([x*A1,y*B1]));
 subplot 122; 
-imagescc(nt_cov([x*A2,y*B2]));
+imagesc(nt_cov([x*A2,y*B2]));
 

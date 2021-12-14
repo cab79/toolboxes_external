@@ -1,10 +1,10 @@
 function nt_greetings(reset)
 %nt_greetings - display message the first time the toolbox is used
 
-persistent greeted
-if nargin>0; greeted=reset; return; end
+persistent nt_greeted
+if nargin>0; nt_greeted=reset; return; end
 
-if isempty(greeted)
+if isempty(nt_greeted)
     
     display(' ')
     display(['NoiseTools, version ',nt_version]);
@@ -12,6 +12,6 @@ if isempty(greeted)
     display('Please cite relevant methods papers.');
     display(' ');
     
-    greeted=1;
+    nt_greeted=1;
     
 end

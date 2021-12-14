@@ -1,0 +1,276 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_plotxx</title>
+  <meta name="keywords" content="nt_plotxx">
+  <meta name="description" content="nt_plotxx(fname,bounds,chans) - plot using index file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_plotxx.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_plotxx
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>nt_plotxx(fname,bounds,chans) - plot using index file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">nt_plotxx(fname,bounds,chans) - plot using index file
+
+  fname: name of file to plot (or of its index file)
+  bounds: [start,stop] (s) range to plot [default: all]
+  chans: channels to plot [default: all]
+ 
+ Data are plotted using cheap data representation in index file.
+ All channels are plotted unless specified. 
+ The entire file is plotted unless specified.
+ The mean of each channel (over entire data) is removed before plotting.
+
+ A limited form of zooming and navigation is available using the arrow keys.
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>	nt_double2int() - recode/decode double as integer to save space</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_idxx.html" class="code" title="function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)">nt_idxx</a>	nt_idxx(fname,p) - create an index file to summarize large data file</li><li><a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>	nt_plotxx(fname,bounds,chans) - plot using index file</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>	nt_plotxx(fname,bounds,chans) - plot using index file</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function keyfunction(fig,eventDat)</a></li><li><a href="#_sub2" class="code">function y=dsmmx(mmx,dsr)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)</a>
+0002 <span class="comment">%nt_plotxx(fname,bounds,chans) - plot using index file</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  fname: name of file to plot (or of its index file)</span>
+0005 <span class="comment">%  bounds: [start,stop] (s) range to plot [default: all]</span>
+0006 <span class="comment">%  chans: channels to plot [default: all]</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Data are plotted using cheap data representation in index file.</span>
+0009 <span class="comment">% All channels are plotted unless specified.</span>
+0010 <span class="comment">% The entire file is plotted unless specified.</span>
+0011 <span class="comment">% The mean of each channel (over entire data) is removed before plotting.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% A limited form of zooming and navigation is available using the arrow keys.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% NoiseTools</span>
+0016 
+0017 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0018 
+0019 assert(nargin&gt;0, <span class="string">'!'</span>);
+0020 <span class="keyword">if</span> nargin&lt;2; bounds=[]; <span class="keyword">end</span>
+0021 <span class="keyword">if</span> nargin&lt;3; chans=[]; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;4; imageflag=false; <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> ischar(fname) <span class="comment">% file name</span>
+0025     [FILEPATH,NAME,EXT]=fileparts(fname);
+0026     
+0027     <span class="keyword">if</span> isempty(FILEPATH) 
+0028         FILEPATH=<span class="string">'./'</span>; 
+0029         fname=[FILEPATH,filesep,fname];
+0030     <span class="keyword">end</span>
+0031     
+0032     disp(EXT)
+0033     <span class="keyword">if</span> ~strcmp(EXT,<span class="string">'.idxx'</span>) <span class="comment">% must be data file, find index</span>
+0034         fname_data=fname;
+0035         fname=[FILEPATH,filesep,<span class="string">'idxx'</span>,filesep,NAME,EXT,<span class="string">'.idxx'</span>];
+0036     <span class="keyword">end</span>
+0037     
+0038     <span class="keyword">if</span> 2~=exist(fname)
+0039         disp(<span class="string">'No index file found.  Create one.'</span>);
+0040         <span class="keyword">if</span> 2~=exist(fname_data)
+0041             error(<span class="string">'No data file either...'</span>);
+0042         <span class="keyword">end</span>
+0043         disp(<span class="string">'This may take a while...'</span>);
+0044         tic;
+0045         <a href="nt_idxx.html" class="code" title="function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)">nt_idxx</a>(fname);
+0046         toc;
+0047     <span class="keyword">end</span>
+0048     disp(<span class="string">'read from file...'</span>); tic;
+0049     load(fname, <span class="string">'-mat'</span>, <span class="string">'bstats'</span>, <span class="string">'wstats'</span>); <span class="comment">% ignores 'cstats' and 'sstats'</span>
+0050     disp(<span class="string">'done'</span>); toc
+0051     i=bstats;
+0052     ii=wstats;
+0053 <span class="keyword">elseif</span> iscell(fname) <span class="comment">%  index struct</span>
+0054     i=fname{1};
+0055     ii=fname{2};
+0056 <span class="keyword">else</span>
+0057     error(<span class="string">'!'</span>);
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="keyword">if</span> 2==exist(<span class="string">'get_axes_width'</span>)  <span class="comment">% tbd: replicate to remove dependency</span>
+0061     <span class="comment">% estimate how many pixels fit within a window</span>
+0062     axes_width=get_axes_width(gca);
+0063 <span class="keyword">else</span>
+0064     warning(<span class="string">'get_axes_width() not found'</span>);
+0065     disp(<span class="string">'Download https://www.mathworks.com/matlabcentral/fileexchange/40790-plot-big'</span>);
+0066     axes_width=500;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="comment">% decode from int structure</span>
+0070 <span class="keyword">if</span> isempty(chans); chans=1:i.nchans; <span class="keyword">end</span>
+0071 mn=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(ii.min,{[],chans});
+0072 mx=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(ii.max,{[],chans});
+0073 mnn=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(ii.mean,{[],chans});
+0074 
+0075 <span class="comment">% remove mean from min and max for each channel</span>
+0076 mn=bsxfun(@minus,mn,mean(mnn));
+0077 mx=bsxfun(@minus,mx,mean(mnn));
+0078 
+0079 srr=i.sr/i.dsr;     <span class="comment">% sampling rate</span>
+0080 
+0081 <span class="comment">% select data within requested bounds (in seconds)</span>
+0082 maxbound=(size(mn,1)-1)/srr;    <span class="comment">% s, end of file</span>
+0083 <span class="keyword">if</span> ~maxbound;
+0084     disp(<span class="string">'warning: empty file'</span>);
+0085     <span class="keyword">return</span>
+0086 <span class="keyword">end</span>
+0087 <span class="keyword">if</span> isempty(bounds); bounds=[0,maxbound]; <span class="keyword">end</span>
+0088 start=1+max(0,min(size(mn,1)-1, round(bounds(1)*srr)));
+0089 stop=1+max(0,min(size(mn,1)-1, round(bounds(2)*srr)));
+0090 mn=mn(start:stop,:);
+0091 mx=mx(start:stop,:);
+0092 
+0093 <span class="comment">% first display using 'plot'</span>
+0094 <span class="keyword">if</span> size(mx,1)&lt;axes_width
+0095     <span class="comment">% running into the limits of the resolution of the index, we should go</span>
+0096     <span class="comment">% to data file - tbd</span>
+0097 <span class="keyword">end</span>
+0098 <span class="keyword">if</span> imageflag
+0099     dsr=round(size(mx,1)/(axes_width));
+0100     mmx=<a href="#_sub2" class="code" title="subfunction y=dsmmx(mmx,dsr) ">dsmmx</a>(cat(3,mn,mx),dsr);
+0101     mn=mmx(:,:,1); mx=mmx(:,:,2);
+0102     srr=srr/dsr;
+0103     <span class="comment">% plot max-min range as image</span>
+0104     imagesc((mx-mn)');
+0105 <span class="keyword">else</span>
+0106     <span class="keyword">if</span> size(mx,1)&gt;axes_width*50
+0107         <span class="comment">% coalesce first if really big</span>
+0108         dsr=round(size(mx,1)/(axes_width*50));
+0109         mmx=<a href="#_sub2" class="code" title="subfunction y=dsmmx(mmx,dsr) ">dsmmx</a>(cat(3,mn,mx),dsr);
+0110         mn=mmx(:,:,1); mx=mmx(:,:,2);
+0111         srr=srr/dsr;
+0112     <span class="keyword">end</span>
+0113 
+0114     <span class="comment">% plot as waveform</span>
+0115     zz1=mn; zz1(1:2:<span class="keyword">end</span>,:)=mx(1:2:<span class="keyword">end</span>,:);
+0116     zz2=mn; zz2(2:2:<span class="keyword">end</span>,:)=mx(2:2:<span class="keyword">end</span>,:);
+0117     yy=[mn; flipud(mx); zz1; flipud(zz2)]; 
+0118     xx=[(0:size(mn,1)-1)' ; (size(mn,1)-1:-1:0)'; (0:size(mn,1)-1)' ; (size(mn,1)-1:-1:0)'];
+0119     <span class="keyword">if</span> bounds(1)+max(xx/srr)&lt;3600
+0120         plot(bounds(1)+xx/srr , yy); <span class="comment">% plot min forward &amp; max backward</span>
+0121         xlabel(<span class="string">'time (s)'</span>);
+0122         xlim(bounds);
+0123     <span class="keyword">else</span> 
+0124         plot((bounds(1)+xx/srr)/3600 , yy); <span class="comment">% plot min forward &amp; max backward</span>
+0125         xlabel(<span class="string">'time (h)'</span>);
+0126         xlim(bounds/3600);
+0127     <span class="keyword">end</span>
+0128     a=min(mn(:));
+0129     b=max(mx(:));
+0130     <span class="keyword">if</span> b&gt;a; ylim([a-(b-a)*0.1,b+(b-a)*0.1]); <span class="keyword">end</span>
+0131 
+0132 <span class="keyword">end</span>
+0133     
+0134 drawnow;
+0135 
+0136 <span class="keyword">if</span> 0
+0137     <span class="comment">% then write over with fill, better aspect, in principle, but slow</span>
+0138     hold on;
+0139     <span class="keyword">if</span> size(mx,1)&gt;axes_width
+0140         dsr=round(size(mx,1)/(axes_width));
+0141         mmx=<a href="#_sub2" class="code" title="subfunction y=dsmmx(mmx,dsr) ">dsmmx</a>(cat(3,mn,mx),dsr);
+0142         mn=mmx(:,:,1); mx=mmx(:,:,2);
+0143         srr=srr/dsr;
+0144     <span class="keyword">end</span>
+0145     npoints=size(mn,1);
+0146     X=bounds(1)+(0:npoints-1)'/srr;
+0147     h=fill([X;flipud(X)],[mn;flipud(mx)], <span class="string">'k'</span>, <span class="string">'LineStyle'</span>, <span class="string">'none'</span>);
+0148     colororder=get(gca,<span class="string">'colororder'</span>);
+0149     <span class="keyword">for</span> iPatch=1:numel(h);
+0150         h(iPatch).FaceColor=colororder(1+rem(iPatch-1,7),:);
+0151         <span class="comment">%h(iPatch).EdgeColor=colororder(1+rem(iPatch-1,7),:);</span>
+0152     <span class="keyword">end</span>
+0153     hold off
+0154 <span class="keyword">end</span>
+0155 <span class="comment">%</span>
+0156 <span class="comment">% a=min(mn(:));</span>
+0157 <span class="comment">% b=max(mx(:));</span>
+0158 <span class="comment">% ylim([a-(b-a)*0.1,b+(b-a)*0.1])</span>
+0159 
+0160 <span class="comment">% GUI</span>
+0161 userdata.i=i;
+0162 userdata.ii=ii;
+0163 userdata.bounds=bounds;
+0164 set(gcf,<span class="string">'UserData'</span>,userdata);
+0165 <span class="comment">%set(gcf, 'KeyPressFcn',@keyfunction)</span>
+0166 <span class="keyword">end</span>
+0167 
+0168 <a name="_sub1" href="#_subfunctions" class="code">function keyfunction(fig,eventDat) </a>
+0169 userdata=get(fig,<span class="string">'UserData'</span>);
+0170 b=userdata.bounds;
+0171 i=userdata.i;
+0172 ii=userdata.ii;
+0173 fname=i.fname; 
+0174 <span class="keyword">switch</span> eventDat.Key
+0175     <span class="keyword">case</span> <span class="string">'rightarrow'</span>
+0176         newbounds=[b(1)+(b(2)-b(1))*.5, b(1)+(b(2)-b(1))*1.5];
+0177         disp(round([newbounds, diff(newbounds)]))
+0178         <a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>({i,ii},newbounds);
+0179     <span class="keyword">case</span> <span class="string">'leftarrow'</span>
+0180         newbounds=[b(1)-(b(2)-b(1))*.5, b(1)+(b(2)-b(1))*.5];
+0181          disp(round([newbounds, diff(newbounds)]))
+0182         <a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>({i,ii},newbounds);
+0183     <span class="keyword">case</span> <span class="string">'uparrow'</span>
+0184         newbounds=[b(1)+(b(2)-b(1))*.25, b(1)+(b(2)-b(1))*.75];
+0185          disp(round([newbounds, diff(newbounds)]))
+0186        <a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>({i,ii},newbounds);
+0187     <span class="keyword">case</span> <span class="string">'downarrow'</span>
+0188         newbounds=[b(1)-(b(2)-b(1))*.5, b(1)+(b(2)-b(1))*1.5];
+0189         disp(round([newbounds, diff(newbounds)]))
+0190         <a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>({i,ii},newbounds);
+0191     <span class="keyword">otherwise</span>
+0192 <span class="keyword">end</span>
+0193 <span class="keyword">if</span> nargout==0; 
+0194     <span class="comment">%just return stats</span>
+0195     clear bstats wstats; 
+0196 <span class="keyword">end</span>
+0197 <span class="keyword">end</span>
+0198 
+0199 
+0200 
+0201 <a name="_sub2" href="#_subfunctions" class="code">function y=dsmmx(mmx,dsr) </a><span class="comment">% downsample min-max array</span>
+0202     assert(dsr&lt;size(mmx,1), <span class="string">'!'</span>);
+0203     assert(size(mmx,3)==2, <span class="string">'!'</span>);
+0204     n=floor(size(mmx,1)/dsr);
+0205     xtra=mmx(n*dsr+1:<span class="keyword">end</span>,:,:); 
+0206     mmx=mmx(1:n*dsr,:,:);
+0207     [nsamples,nchans,~]=size(mmx);
+0208     mmx=permute(mmx,[3 1 2]); <span class="comment">% --&gt; 2 X nsamples X nchans</span>
+0209     mmx=reshape(mmx, [dsr*2,nsamples/dsr, nchans]);
+0210     mn=min(mmx); 
+0211     mx=max(mmx);
+0212     y=cat(3,shiftdim(mn,1),shiftdim(mx,1));
+0213     <span class="comment">% process xtra tbd</span>
+0214 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

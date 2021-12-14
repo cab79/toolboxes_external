@@ -1,0 +1,482 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_idxx</title>
+  <meta name="keywords" content="nt_idxx">
+  <meta name="description" content="nt_idxx(fname,p) - create an index file to summarize large data file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_idxx.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_idxx
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>nt_idxx(fname,p) - create an index file to summarize large data file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">nt_idxx(fname,p) - create an index file to summarize large data file
+
+ Usage:
+   nt_idx(fname): calculate index structs, store in index file
+   nt_idx(fname,p): override default parameters
+   [bstats,wstats,cstats,sstats]=nt_idx(fname,...): return index structs:
+     bstats: basic stats (size, etc.)
+     wstats: waveform (min, max, mean, std)
+     cstats: covariance
+     sstats: psd
+
+ Parameters:
+  fname: name of data file to index
+  p: struct to pass parameters:
+    p.iname: name of index file to create [default: [PATH, 'idxx/', NAME, EXT, '.idxx']
+    p.nstats: target number of stats samples [default: 1000 unless p.dsr set]
+    p.dsr: downsampling ratio of wave stats
+    p.dsrcov: downsampling ratio of covariance relative to wave [default: don't calculate cov]
+    p.dsrpsd: downsampling ratio of PSD relative to wave [default: don't calculate psd]
+    p.channels_to_keep: ignore other channels
+    p.nfft: fft size for psd [default: 1024]
+    p.nlin: number of full-resolution spectral bins [default: 32]
+    p.chunksize: size of chunks to read from disk [default: 500000, 0 --&gt;all]
+    p.reader: header/data reader [default: 'BioSig']
+    p.preproc: preprocessing function handle [default: none]
+    p.quiet: suppress messages [default: false];
+
+ Reader p.reader can be either 'FieldTrip' or 'BioSig' or a user-specified
+ reader 'reader' callable as:
+   [header,data]=reader(fname, chans, bouds)
+ where bounds=[firstsample last sample], chans is a list of channels
+ starting from 1, header.Fs contains the sample rate, and data has 
+ dimensions samples X channels
+ 
+ If p.preproc is provided, it will be called as:
+    [y,w]=p.preproc(x);
+ where x and y are time X channels data matrices (resp. before and after
+ preprocessing), and w is a weight array (time X 1 or time X channels)
+ indicating bad data. Examples:
+    p.preproc=@(x) deal(max(min(x,10),-10),[]); % clip, no weight
+    p.preproc=@(x) deal(max(min(x,10),-10),all(x==max(min(x,10),-10),2)); % clipping
+    p.preproc=@(x) deal(max(min(x,10),-10),x==max(min(x,10),-10)); % clipping per channel
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>	nt_double2int() - recode/decode double as integer to save space</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>	size=nt_whoss - total Gbytes used by variables</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_plotxx.html" class="code" title="function [bstats,wstats]=nt_plotxx(fname,bounds,chans,imageflag)">nt_plotxx</a>	nt_plotxx(fname,bounds,chans) - plot using index file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)</a>
+0002 <span class="comment">%nt_idxx(fname,p) - create an index file to summarize large data file</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Usage:</span>
+0005 <span class="comment">%   nt_idx(fname): calculate index structs, store in index file</span>
+0006 <span class="comment">%   nt_idx(fname,p): override default parameters</span>
+0007 <span class="comment">%   [bstats,wstats,cstats,sstats]=nt_idx(fname,...): return index structs:</span>
+0008 <span class="comment">%     bstats: basic stats (size, etc.)</span>
+0009 <span class="comment">%     wstats: waveform (min, max, mean, std)</span>
+0010 <span class="comment">%     cstats: covariance</span>
+0011 <span class="comment">%     sstats: psd</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Parameters:</span>
+0014 <span class="comment">%  fname: name of data file to index</span>
+0015 <span class="comment">%  p: struct to pass parameters:</span>
+0016 <span class="comment">%    p.iname: name of index file to create [default: [PATH, 'idxx/', NAME, EXT, '.idxx']</span>
+0017 <span class="comment">%    p.nstats: target number of stats samples [default: 1000 unless p.dsr set]</span>
+0018 <span class="comment">%    p.dsr: downsampling ratio of wave stats</span>
+0019 <span class="comment">%    p.dsrcov: downsampling ratio of covariance relative to wave [default: don't calculate cov]</span>
+0020 <span class="comment">%    p.dsrpsd: downsampling ratio of PSD relative to wave [default: don't calculate psd]</span>
+0021 <span class="comment">%    p.channels_to_keep: ignore other channels</span>
+0022 <span class="comment">%    p.nfft: fft size for psd [default: 1024]</span>
+0023 <span class="comment">%    p.nlin: number of full-resolution spectral bins [default: 32]</span>
+0024 <span class="comment">%    p.chunksize: size of chunks to read from disk [default: 500000, 0 --&gt;all]</span>
+0025 <span class="comment">%    p.reader: header/data reader [default: 'BioSig']</span>
+0026 <span class="comment">%    p.preproc: preprocessing function handle [default: none]</span>
+0027 <span class="comment">%    p.quiet: suppress messages [default: false];</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% Reader p.reader can be either 'FieldTrip' or 'BioSig' or a user-specified</span>
+0030 <span class="comment">% reader 'reader' callable as:</span>
+0031 <span class="comment">%   [header,data]=reader(fname, chans, bouds)</span>
+0032 <span class="comment">% where bounds=[firstsample last sample], chans is a list of channels</span>
+0033 <span class="comment">% starting from 1, header.Fs contains the sample rate, and data has</span>
+0034 <span class="comment">% dimensions samples X channels</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% If p.preproc is provided, it will be called as:</span>
+0037 <span class="comment">%    [y,w]=p.preproc(x);</span>
+0038 <span class="comment">% where x and y are time X channels data matrices (resp. before and after</span>
+0039 <span class="comment">% preprocessing), and w is a weight array (time X 1 or time X channels)</span>
+0040 <span class="comment">% indicating bad data. Examples:</span>
+0041 <span class="comment">%    p.preproc=@(x) deal(max(min(x,10),-10),[]); % clip, no weight</span>
+0042 <span class="comment">%    p.preproc=@(x) deal(max(min(x,10),-10),all(x==max(min(x,10),-10),2)); % clipping</span>
+0043 <span class="comment">%    p.preproc=@(x) deal(max(min(x,10),-10),x==max(min(x,10),-10)); % clipping per channel</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% NoiseTools</span>
+0046 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0047 
+0048 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0049 <span class="keyword">if</span> nargin&lt;2 ; p=[]; <span class="keyword">end</span>
+0050 
+0051 <span class="comment">% defaults;</span>
+0052 <span class="keyword">if</span> ~isfield(p,<span class="string">'iname'</span>)||isempty(p.iname); p.iname=[]; <span class="keyword">end</span> <span class="comment">% default assigned later</span>
+0053 <span class="keyword">if</span> ~isfield(p,<span class="string">'dsr'</span>); p.dsr=[]; <span class="keyword">end</span> <span class="comment">% block size unspecified</span>
+0054 <span class="keyword">if</span> ~isfield(p,<span class="string">'nstats'</span>); p.nstats=[]; <span class="keyword">end</span> <span class="comment">% number of stats unspecified</span>
+0055 <span class="keyword">if</span> ~isfield(p,<span class="string">'dsrcov'</span>); p.dsrcov=[]; <span class="keyword">end</span> <span class="comment">% don't calculate covariance</span>
+0056 <span class="keyword">if</span> ~isfield(p,<span class="string">'dsrpsd'</span>); p.dsrpsd=[]; <span class="keyword">end</span> <span class="comment">% don't calculate PSD</span>
+0057 <span class="keyword">if</span> ~isfield(p,<span class="string">'channels_to_keep'</span>)||isempty(p.channels_to_keep); p.channels_to_keep=[]; <span class="keyword">end</span> <span class="comment">% all</span>
+0058 <span class="keyword">if</span> ~isfield(p,<span class="string">'nfft'</span>)||isempty(p.nfft); p.nfft=4096; <span class="keyword">end</span>
+0059 <span class="keyword">if</span> ~isfield(p,<span class="string">'nlin'</span>)||isempty(p.nlin); p.nlin=16; <span class="keyword">end</span>
+0060 <span class="keyword">if</span> ~isfield(p,<span class="string">'chunksize'</span>)||isempty(p.chunksize); p.chunksize=500000; <span class="keyword">end</span>
+0061 <span class="keyword">if</span> ~isfield(p,<span class="string">'reader'</span>)||isempty(p.reader); p.reader=<span class="string">'BioSig'</span>; <span class="keyword">end</span>
+0062 <span class="keyword">if</span> ~isfield(p,<span class="string">'preproc'</span>); p.preproc=[]; <span class="keyword">end</span>
+0063 <span class="keyword">if</span> ~isfield(p,<span class="string">'quiet'</span>); p.quiet=0; <span class="keyword">end</span>
+0064 
+0065 <span class="comment">% check for data file</span>
+0066 <span class="keyword">if</span> ~exist(fname,<span class="string">'FILE'</span>);
+0067     disp(fname);
+0068     disp(<span class="string">'not found'</span>);
+0069     error(<span class="string">'!'</span>);
+0070 <span class="keyword">end</span>
+0071 
+0072 <span class="comment">% check for readers</span>
+0073 <span class="keyword">if</span> strcmp(p.reader,<span class="string">'FieldTrip'</span>)
+0074     <span class="keyword">if</span> 2~=exist(<span class="string">'ft_read_data'</span>); disp(<span class="string">'You must download FieldTrip from www.fieldtriptoolbox.org'</span>); <span class="keyword">return</span>; <span class="keyword">end</span>
+0075 <span class="keyword">elseif</span> strcmp(p.reader,<span class="string">'BioSig'</span>)
+0076     <span class="keyword">if</span> 2~=exist(<span class="string">'sopen'</span>); disp(<span class="string">'You must download BioSig from biosig.sourceforge.net'</span>); <span class="keyword">return</span>; <span class="keyword">end</span>
+0077 <span class="keyword">else</span>
+0078     <span class="keyword">if</span> ~isa(p.reader,<span class="string">'function_handle'</span>); error(<span class="string">'function not found'</span>); <span class="keyword">end</span>
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">% use separate structs to make it easy to read just one kind of stats from file</span>
+0082 bstats=[]; <span class="comment">% index structure for basic stats</span>
+0083 wstats=[]; <span class="comment">% index structure for waveform</span>
+0084 cstats=[]; <span class="comment">% index structure for covariance</span>
+0085 sstats=[]; <span class="comment">% index structure for spectrogram</span>
+0086 
+0087 <span class="comment">% read header, store info in bstats</span>
+0088 <span class="keyword">if</span> strcmp(p.reader,<span class="string">'FieldTrip'</span>)
+0089     h=ft_read_header(fname);
+0090     bstats.sr=h.Fs;
+0091     bstats.nsamples=h.nSamples;
+0092     bstats.nchans=h.nChans;
+0093     bstats.label=h.label; 
+0094 <span class="keyword">elseif</span> strcmp(p.reader,<span class="string">'BioSig'</span>)
+0095     <span class="keyword">if</span> p.quiet
+0096         evalc(<span class="string">'h=sopen(fname)'</span>); <span class="comment">% suppress pesky verbose output</span>
+0097     <span class="keyword">else</span>
+0098         h=sopen(fname);
+0099     <span class="keyword">end</span> 
+0100     bstats.sr=h.SampleRate;
+0101     <span class="comment">%if h.NRec&gt;1; error('!'); end % need to figure out how to handle, if needed</span>
+0102     bstats.nsamples=h.SPR*h.NRec;
+0103     idx=find(~strcmp(h.Label,<span class="string">'EDF Annotations'</span>));
+0104     bstats.nchans=numel(idx);
+0105     bstats.label=h.Label(idx);
+0106     sclose(h);
+0107 <span class="keyword">else</span>
+0108     h=p.reader(fname);
+0109     bstats.sr=h.sr;
+0110     bstats.nsamples=h.nsamples;
+0111     bstats.nchans=h.nchans;
+0112     bstats.label=h.label;
+0113 <span class="keyword">end</span>
+0114 bstats.header=h;
+0115 bstats.fname=fname; 
+0116 bstats.p=p;
+0117 bstats.now=now;
+0118 
+0119 <span class="comment">% store code of this function and of caller function</span>
+0120 bstats.nt_idxx.txt=evalc([<span class="string">'type '</span>, mfilename]);
+0121 stack=dbstack;
+0122 <span class="keyword">if</span> numel(stack)&gt;1
+0123     bstats.caller.file=stack(2).name;
+0124     <span class="keyword">try</span>
+0125         txt=evalc([<span class="string">'type '</span>, stack(2).name]); 
+0126     <span class="keyword">catch</span>
+0127         warning(<span class="string">'could not list caller function'</span>);
+0128     <span class="keyword">end</span>
+0129     bstats.caller.txt=txt;
+0130 <span class="keyword">end</span>
+0131 
+0132 <span class="comment">% channels</span>
+0133 <span class="keyword">if</span> isempty(p.channels_to_keep) 
+0134     p.channels_to_keep=1:bstats.nchans;
+0135 <span class="keyword">end</span>
+0136 
+0137 <span class="keyword">if</span> any(p.channels_to_keep&gt;bstats.nchans); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0138 bstats.nchans=numel(p.channels_to_keep);
+0139 
+0140 <span class="comment">% idetermine time resolution of statistics</span>
+0141 <span class="keyword">if</span> isempty(p.dsr) 
+0142     <span class="comment">% DSR unspecified, specify nstats</span>
+0143     <span class="keyword">if</span> isempty(p.nstats)
+0144         <span class="comment">% set to default</span>
+0145         p.nstats=1000;
+0146     <span class="keyword">end</span>
+0147     bstats.dsr=ceil(bstats.nsamples/p.nstats);
+0148     nwstats=ceil(bstats.nsamples/bstats.dsr);
+0149 <span class="keyword">else</span>
+0150     <span class="comment">% DSR specified</span>
+0151     <span class="keyword">if</span> ~isempty(p.nstats)
+0152         <span class="comment">% ntats also specify: try to ensure minimum nstats</span>
+0153         <span class="keyword">if</span> ceil(bstats.nsamples/p.dsr)&lt;p.nstats
+0154             p.dsr=ceil(bstats.nsamples/p.nstats);
+0155         <span class="keyword">end</span>
+0156     <span class="keyword">end</span>
+0157     bstats.dsr=p.dsr;
+0158     nwstats=ceil(bstats.nsamples/bstats.dsr);
+0159 <span class="keyword">end</span>
+0160 
+0161 <span class="comment">% allocate basic stats arrays:</span>
+0162 nwstats=ceil(bstats.nsamples/bstats.dsr); <span class="comment">% total number of blocks for basic stats</span>
+0163 wstats.nwstats=nwstats;
+0164 wstats.min=zeros(nwstats,bstats.nchans);
+0165 wstats.max=zeros(nwstats,bstats.nchans); 
+0166 wstats.mean=zeros(nwstats,bstats.nchans);
+0167 wstats.rms=zeros(nwstats,bstats.nchans);
+0168 
+0169 <span class="comment">% allocate weight matrix if needed</span>
+0170 <span class="comment">% if ~isempty(p.preproc)</span>
+0171 <span class="comment">%     % test to determine if it returns a weight matrix, and if so what size</span>
+0172 <span class="comment">%     [~,w]=p.preproc(randn(100,10));</span>
+0173 <span class="comment">%     clf; drawnow;</span>
+0174 <span class="comment">%     if ~isempty(w)</span>
+0175 <span class="comment">%         if size(w,2)==1</span>
+0176 <span class="comment">%             wstats.w=zeros(nwstats,1);</span>
+0177 <span class="comment">%         else</span>
+0178 <span class="comment">%             wstats.w=zeros(nwstats,bstats.nchans);</span>
+0179 <span class="comment">%         end</span>
+0180 <span class="comment">%     end</span>
+0181 <span class="comment">% end</span>
+0182 
+0183 <span class="comment">% size of chunk to read from disk, multiple of block size</span>
+0184 p.chunksize=floor(p.chunksize/bstats.dsr)*bstats.dsr; 
+0185 
+0186 <span class="comment">% allocate covariance array</span>
+0187 <span class="keyword">if</span> ~isempty(p.dsrcov)
+0188     blksizecov=p.dsrcov*bstats.dsr;
+0189     tmp=log2(p.dsrcov);
+0190     assert(tmp==round(tmp), <span class="keyword">...</span>
+0191         <span class="string">'p.dsrcov should be power of 2'</span>);
+0192     ncstats=ceil(bstats.nsamples/blksizecov);
+0193     cstats.cov=zeros(ncstats,bstats.nchans,bstats.nchans);
+0194     cstats.blksizecov=blksizecov;
+0195     p.chunksize=floor(p.chunksize/blksizecov)*blksizecov;
+0196 <span class="keyword">end</span>
+0197 
+0198 <span class="comment">% allocate psd array</span>
+0199 <span class="keyword">if</span> ~isempty(p.dsrpsd) 
+0200     blksizepsd=p.dsrpsd*bstats.dsr;
+0201     <span class="keyword">if</span> blksizepsd &lt; p.nfft; 
+0202         disp([blksizepsd,p.nfft]);
+0203         error(<span class="string">'!'</span>); 
+0204     <span class="keyword">end</span>;
+0205     tmp=log2(p.dsrpsd);
+0206     assert(tmp==round(tmp), <span class="keyword">...</span>
+0207         <span class="string">'p.dsrpsd should be power of 2'</span>);
+0208     nsstats=ceil(bstats.nsamples/blksizepsd);
+0209     
+0210     <span class="comment">%{</span>
+0211     Matrix to transform linear frequency  to semilog frequency.
+0212     The first nlin samples are full resolution, the next nlin/2 half
+0213     resolution (spectral bins grouped by 2), the next nlin/2 quarter
+0214     resolution, etc.
+0215     <span class="comment">%}</span>
+0216     M={};
+0217     <span class="keyword">if</span> p.nlin~=2^log2(p.nlin); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0218     M{1}=eye(p.nlin+1);
+0219     <span class="keyword">for</span> iBlk=1:log2(p.nfft/p.nlin)-1
+0220         <span class="keyword">for</span> k=1:p.nlin/2 
+0221             MM{k}=ones(2^iBlk,1)/2^iBlk; 
+0222         <span class="keyword">end</span>
+0223         M{iBlk+1}=blkdiag(MM{:});        
+0224     <span class="keyword">end</span>
+0225     M=blkdiag(M{:});
+0226     sstats.M=M;
+0227 
+0228     <span class="comment">% scaled frequency axis:</span>
+0229     f0=(0:p.nfft/2)/p.nfft; <span class="comment">% normalized frequency of fft</span>
+0230     f=f0*M; f=f./sum(M);
+0231     sstats.f=f;
+0232     
+0233 <span class="comment">%    figure(1); clf; plot(f); pause</span>
+0234 
+0235     sstats.psd=zeros(nsstats,bstats.nchans,size(M,2));
+0236     sstats.nfft=p.nfft;
+0237     sstats.blksizepsd=blksizepsd;
+0238     
+0239     <span class="comment">% ensure chunksize is multiple of blksepsd</span>
+0240     p.chunksize=floor(p.chunksize/blksizepsd)*blksizepsd;
+0241 <span class="keyword">end</span>
+0242 
+0243 
+0244 foffset=0;
+0245 boffset=0;
+0246 coffset=0;
+0247 soffset=0;
+0248 
+0249 <span class="comment">% read and index;</span>
+0250 <span class="keyword">while</span> true
+0251     
+0252     <span class="comment">%if file_offset&gt;=i.nsamples; break; end</span>
+0253     <span class="keyword">if</span> ~p.quiet; 
+0254         disp([foffset, bstats.nsamples]); 
+0255         disp([num2str(foffset/bstats.nsamples*100), <span class="string">'%'</span>]);
+0256     <span class="keyword">end</span>
+0257     
+0258     <span class="comment">% read chunk from disk</span>
+0259     tic
+0260     begsample=foffset+1;
+0261     endsample=min(foffset+p.chunksize,bstats.nsamples);
+0262     <span class="keyword">if</span> endsample&lt;=begsample; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0263     <span class="keyword">if</span> strcmp(p.reader,<span class="string">'FieldTrip'</span>)
+0264         error(<span class="string">'!'</span>);
+0265         x=ft_read_data(fname, <span class="string">'begsample'</span>,begsample,<span class="string">'endsample'</span>,endsample);
+0266         x=x'; <span class="comment">% --&gt; time X channels</span>
+0267         x=x(:,p.channels_to_keep);
+0268     <span class="keyword">elseif</span> strcmp(p.reader,<span class="string">'BioSig'</span>)
+0269         <span class="keyword">if</span> p.quiet
+0270             evalc(<span class="string">'h=sopen(fname,''r'',p.channels_to_keep)'</span>);<span class="comment">% suppress pesky verbose output</span>
+0271         <span class="keyword">else</span>
+0272             h=sopen(fname,<span class="string">'r'</span>,p.channels_to_keep);
+0273         <span class="keyword">end</span>
+0274         NoS=(endsample-begsample-1)/bstats.sr;
+0275         StartPos=(begsample-1)/bstats.sr;
+0276         x=sread(h,NoS,StartPos);
+0277         sclose(h);
+0278     <span class="keyword">else</span>
+0279         [~,x]=p.reader(fname,p.channels_to_keep,[begsample endsample]);
+0280     <span class="keyword">end</span>
+0281     <span class="keyword">if</span> ~p.quiet; toc; <span class="keyword">end</span>
+0282     
+0283     disp(size(x))
+0284     
+0285     <span class="comment">% apply preprocessing</span>
+0286     <span class="keyword">if</span> ~isempty(p.preproc)
+0287         disp(<span class="string">'preproc:'</span>); tic;
+0288         [x,w]=p.preproc(x);
+0289         toc;
+0290     <span class="keyword">else</span>
+0291         w=[];
+0292     <span class="keyword">end</span>
+0293     <span class="keyword">if</span> ~isempty(w); error(<span class="string">'TBD'</span>); <span class="keyword">end</span>
+0294     
+0295     figure(1); clf; plot(x); drawnow;
+0296     
+0297     <span class="comment">% fold chunk into blocks</span>
+0298     nblocks=floor(size(x,1)/bstats.dsr); <span class="comment">% number of blocks in this chunk</span>
+0299     xb=x(1:nblocks*bstats.dsr,:); <span class="comment">% chunk</span>
+0300     xb=reshape(xb,[bstats.dsr,nblocks,bstats.nchans]); <span class="comment">% block matrix</span>
+0301 
+0302     <span class="comment">% time series of waveform statistics</span>
+0303     tic;
+0304     wstats.min(boffset+(1:nblocks),:)=min(xb,[],1);
+0305     wstats.max(boffset+(1:nblocks),:)=max(xb,[],1);
+0306     wstats.mean(boffset+(1:nblocks),:)=mean(xb,1);
+0307     wstats.rms(boffset+(1:nblocks),:)=sqrt(mean(xb.^2,1));
+0308     boffset=boffset+nblocks; 
+0309     <span class="keyword">if</span> ~p.quiet; toc; <span class="keyword">end</span>
+0310     
+0311     figure(2); clf; plot([wstats.min, wstats.max]); drawnow
+0312     
+0313     
+0314     <span class="comment">% extra bit at end of file?</span>
+0315     <span class="keyword">if</span> size(x,1)&gt;nblocks*bstats.dsr
+0316         tmp=x(nblocks*bstats.dsr+1:<span class="keyword">end</span>,:);
+0317         wstats.min(boffset+1,:)=min(tmp,[],1);
+0318         wstats.max(boffset+1,:)=max(tmp,[],1);
+0319         wstats.mean(boffset+1,:)=mean(tmp,1);
+0320         wstats.rms(boffset+1,:)=sqrt(mean(tmp.^2,1));
+0321     <span class="keyword">end</span>
+0322     
+0323     foffset=foffset+nblocks*bstats.dsr; <span class="comment">% advance pointer in file</span>
+0324 
+0325     <span class="comment">% time series of covariance matrices</span>
+0326     <span class="keyword">if</span> ~isempty(cstats) &amp;&amp; isfield(cstats, <span class="string">'cov'</span>)
+0327         nblocks=floor(size(x,1)/blksizecov); <span class="comment">% number of blocks</span>
+0328         xb=x(1:nblocks*blksizecov,:);        
+0329         xb=reshape(xb,[blksizecov, nblocks, bstats.nchans]);
+0330         <span class="keyword">for</span> iBlock=1:nblocks
+0331             tmp=squeeze(xb(:,iBlock,:));
+0332             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0333             cstats.cov(coffset+iBlock,:,:) = tmp'*tmp;
+0334         <span class="keyword">end</span>
+0335         coffset=coffset+size(xb,2);
+0336         <span class="keyword">if</span> size(x,1)&gt;nblocks*blksizecov
+0337             tmp=x(nblocks*blksizecov+1:<span class="keyword">end</span>,:);
+0338             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0339             cstats.cov(coffset+1,:,:)=tmp'*tmp;
+0340         <span class="keyword">end</span>              
+0341     <span class="keyword">end</span>
+0342       
+0343     <span class="comment">% time series of power spectra</span>
+0344     <span class="keyword">if</span> ~isempty(sstats) &amp;&amp; isfield(sstats, <span class="string">'psd'</span>)
+0345         nblocks=floor(size(x,1)/blksizepsd); <span class="comment">% number of blocks in chunk</span>
+0346         xb=x(1:nblocks*blksizepsd,:);        
+0347         xb=reshape(xb,[blksizepsd, nblocks, bstats.nchans]);
+0348         <span class="keyword">for</span> iBlock=1:nblocks
+0349             tmp=squeeze(xb(:,iBlock,:));    
+0350             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0351             sstats.psd(soffset+iBlock,:,:) = pwelch(tmp, p.nfft, <span class="string">'power'</span>)'*M;
+0352         <span class="keyword">end</span>
+0353         soffset=soffset+size(xb,2);
+0354         
+0355         disp([soffset size(sstats.psd,1)]);
+0356         
+0357         <span class="keyword">if</span> size(x,1)&gt;nblocks*blksizepsd
+0358             tmp=x(nblocks*blksizepsd+1:<span class="keyword">end</span>,:);
+0359             tmp=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(tmp);
+0360             <span class="keyword">if</span> size(tmp,1)&lt;p.nfft; <span class="keyword">break</span>; <span class="keyword">end</span>
+0361             sstats.psd(soffset+1,:,:) = pwelch(tmp, p.nfft, <span class="string">'power'</span>)'*M;
+0362         <span class="keyword">end</span>              
+0363     <span class="keyword">end</span>
+0364     
+0365     <span class="keyword">if</span> ~p.quiet; <a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>; <span class="keyword">end</span>
+0366     <span class="comment">%disp([num2str(foffset/h.nSamples*100), '%']);</span>
+0367 <span class="comment">%     disp([num2str(foffset), '/', num2str(h.nSamples), ' (', num2str(foffset/h.nSamples*100), '%)']);</span>
+0368 <span class="comment">%     disp([boffset, coffset, soffset]);</span>
+0369     
+0370     <span class="keyword">if</span> endsample&gt;=bstats.nsamples; <span class="keyword">break</span>; <span class="keyword">end</span>;
+0371 <span class="keyword">end</span>
+0372    
+0373 <span class="keyword">if</span> ~nargout
+0374     <span class="keyword">if</span> isempty(p.iname)
+0375         [FILEPATH,NAME,EXT]=fileparts(fname);
+0376         <span class="keyword">if</span> isempty(FILEPATH); FILEPATH=pwd; <span class="keyword">end</span>
+0377         <span class="keyword">if</span> ~exist([FILEPATH,filesep,<span class="string">'idxx'</span>], <span class="string">'dir'</span>)
+0378             mkdir([FILEPATH,filesep,<span class="string">'idxx'</span>]);
+0379         <span class="keyword">end</span>        
+0380         p.iname=[FILEPATH,filesep,<span class="string">'idxx'</span>,filesep,NAME,EXT,<span class="string">'.idxx'</span>];
+0381     <span class="keyword">end</span>
+0382     wstats.min=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.min); 
+0383     wstats.max=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.max);
+0384     wstats.mean=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.mean);
+0385     wstats.rms=<a href="nt_double2int.html" class="code" title="function z=nt_double2int(x,param)">nt_double2int</a>(wstats.rms);
+0386     save(p.iname, <span class="string">'bstats'</span>, <span class="string">'wstats'</span>,<span class="string">'cstats'</span>, <span class="string">'sstats'</span>,<span class="string">'-v7.3'</span>);
+0387     clear bstats wstats cstats sstats;
+0388 <span class="keyword">end</span>
+0389 
+0390 
+0391     
+0392</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

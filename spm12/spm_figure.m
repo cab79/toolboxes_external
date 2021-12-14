@@ -309,7 +309,7 @@ if isempty(Tags)
     delete(findall(allchild(F),'flat','HandleVisibility','on'));
     drawnow
     pause(0.05);
-    if ~isdocked, set(F,'Position',pos); end
+     if ~isdocked, set(F,'Position',pos); end
     %-Reset figures callback functions
     zoom(F,'off');
     pan(F,'off');

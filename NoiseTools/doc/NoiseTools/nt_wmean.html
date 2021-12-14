@@ -4,7 +4,7 @@
 <head>
   <title>Description of nt_wmean</title>
   <meta name="keywords" content="nt_wmean">
-  <meta name="description" content="y=wmean(x,w,dim) - weighted average over columns">
+  <meta name="description" content="y=nt_wmean(x,w,dim) - weighted average">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>y=wmean(x,w,dim) - weighted average over columns</strong></div>
+<div class="box"><strong>y=nt_wmean(x,w,dim) - weighted average</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function y=wmean(x,w,dim) </strong></div>
+<div class="box"><strong>function y=nt_wmean(x,w,dim) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment">y=wmean(x,w,dim) - weighted average over columns y: row vector of weighed means x: column vector or matrix of values to average columnwise w: column vector or matrix of weights (default: all ones) dim: dimension over which to average (default: 1)  if x contains nans the corresponding weights are set to zero</pre></div>
+<div class="fragment"><pre class="comment">y=nt_wmean(x,w,dim) - weighted average y: vector of weighed means x: column vector or matrix of values to average columnwise w: column vector or matrix of weights (default: all ones) dim: dimension over which to average (default: 1)  if x contains nans the corresponding weights are set to zero</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
@@ -36,16 +36,16 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_find_outliers.html" class="code" title="function w=nt_find_outliers(x,toobig1,toobig2);">nt_find_outliers</a>	w=nt_find_outliers(x,toobig1,toobig2) - find outliers (glitches, etc.).</li></ul>
+<li><a href="nt_bsmean.html" class="code" title="function [mn,sd,all]=nt_bsmean(x,N,w)">nt_bsmean</a>	[mn,sd,all]=nt_bsmean(x,N,w) - calculate mean, estimate sd using bootstrap</li><li><a href="nt_bsrms.html" class="code" title="function [rms,sd,all]=nt_bsrms(x,N,w)">nt_bsrms</a>	[rms,sd,all]=nt_bsrms(x,N,w) - calculate rms, estimate sd using bootstrap</li><li><a href="nt_dss1.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2)">nt_dss1</a>	[todss,pwr0,pwr1]=nt_dss1(x,w,keep1,keep2) - evoked-biased DSS denoising</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y=wmean(x,w,dim) </a>
-0002 <span class="comment">%y=wmean(x,w,dim) - weighted average over columns</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y=nt_wmean(x,w,dim) </a>
+0002 <span class="comment">%y=nt_wmean(x,w,dim) - weighted average</span>
 0003 <span class="comment">%</span>
-0004 <span class="comment">% y: row vector of weighed means</span>
+0004 <span class="comment">% y: vector of weighed means</span>
 0005 <span class="comment">%</span>
 0006 <span class="comment">% x: column vector or matrix of values to average columnwise</span>
 0007 <span class="comment">% w: column vector or matrix of weights (default: all ones)</span>
@@ -73,8 +73,9 @@ This function is called by:
 0029     <span class="keyword">if</span> size(w,2)==1; w=repmat(w,1,size(x,2)); <span class="keyword">end</span>
 0030     <span class="keyword">if</span> size(w,2) ~= size(x,2); error(<span class="string">'weight must have same ncols as data, or 1'</span>); <span class="keyword">end</span>
 0031     y=sum(x.*w,dim)./sum(w,dim);
-0032 <span class="keyword">end</span>
-0033</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0032     y(find(isnan(y)))=0;
+0033 <span class="keyword">end</span>
+0034</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

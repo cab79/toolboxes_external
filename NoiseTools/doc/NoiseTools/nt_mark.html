@@ -4,7 +4,7 @@
 <head>
   <title>Description of nt_mark</title>
   <meta name="keywords" content="nt_mark">
-  <meta name="description" content="nt_mark(idx,labels)">
+  <meta name="description" content="nt_mark(idx,labels,line_params,text_params)">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>nt_mark(idx,labels)</strong></div>
+<div class="box"><strong>nt_mark(idx,labels,line_params,text_params)</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="box"><strong>function nt_mark(idx,labels,line_params,text_params) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment"> nt_mark(idx,labels)</pre></div>
+<div class="fragment"><pre class="comment"> nt_mark(idx,labels,line_params,text_params)</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
@@ -36,14 +36,14 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li></ul>
+<li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard,minstep)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard,minstep) - split time series into intervals</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 <div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nt_mark(idx,labels,line_params,text_params)</a>
-0002 <span class="comment">% nt_mark(idx,labels)</span>
+0002 <span class="comment">% nt_mark(idx,labels,line_params,text_params)</span>
 0003 
 0004 
 0005 <span class="keyword">if</span> nargin&lt;2; labels=[]; <span class="keyword">end</span>
@@ -58,6 +58,6 @@ This function is called by:
 0014     <span class="keyword">end</span>
 0015 <span class="keyword">end</span>
 0016 set(gca,<span class="string">'ylim'</span>,ylim)</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

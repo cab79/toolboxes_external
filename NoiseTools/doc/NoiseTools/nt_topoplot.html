@@ -38,7 +38,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-</ul>
+<li><a href="nt_interpolate_bad_channels.html" class="code" title="function [toGood,fromGood]=interpolate_bad_channels(x,iBad,coordinates,n)">nt_interpolate_bad_channels</a>	y=interpolate_bad_channels(x,iBad,coordinates,n) - interpolate bad channels from good</li></ul>
 <!-- crossreference -->
 
 
@@ -70,8 +70,12 @@ This function is called by:
 0024     <span class="string">'outline'</span>, layout.outline, <span class="keyword">...</span>
 0025     <span class="string">'interplim'</span>, <span class="string">'mask'</span>);
 0026 
-0027 axis off
-0028 axis equal</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0027 <span class="comment">% ensure symmetrical color axes</span>
+0028 clim=get(gca,<span class="string">'clim'</span>);
+0029 set(gca,<span class="string">'clim'</span>,[-1 1]*max(abs(clim)));
+0030 
+0031 axis off
+0032 axis equal</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_rereference2</title>
+  <meta name="keywords" content="nt_rereference2">
+  <meta name="description" content="[y,mn]=nt_rereference2(x,mask,thresh,factor) - robust rereferencing">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_rereference2.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_rereference2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[y,mn]=nt_rereference2(x,mask,thresh,factor) - robust rereferencing</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [y,mn,mask]=nt_rereference2(x,mask,thresh,factor) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[y,mn]=nt_rereference2(x,mask,thresh,factor) - robust rereferencing
+
+   y: rereferenced data
+   mn: subtracted reference
+   mask: channel mask
+
+   x: data to rereference (time X channels)
+   mask: channel mask
+   thresh: std threshold to discard channel [default: 3]
+   factor: apply to mean before subtracting [default: 1]
+   
+ See also: <a href="nt_rereference.html" class="code" title="function [y,mn]=nt_rereference(x,w,factor)">nt_rereference</a>, <a href="nt_detrend.html" class="code" title="function [y,w,r]=ntdetrend(x,order,w,basis,thresh,niter,wsize)">nt_detrend</a>, <a href="nt_outliers.html" class="code" title="function [w,y]=nt_outliers(x,w,thresh,niter)">nt_outliers</a>
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,mn,mask]=nt_rereference2(x,mask,thresh,factor)</a>
+0002 <span class="comment">%[y,mn]=nt_rereference2(x,mask,thresh,factor) - robust rereferencing</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%   y: rereferenced data</span>
+0005 <span class="comment">%   mn: subtracted reference</span>
+0006 <span class="comment">%   mask: channel mask</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   x: data to rereference (time X channels)</span>
+0009 <span class="comment">%   mask: channel mask</span>
+0010 <span class="comment">%   thresh: std threshold to discard channel [default: 3]</span>
+0011 <span class="comment">%   factor: apply to mean before subtracting [default: 1]</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% See also: nt_rereference, nt_detrend, nt_outliers</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% NoiseTools</span>
+0016 
+0017 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0018 <span class="keyword">if</span> nargin&lt;2||isempty(mask); mask=ones(1,size(x,2)); <span class="keyword">end</span>
+0019 <span class="keyword">if</span> nargin&lt;3||isempty(thresh); thresh=3; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> nargin&lt;4||isempty(factor); factor=1; <span class="keyword">end</span>
+0021 
+0022 <span class="keyword">if</span> size(mask,1)~=1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0023 <span class="keyword">if</span> size(mask,2) ~= size(x,2); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0024 
+0025 y=x;
+0026 NITER=5;
+0027 <span class="keyword">for</span> iRepeat=1:NITER
+0028     <span class="keyword">if</span> ~sum(mask); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0029     mn=sum(y(:,find(mask)),2)./sum(mask);
+0030     y=bsxfun(@minus,y,mn*factor);
+0031     yy=y(:,find(mask));
+0032     idxBad=std(y)/std(yy(:))&gt;thresh;
+0033     mask(idxBad)=0;
+0034     <span class="comment">%disp(mean(mask))</span>
+0035     <span class="comment">%figure(1); clf; plot(std(y)/std(yy(:))); pause</span>
+0036 <span class="keyword">end</span>
+0037 disp([<span class="string">'proportion channels used for mean: '</span>, num2str(mean(mask))])
+0038 
+0039 
+0040</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

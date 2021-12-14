@@ -59,7 +59,10 @@ for i = 1:Ns
 end
 
 if S.parallel
-    pp = parpool
+    checkp = gcp('nocreate');
+    if isempty(checkp)
+        pp = parpool
+    end
     parforArg = Inf;
 else
     parforArg = 0;
@@ -70,16 +73,21 @@ end
 nP=numel(P);
 parfor (i = 1:numel(P),parforArg)
             
+% for i = 1:numel(P)
+    
     disp(['model: ' num2str(i) '/' num2str(nP)]); % display progress 
-
-%for i = 1:numel(P)
     
     % loop over models (rows)
     %----------------------------------------------------------------------
     
     % Get model specification
     %------------------------------------------------------------------
-    try, load(P{i}); catch, DCM = P{i}; end
+    % CAB: load does not work in parallel
+    %if ~S.parallel
+    %    try, load(P{i}); catch, DCM = P{i}; end
+    %else
+        DCM = P{i};
+    %end
     
     
     % invert and save
@@ -158,4 +166,6 @@ parfor (i = 1:numel(P),parforArg)
     P{i} = DCM;
 end
 
-delete(pp)
+if exist('pp','var')
+    delete(pp)
+end

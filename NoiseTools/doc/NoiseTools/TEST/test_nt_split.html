@@ -50,27 +50,27 @@ This function is called by:
 0006 
 0007 figure(1); clf;
 0008 subplot 411
-0009 plot(x);
+0009 plot(x); title(<span class="string">'step (with noise)'</span>);
 0010 subplot 423
 0011 [idx,score_vector,score]=nt_split(x); 
 0012 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0013 plot(score_vector); title(<span class="string">'find step'</span>)
+0013 plot(score_vector); title(<span class="string">'split on mean'</span>)
 0014 subplot 424
 0015 [idx,score_vector,score]=nt_split(x.^2); 
 0016 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0017 plot(score_vector); title(<span class="string">'find step in power'</span>)
+0017 plot(score_vector); title(<span class="string">'split on power'</span>)
 0018 
 0019 <span class="comment">% single channel, step in power</span>
 0020 x=[randn(N,1); 2*randn(N,1)];  
 0021 subplot 413
-0022 plot(x);
+0022 plot(x); title(<span class="string">'step in power of Gaussian noise'</span>)
 0023 subplot 427
 0024 [idx,score_vector,score]=nt_split(x); 
 0025 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0026 plot(score_vector); title(<span class="string">'find step'</span>)
+0026 plot(score_vector); title(<span class="string">'split on mean'</span>)
 0027 subplot 428
 0028 [idx,score_vector,score]=nt_split(x.^2); 
-0029 plot(score_vector); title(<span class="string">'find step in power'</span>)
+0029 plot(score_vector); title(<span class="string">'split on power'</span>)
 0030 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
 0031 
 0032 
@@ -82,46 +82,46 @@ This function is called by:
 0038 x=[a;b];  
 0039 figure(2); clf
 0040 subplot 311
-0041 plot(x);
+0041 plot(x); title(<span class="string">'10 channel noise, change in covariance'</span>);
 0042 subplot 323
 0043 [idx,score_vector,score]=nt_split(x.^2); 
 0044 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0045 plot(score_vector); title(<span class="string">'power'</span>)
+0045 plot(score_vector); title(<span class="string">'split on power'</span>)
 0046 subplot 324
 0047 [idx,score_vector,score]=nt_split(nt_xprod(x, <span class="string">'lower'</span>)); 
 0048 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0049 plot(score_vector); title(<span class="string">'lower'</span>)
+0049 plot(score_vector); title(<span class="string">'split on cov (lower)'</span>)
 0050 subplot 325
 0051 [idx,score_vector,score]=nt_split(nt_xprod(x, <span class="string">'nodiag'</span>)); 
 0052 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0053 plot(score_vector); title(<span class="string">'nodiag'</span>)
+0053 plot(score_vector); title(<span class="string">'split on cov (no diag)'</span>)
 0054 subplot 326
 0055 [idx,score_vector,score]=nt_split(nt_normrow(nt_xprod(x,<span class="string">'lower'</span>))); 
 0056 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0057 plot(score_vector); title(<span class="string">'lower, normrow'</span>)
+0057 plot(score_vector); title(<span class="string">'split on cov (lower, normrow)'</span>)
 0058 
 0059 <span class="comment">% change in covariance, change in power</span>
 0060 x=[a;b;2*b];  
 0061 figure(3); clf
 0062 subplot 311
-0063 plot(x);
+0063 plot(x); title(<span class="string">'10 channel noise, change in covariance, then power'</span>);
 0064 subplot 323
 0065 [idx,score_vector,score]=nt_split(x.^2); 
 0066 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0067 plot(score_vector); title(<span class="string">'power'</span>)
+0067 plot(score_vector); title(<span class="string">'split on power'</span>)
 0068 subplot 324
 0069 [idx,score_vector,score]=nt_split(nt_xprod(x, <span class="string">'lower'</span>)); 
 0070 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0071 plot(score_vector); title(<span class="string">'lower'</span>)
+0071 plot(score_vector); title(<span class="string">'split on cov (lower)'</span>)
 0072 subplot 325
 0073 [idx,score_vector,score]=nt_split(nt_xprod(x, <span class="string">'nodiag'</span>)); 
 0074 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0075 plot(score_vector); title(<span class="string">'nodiag'</span>)
+0075 plot(score_vector); title(<span class="string">'split on cov (nodiag)'</span>)
 0076 subplot 326
 0077 [idx,score_vector,score]=nt_split(nt_normrow(nt_xprod(x,<span class="string">'lower'</span>))); 
 0078 disp([num2str(idx), <span class="string">'score: '</span>,num2str(score,<span class="string">'%.03f'</span>)]);   
-0079 plot(score_vector); title(<span class="string">'lower, normrow'</span>)
+0079 plot(score_vector); title(<span class="string">'split on cov (lower, normrow)'</span>)
 0080</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

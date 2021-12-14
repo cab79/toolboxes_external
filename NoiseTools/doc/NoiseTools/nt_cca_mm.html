@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_cca_mm</title>
+  <meta name="keywords" content="nt_cca_mm">
+  <meta name="description" content="[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_cca_mm.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_cca_mm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [D,E,R]=nt_cca_mm(x,y,ssize,flipflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task
+
+  D: d-prime 
+  E: error rate
+  R: correlation coefficient over entire trial
+
+  x,y: data as trial arrays
+  ssize: samples, segment size [default: all]
+  flipflag: if true flip mismatched segments timewise [default false]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)">nt_cca_crossvalidate</a>	[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</li><li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>	[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [D,E,R]=nt_cca_mm(x,y,ssize,flipflag)</a>
+0002 <span class="comment">%[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  D: d-prime</span>
+0005 <span class="comment">%  E: error rate</span>
+0006 <span class="comment">%  R: correlation coefficient over entire trial</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%  x,y: data as trial arrays</span>
+0009 <span class="comment">%  ssize: samples, segment size [default: all]</span>
+0010 <span class="comment">%  flipflag: if true flip mismatched segments timewise [default false]</span>
+0011 
+0012 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0013 <span class="keyword">if</span> nargin&lt;3; ssize=[]; <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin&lt;4||isempty(flipflag); flipflag=0; <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> ssize ~= round(ssize); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0017 
+0018 <span class="comment">% clip all trials to same size multiple of wsize</span>
+0019 n=size(x{1},1); <span class="comment">% min size?</span>
+0020 <span class="keyword">for</span> iTrial=1:numel(x)
+0021     <span class="keyword">if</span> size(x{iTrial}) ~= size(y{iTrial}); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0022     n=min(n,size(x{iTrial},1));
+0023 <span class="keyword">end</span>
+0024 <span class="keyword">if</span> isempty(ssize); ssize=n; <span class="keyword">end</span>
+0025 n=ssize*floor(n/ssize); <span class="comment">% reduce to multiple of wsize</span>
+0026 <span class="keyword">if</span> n&lt;1; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0027 <span class="keyword">for</span> iTrial=1:numel(x)
+0028     x{iTrial}=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(x{iTrial}(1:n,:)); <span class="comment">% clip trials to new length</span>
+0029     y{iTrial}=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(y{iTrial}(1:n,:));
+0030 <span class="keyword">end</span>
+0031 nsegments=n/ssize;
+0032 ntrials=numel(x);
+0033 
+0034 <span class="keyword">if</span> 0 <span class="comment">% scramble (sanity check, should yield approx d-prime==0 and error == 50%)</span>
+0035     <span class="keyword">for</span> iTrial=1:ntrials
+0036         y{iTrial}=y{1+mod(iTrial+5,ntrials)};
+0037         <span class="comment">%disp([iTrial, 1+mod(iTrial+5,ntrials)]);</span>
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% CCA</span>
+0042 shifts=[0]; xvalidate=1;
+0043 [AA,BB,RR]=<a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)">nt_cca_crossvalidate</a>(x,y,shifts,xvalidate);
+0044 R=mean(RR,3);
+0045 
+0046 <span class="keyword">for</span> iTrial=1:ntrials
+0047     
+0048     <span class="comment">% calculate model on data excluding this trial</span>
+0049     others=setdiff(1:ntrials,iTrial);
+0050     
+0051     <span class="comment">% CCs</span>
+0052     xx=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(x(others),AA{iTrial});
+0053     yy=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(y(others),BB{iTrial});
+0054     ncomp=size(xx{1},2);
+0055 
+0056     <span class="comment">% cut into segments</span>
+0057     X=zeros(ssize,ncomp,numel(others),nsegments);
+0058     Y=zeros(ssize,ncomp,numel(others),nsegments);
+0059     <span class="keyword">for</span> iTrial2=1:numel(others)
+0060         <span class="keyword">for</span> iWindow=1:nsegments
+0061             start=(iWindow-1)*ssize;
+0062             X(:,:,iTrial2,iWindow)=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(xx{iTrial2}(start+(1:ssize),:))); <span class="comment">% all mean 0 norm 1</span>
+0063             Y(:,:,iTrial2,iWindow)=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(yy{iTrial2}(start+(1:ssize),:)));
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066     
+0067     <span class="comment">% Euclidean distance between EEG and envelope segments</span>
+0068     
+0069     <span class="comment">% match</span>
+0070     D_match=sqrt(mean((X-Y).^2));
+0071     sz=size(D_match); D_match=reshape(D_match,sz(2:end));
+0072     D_match=D_match(:,:)'; <span class="comment">% trials X comps</span>
+0073     
+0074     <span class="comment">% mismatch</span>
+0075     D_mismatch=sqrt(mean((X-circshift(Y,1,3)).^2));
+0076     sz=size(D_mismatch); D_mismatch=reshape(D_mismatch,sz(2:end));
+0077     D_mismatch=D_mismatch(:,:)'; <span class="comment">% trials X comps</span>
+0078     
+0079     c0=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(D_match)/size(D_mismatch,1);
+0080     c1=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(D_mismatch)/size(D_match,1);
+0081     [todss,pwr0,pwr1]=<a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>(c0,c1);
+0082     <span class="keyword">if</span> mean(D_match*todss(:,1))&lt;0; todss=-todss; <span class="keyword">end</span>
+0083     
+0084     DD_match=D_match*todss(:,1);
+0085     DD_mismatch=D_mismatch*todss(:,1);
+0086     
+0087     dprime(iTrial)=abs(mean(DD_match)-mean(DD_mismatch)) / std([DD_match-mean(DD_match); DD_mismatch-mean(DD_mismatch)]);    
+0088 
+0089     <span class="comment">%{</span>
+0090     We now have a CCA solution and a JD transform calculated
+0091     on other trials. 
+0092     
+0093     We apply them to segments of this trial.
+0094     <span class="comment">%}</span>
+0095     
+0096     <span class="comment">% apply same CCA transform:</span>
+0097     xx_x=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(x{iTrial},AA{iTrial});
+0098     yy_x=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(y{iTrial},BB{iTrial});
+0099     <span class="comment">% yy_x=nt_mmat(y{1+mod(iTrial,ntrials)},BB{iTrial}); % scramble</span>
+0100     
+0101     <span class="comment">%figure(1); plot([xx_x,yy_x]); pause</span>
+0102     
+0103     <span class="comment">% cut CCs into segments</span>
+0104     X_x=zeros(ssize,ncomp,nsegments);
+0105     Y_x=zeros(ssize,ncomp,nsegments);
+0106     <span class="keyword">for</span> iWindow=1:nsegments
+0107         start=(iWindow-1)*ssize;
+0108         X_x(:,:,iWindow)=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(xx_x(start+(1:ssize),:)));
+0109         Y_x(:,:,iWindow)=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(yy_x(start+(1:ssize),:)));
+0110     <span class="keyword">end</span>
+0111     
+0112     <span class="comment">% Euclidean distance for matched segments</span>
+0113     D_match_x=zeros(nsegments,ncomp);
+0114     <span class="keyword">for</span> iWindow=1:nsegments
+0115         D_match_x(iWindow,:)=sqrt( mean((X_x(:,:,iWindow)-Y_x(:,:,iWindow)).^2) );
+0116     <span class="keyword">end</span>        
+0117     
+0118     <span class="comment">% average Euclidean distance for mismatched segments</span>
+0119     D_mismatch_x=zeros(nsegments,ncomp);
+0120     <span class="keyword">for</span> iWindow=1:nsegments
+0121         X_all_others=X(:,:,:); <span class="comment">% all segments of all other trials</span>
+0122         <span class="keyword">if</span> flipflag;
+0123             X_all_others=X_all_others(end:-1:1,:,:);
+0124         <span class="keyword">end</span>
+0125         tmp=bsxfun(@minus,X_all_others,Y_x(:,:,iWindow));
+0126         d = sqrt(mean((tmp).^2));
+0127         D_mismatch_x(iWindow,:)=mean(d,3);
+0128     <span class="keyword">end</span>
+0129     
+0130 <span class="comment">%      figure(1); clf;</span>
+0131 <span class="comment">%      for k=1:6; subplot (3,2,k); plot([D_match_x(:,k),D_mismatch_x(:,k)]); end</span>
+0132     <span class="keyword">if</span> 1    
+0133         D_match_x=D_match_x*todss(:,1);
+0134         D_mismatch_x=D_mismatch_x*todss(:,1);
+0135     <span class="keyword">else</span>
+0136         D_match_x=D_match_x(:,1);
+0137         D_mismatch_x=D_mismatch_x(:,1);
+0138     <span class="keyword">end</span>
+0139     
+0140 <span class="comment">%      figure(2); clf;</span>
+0141 <span class="comment">%      plot([D_match_x,D_mismatch_x])</span>
+0142 <span class="comment">%      pause</span>
+0143     
+0144     err(iTrial)=numel(find(D_mismatch_x&lt;D_match_x))/nsegments;
+0145     <span class="comment">%disp(err(iTrial))</span>
+0146 <span class="keyword">end</span>
+0147 
+0148 D=mean(dprime);
+0149 E=mean(err);
+0150 
+0151</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

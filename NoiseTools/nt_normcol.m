@@ -13,11 +13,23 @@ function [y,norm]=nt_normcol(x,w)
 % Weight should be either a column vector, or a matrix (2D or 3D) of same
 % size as data.
 %
+% See nt_normrow, nt_normpage, nt_normpagecol.
+%
 % NoiseTools
 
 if nargin<2; w=[]; end
 
 if isempty(x); error('empty x'); end
+
+if iscell(x)
+    if nargin>1; error('weights not supported for cell array'); end
+    disp('warning: normalizing each cell individually');
+    y={};
+    for iCell=1:numel(x);
+        y{iCell}=nt_normcol(x{iCell});
+    end
+    return
+end
 
 if ndims(x)==4;
     if nargin>1; error('weights not supported for 4D data'); end

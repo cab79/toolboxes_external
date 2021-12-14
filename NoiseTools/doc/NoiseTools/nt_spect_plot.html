@@ -42,7 +42,7 @@ This function calls:
 </ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_bias_cluster.html" class="code" title="function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)">nt_bias_cluster</a>	[c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags) - cluster covariance</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose)">nt_cluster_jd</a>	[IDX,todss,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_cluster_jd_old.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd2(x,dsr,flags,init)">nt_cluster_jd_old</a>	[IDX,todss,SCORE]=nt_cluster_jd2(x,dsr,flags,init) - cluster with joint diagonalization</li><li><a href="nt_spect_plot2.html" class="code" title="function varargout=nt_spect_plot2(x,varargin)">nt_spect_plot2</a>	nt_spect_plot2 - plot power spectrum</li><li><a href="nt_yulewalk_whiten.html" class="code" title="function [x,B,A]=nt_yulewalk_whiten(x,order,freqs)">nt_yulewalk_whiten</a>	[y,B,A]=nt_yulewalk_whiten(x,order,freqs) - whiten spectrally</li></ul>
+<li><a href="nt_bias_cluster.html" class="code" title="function [c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags)">nt_bias_cluster</a>	[c0,c1,A,todss,pwr0,pwr1]=nt_bias_cluster(x,dsr,flags) - cluster covariance</li><li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose, depth,N)">nt_cluster_jd</a>	[IDX,todss,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_spect_plot2.html" class="code" title="function varargout=nt_spect_plot2(x,varargin)">nt_spect_plot2</a>	nt_spect_plot2 - plot power spectrum</li><li><a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>	[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</li></ul>
 <!-- crossreference -->
 
 
@@ -73,14 +73,14 @@ This function is called by:
 0023 
 0024 
 0025 <span class="keyword">if</span> nargout == 0;
-0026     plot(f,abs(pxx).^0.5);
+0026     plot(f,abs(pxx));
 0027     set(gca,<span class="string">'yscale'</span>,<span class="string">'log'</span>);
 0028     xlim([f(1) f(end)]);
-0029     xlabel(<span class="string">'Hz'</span>); ylabel(<span class="string">'Hz^{-0.5}'</span>);
+0029     xlabel(<span class="string">'Hz'</span>); ylabel(<span class="string">'power density'</span>, <span class="string">'interpreter'</span>, <span class="string">'tex'</span>);
 0030     varargout={};
 0031 <span class="keyword">else</span>
 0032     varargout={pxx,f};
 0033 <span class="keyword">end</span></pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

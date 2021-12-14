@@ -50,7 +50,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_wmean.html" class="code" title="function y=wmean(x,w,dim)">nt_wmean</a>	y=wmean(x,w,dim) - weighted average over columns</li></ul>
+<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_wmean.html" class="code" title="function y=nt_wmean(x,w,dim)">nt_wmean</a>	y=nt_wmean(x,w,dim) - weighted average</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -104,13 +104,13 @@ This function is called by:
 0043 
 0044 <span class="comment">% apply relative threshold</span>
 0045 <span class="keyword">if</span> ~isempty(toobig2);
-0046     X=<a href="nt_wmean.html" class="code" title="function y=wmean(x,w,dim)">nt_wmean</a>(x.^2,w);
+0046     X=<a href="nt_wmean.html" class="code" title="function y=nt_wmean(x,w,dim)">nt_wmean</a>(x.^2,w);
 0047     X=repmat(X,size(x,1),1);
 0048     idx=find(x.^2&gt;(X*toobig2));
 0049     w(idx)=0;
 0050 <span class="keyword">end</span>
 0051 
 0052 w=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(w,m);</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 05-Jul-2017 12:25:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

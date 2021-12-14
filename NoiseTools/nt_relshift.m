@@ -1,10 +1,10 @@
 function [xx,yy]=nt_relshift(x,y,shift)
-%[xx,yx]=nt_relshift(x,y,shift,flag) - shift x relative to y 
+%[xx,yy]=nt_relshift(x,y,shift,flag) - delay x relative to y 
 %
 %  xx, yy: shifted matrices
 %
 %  x,y: column matrices to shift
-%  shift: amount to shift (can be negative or fractionary)
+%  shift: amount to delay x (can be negative or fractionary)
 %  
 % If shift has multiple values, xx and yy are 3D matrices, one shift per
 % page. Shifted data are zero-padded.
@@ -12,7 +12,31 @@ function [xx,yy]=nt_relshift(x,y,shift)
 % NoiseTools
 
 if nargin<3; error('!'); end
-if size(x,1)~=size(y,1); error('!'); end
+
+if iscell(x)
+    if ~iscell(y); error('!'); end
+    xx={}; yy={};
+    for iCell=1:numel(x)
+        [xx{iCell},yy{iCell}]=nt_relshift(x{iCell},y{iCell},shift);
+    end
+    return
+end
+
+if ndims(x)==3;
+    for iPage=1:size(x,3);
+        [xx(:,:,iPage),yy(:,:,iPage)]=nt_relshift(x(:,:,iPage),y(:,:,iPage),shift);
+    end
+    return;
+end
+
+if ~isnumeric(x); error('!'); end
+if size(x,1)~=size(y,1); 
+%    warning(['x and y have different nrows: ', num2str([size(x,1), size(y,1)])]);
+    m=min(size(x,1),size(y,1));
+    x=x(1:m,:,:); 
+    y=y(1:m,:,:);
+    %error('!'); 
+end
 
 if shift ~= round(shift); error('fractionary shifts not yet implemented'); end
 
@@ -21,7 +45,7 @@ if length(shift)==1
         yy=y(1:end-shift,:);
         xx=x(shift+1:end,:);
     else
-         yy=y(-shift+1:end,:);
+        yy=y(-shift+1:end,:);
         xx=x(1:end+shift,:);
     end   
 else

@@ -1,5 +1,5 @@
 function nt_mark(idx,labels,line_params,text_params)
-% nt_mark(idx,labels)
+% nt_mark(idx,labels,line_params,text_params)
 
 
 if nargin<2; labels=[]; end

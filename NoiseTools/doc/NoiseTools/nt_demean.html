@@ -40,10 +40,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>	y=nt_vecadd(x,v) - add vector to all rows or columns of matrix</li><li><a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>	y=nt_vecmult(x,v) - multiply all rows or columns of matrix by vector</li></ul>
+<li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li><li><a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>	y=nt_vecadd(x,v) - add vector to all rows or columns of matrix</li><li><a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>	y=nt_vecmult(x,v) - multiply all rows or columns of matrix by vector</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_demean2.html" class="code" title="function x=nt_demean2(x,w)">nt_demean2</a>	y=nt_demean2(x,w) - remove mean of each row and page</li><li><a href="nt_detrend.html" class="code" title="function x=ntdetrend(x,order,w,basis)">nt_detrend</a>	y=nt_detrend(x,order,w,basis) - remove polynomial or sinusoidal trend</li><li><a href="nt_find_outliers.html" class="code" title="function w=nt_find_outliers(x,toobig1,toobig2);">nt_find_outliers</a>	w=nt_find_outliers(x,toobig1,toobig2) - find outliers (glitches, etc.).</li><li><a href="nt_kurtosis.html" class="code" title="function [todss,K]=nt_kurtosis(x,nIterations,exponent,w,smooth)">nt_kurtosis</a>	[todss,K]=nt_kurtosis(x,nIterations,exponent,w,smooth)- find high-kurtosis components</li><li><a href="nt_repeatability.html" class="code" title="function score=nt_repeatability(x,demean_flag)">nt_repeatability</a>	[score]=nt_repeatability(x,demean_flag) - repeatability score</li><li><a href="nt_sgram.html" class="code" title="function [s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags)">nt_sgram</a>	[s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags) - spectrogram</li><li><a href="nt_sns.html" class="code" title="function y=nt_sns(x,nneighbors,skip,w)">nt_sns</a>	y=nt_sns(x,nneigbors,skip,w) - sensor noise suppression</li><li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard) - split time series into intervals</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li><li><a href="nt_star.html" class="code" title="function [x,w,ww]=nt_star(x,thresh,closest,depth)">nt_star</a>	[y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression, new version</li><li><a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>	[y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li><li><a href="nt_tsregress.html" class="code" title="function [z,idx]=nt_tsregress(x,y,shifts,xw,yw,keep,threshold)">nt_tsregress</a>	[z,idx]=nt_tsregress(x,y,shifts,xw,yw,keep,threshold) - time-shift regression</li></ul>
+<li><a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag)">nt_cca</a>	[A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag) - canonical correlation</li><li><a href="nt_cca_aad.html" class="code" title="function [D,E,R]=nt_cca_aad(xA,xB,y,ssize)">nt_cca_aad</a>	[D,E,R]=nt_cca_match_aad(xA,xB,y,ssize) - calculate metrics for match-mismatch task</li><li><a href="nt_cca_crossvalidate.html" class="code" title="function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)">nt_cca_crossvalidate</a>	[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</li><li><a href="nt_cca_crossvalidate2.html" class="code" title="function [A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts)">nt_cca_crossvalidate2</a>	[A,B,RR]=nt_cca_crossvalidate2(xx,yy,shifts) - CCA with cross-validation</li><li><a href="nt_cca_mm.html" class="code" title="function [D,E,R]=nt_cca_mm(x,y,ssize,flipflag)">nt_cca_mm</a>	[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task</li><li><a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,shifts,demeanflag)">nt_cov_lags</a>	[C,tw,m]=nt_cov_lags(x,y,shifts,nodemeanflag) - covariance of [x,y] with lags</li><li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_demean2.html" class="code" title="function x=nt_demean2(x,w)">nt_demean2</a>	y=nt_demean2(x,w) - remove mean of each row and page</li><li><a href="nt_destep.html" class="code" title="function [y,stepList]=nt_destep(x,thresh,guard,depth,minstep);">nt_destep</a>	[y,stepList]=nt_destep(x,thresh,guard,depth,minstep) - remove step glitch from MEG data</li><li><a href="nt_detrend.html" class="code" title="function [y,w,r]=ntdetrend(x,order,w,basis,thresh,niter,wsize)">nt_detrend</a>	[y,w,r]=nt_detrend(x,order,w,basis,thresh,niter,wsize) - robustly remove trend</li><li><a href="nt_dprime.html" class="code" title="function [d,e]=nt_dprime(x,y,jd_flag)">nt_dprime</a>	[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions</li><li><a href="nt_idx_disp.html" class="code" title="function nt_idx_disp(name,field,explainflag)">nt_idx_disp</a>	nt_idx_disp(name,field,explainflag) - display contents of index file</li><li><a href="nt_idxx.html" class="code" title="function [bstats,wstats,cstats,sstats]=nt_idxx(fname,p)">nt_idxx</a>	nt_idxx(fname,p) - create an index file to summarize large data file</li><li><a href="nt_inpaint.html" class="code" title="function [y,yy]=nt_inpaint(x,w)">nt_inpaint</a>	function y=nt_inpaint(x,w) - weighted interpolation based on correlation structure</li><li><a href="nt_iplot.html" class="code" title="function [hh,ii]=nt_iplot(name)">nt_iplot</a>	[hh,ii]=nt_iplot(fname) - plot data file based on index</li><li><a href="nt_outliers.html" class="code" title="function [w,y]=nt_outliers(x,w,thresh,niter)">nt_outliers</a>	[w,y]=nt_outliers(x,w,thresh,niter) - detect outliers based on weighted correlation structure</li><li><a href="nt_regw.html" class="code" title="function [b,z]=nt_regw(y,x,w)">nt_regw</a>	[b,z]=nt_regw(y,x,w) - weighted regression</li><li><a href="nt_sgram.html" class="code" title="function [s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags)">nt_sgram</a>	[s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags) - spectrogram</li><li><a href="nt_sns.html" class="code" title="function y=nt_sns(x,nneighbors,skip,w)">nt_sns</a>	y=nt_sns(x,nneigbors,skip,w) - sensor noise suppression</li><li><a href="nt_split.html" class="code" title="function [idx,score_vector,score]=nt_split(x,depth,thresh,guard,minstep)">nt_split</a>	[idx,score_vector,score]=nt_split(x,depth,thresh,guard,minstep) - split time series into intervals</li><li><a href="nt_split_jd.html" class="code" title="function [idx,score_vector,todss]=nt_split_jd(x,thresh,depth);">nt_split_jd</a>	[idx,score_vector,todss]=nt_split_dss(x,thresh,depth) - segmentation based on joint diagonalization</li><li><a href="nt_star.html" class="code" title="function [x,w,ww]=nt_star(x,thresh,closest,depth)">nt_star</a>	[y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression</li><li><a href="nt_star2.html" class="code" title="function [x,w,ww]=nt_star2(x,thresh,closest,w)">nt_star2</a>	[y,w,ww]=nt_star2(x,thresh,closest,w) - sensor noise suppression</li><li><a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>	[y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li><li><a href="nt_tsregress.html" class="code" title="function [z,idx]=nt_tsregress(x,y,shifts,xw,yw,keep,threshold)">nt_tsregress</a>	[z,idx]=nt_tsregress(x,y,shifts,xw,yw,keep,threshold) - time-shift regression</li><li><a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>	[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</li></ul>
 <!-- crossreference -->
 
 
@@ -63,57 +63,66 @@ This function is called by:
 0012 <span class="keyword">if</span> nargin&lt;1; error(<span class="string">'!'</span>);<span class="keyword">end</span>
 0013 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
 0014 
-0015 <span class="keyword">if</span> ~isempty(w) &amp;&amp; numel(w)&lt;size(x,1)
-0016     w=w(:);
-0017     <span class="comment">% interpret w as array of indices to set to 1</span>
-0018     <span class="keyword">if</span> min(w)&lt;1 || max(w)&gt;size(x,1); 
-0019         error(<span class="string">'w interpreted as indices but values are out of range'</span>);
-0020     <span class="keyword">end</span>
-0021     ww=zeros(size(x,1),1);
-0022     ww(w)=1;
-0023     w=ww;
-0024 <span class="keyword">end</span>
-0025 
-0026 
-0027 <span class="keyword">if</span> size(w,3)~=size(x,3);
-0028     <span class="keyword">if</span> size(w,3)==1 &amp;&amp; size(x,3)~=1;
-0029         w=repmat(w,[1,1,size(x,3)]);
-0030     <span class="keyword">else</span>
-0031         error(<span class="string">'W should have same npages as X, or else 1'</span>);
-0032     <span class="keyword">end</span>
-0033 <span class="keyword">end</span>
+0015 <span class="keyword">if</span> iscell(x)
+0016     <span class="keyword">if</span> ~isempty(w); error(<span class="string">'!'</span>); <span class="keyword">end</span>; <span class="comment">% not implemented</span>
+0017     <span class="keyword">for</span> iCell=1:numel(x)
+0018         [x{iCell},mn{iCell}]=<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(x{iCell});
+0019     <span class="keyword">end</span>
+0020     <span class="keyword">return</span>;
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> ~isempty(w) &amp;&amp; numel(w)&lt;size(x,1)
+0024     w=w(:);
+0025     <span class="comment">% interpret w as array of indices to set to 1</span>
+0026     <span class="keyword">if</span> min(w)&lt;1 || max(w)&gt;size(x,1); 
+0027         error(<span class="string">'w interpreted as indices but values are out of range'</span>);
+0028     <span class="keyword">end</span>
+0029     ww=zeros(size(x,1),1);
+0030     ww(w)=1;
+0031     w=ww;
+0032 <span class="keyword">end</span>
+0033 
 0034 
-0035 [m,n,o]=size(x);
-0036 x=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(x);
-0037 
-0038 <span class="keyword">if</span> isempty(w);
-0039     
-0040     mn=mean(double(x),1);
-0041     x=<a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>(x,-mn);
-0042     
-0043 <span class="keyword">else</span>
-0044     
-0045     w=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(w);
-0046     
-0047     <span class="keyword">if</span> size(w,1)~=size(x,1)
-0048         error(<span class="string">'X and W should have same nrows'</span>); 
-0049     <span class="keyword">end</span>
+0035 <span class="keyword">if</span> size(w,3)~=size(x,3);
+0036     <span class="keyword">if</span> size(w,3)==1 &amp;&amp; size(x,3)~=1;
+0037         w=repmat(w,[1,1,size(x,3)]);
+0038     <span class="keyword">else</span>
+0039         error(<span class="string">'W should have same npages as X, or else 1'</span>);
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">end</span>
+0042 
+0043 [m,n,o]=size(x);
+0044 x=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(x);
+0045 
+0046 <span class="keyword">if</span> isempty(w);
+0047     
+0048     mn=mean(double(x),1);
+0049     x=<a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>(x,-mn);
 0050     
-0051     
-0052     <span class="keyword">if</span> size(w,2)==1;
-0053         mn=sum(<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(double(x),w),1) ./ (sum(w,1)+eps);
-0054     <span class="keyword">elseif</span> size(w,2)==n;
-0055         mn=sum(x.*w) ./ (sum(w,1)+eps);
-0056     <span class="keyword">else</span>
-0057         error(<span class="string">'W should have same ncols as X, or else 1'</span>);
-0058     <span class="keyword">end</span>
-0059 
-0060     <span class="comment">%y=bsxfun(@minus,x,mn);</span>
-0061     x=<a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>(x,-mn);
-0062     
-0063 <span class="keyword">end</span>
-0064 
-0065 x=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(x,m);</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0051 <span class="keyword">else</span>
+0052     
+0053     w=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(w);
+0054     
+0055     <span class="keyword">if</span> size(w,1)~=size(x,1)
+0056         error(<span class="string">'X and W should have same nrows'</span>); 
+0057     <span class="keyword">end</span>
+0058     
+0059     
+0060     <span class="keyword">if</span> size(w,2)==1;
+0061         mn=sum(<a href="nt_vecmult.html" class="code" title="function x=nt_vecmult(x,v)">nt_vecmult</a>(double(x),w),1) ./ (sum(w,1)+eps);
+0062     <span class="keyword">elseif</span> size(w,2)==n;
+0063         mn=sum(x.*w) ./ (sum(w,1)+eps);
+0064     <span class="keyword">else</span>
+0065         error(<span class="string">'W should have same ncols as X, or else 1'</span>);
+0066     <span class="keyword">end</span>
+0067 
+0068     <span class="comment">%y=bsxfun(@minus,x,mn);</span>
+0069     x=<a href="nt_vecadd.html" class="code" title="function x=nt_vecadd(x,v)">nt_vecadd</a>(x,-mn);
+0070     
+0071 <span class="keyword">end</span>
+0072 
+0073 x=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(x,m);
+0074</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

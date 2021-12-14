@@ -12,7 +12,7 @@ nt_greetings;
 
 if nargin<4||isempty(nodelayflag); nodelayflag=0; end
 if nargin<3||isempty(nIterations); nIterations=1; end
-if nargin<2; help nt_smooth ; error; end
+if nargin<2; help nt_smooth ; error('!'); end
 
 if ndims(x)>4; error('!'); end
 
@@ -28,14 +28,19 @@ end
 mn=mean(x(1:(integ+1),:,:),1);
 x=bsxfun(@minus,x,mn);
 
-% filter kernel
-B=[ones(integ,1);frac]/T;
-for k=1:nIterations-1
-    B=conv(B,[ones(integ,1);frac]/T);
+if nIterations==1 && frac==0;
+    % faster
+    x=cumsum(x);
+    x(T+1:end,:)=x(T+1:end,:)-x(1:end-T,:);
+    x=x/T;
+else
+    % filter kernel
+    B=[ones(integ,1);frac]/T;
+    for k=1:nIterations-1
+        B=conv(B,[ones(integ,1);frac]/T);
+    end
+    x=filter(B,1,x);    
 end
-
-% apply
-x=filter(B,1,x);    
 
 if nodelayflag
     shift=round(T/2*nIterations); %[shift n*T]

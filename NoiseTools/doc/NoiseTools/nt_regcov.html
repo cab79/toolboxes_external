@@ -34,7 +34,7 @@
   cxy: cross-covariance matrix between data and regressor
   cyy: covariance matrix of regressor
   keep: number of regressor PCs to keep (default: all)
-  threshold: threshold for discarding regressor PCs (default: 0)</pre></div>
+  threshold: eigenvalue threshold for discarding regressor PCs (default: 0)</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
@@ -57,7 +57,7 @@ This function is called by:
 0006 <span class="comment">%  cxy: cross-covariance matrix between data and regressor</span>
 0007 <span class="comment">%  cyy: covariance matrix of regressor</span>
 0008 <span class="comment">%  keep: number of regressor PCs to keep (default: all)</span>
-0009 <span class="comment">%  threshold: threshold for discarding regressor PCs (default: 0)</span>
+0009 <span class="comment">%  threshold: eigenvalue threshold for discarding regressor PCs (default: 0)</span>
 0010 
 0011 <span class="keyword">if</span> nargin&lt;4; threshold=[]; <span class="keyword">end</span>
 0012 <span class="keyword">if</span> nargin&lt;3; keep=[]; <span class="keyword">end</span>
@@ -93,6 +93,6 @@ This function is called by:
 0042 
 0043 
 0044</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

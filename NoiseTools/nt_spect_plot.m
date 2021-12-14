@@ -23,10 +23,10 @@ pxx=pxx/ncols;
 
 
 if nargout == 0;
-    plot(f,abs(pxx).^0.5);
+    plot(f,abs(pxx));
     set(gca,'yscale','log');
     xlim([f(1) f(end)]);
-    xlabel('Hz'); ylabel('Hz^{-0.5}');
+    xlabel('Hz'); ylabel('power density', 'interpreter', 'tex');
     varargout={};
 else
     varargout={pxx,f};

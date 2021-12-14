@@ -1,4 +1,4 @@
-function [C,A,score]=nt_cluster1D_b(x);
+function [C,A,score]=nt_cluster1D(x);
 %[C,A,score]=nt_cluster1D_b(x) - cluster 1D data into 2 clusters
 %
 %  x: column vector or matrix of data to cluster
@@ -16,12 +16,12 @@ C=zeros(2,size(x,2));   % centroids
 for iCol=1:size(x,2)
     
     xx=x(:,iCol);
-    [xx,idx0]=sort(xx);
+    [xx,iSort]=sort(xx);
     [idx,score_vector,score0]=nt_split(xx);
     score(:,iCol)=score0;
     C(:,iCol)=[mean(xx(1:idx)),mean(xx(idx+1:end))];
     t=1:size(xx,1);
-    A(t(idx0(idx+1:end)), iCol)=1; % 0: low values, 1: high values
+    A(t(iSort(idx+1:end)), iCol)=1; % 0: low values, 1: high values
     
 %     figure(1); clf; subplot 211;
 %     hold on; histogram(xx,-5:0.01:5, 'displaystyle','stairs' ); histogram(xx(1:idx),-5:0.01:5); plot(C(:,iCol),[500 500], '.r');

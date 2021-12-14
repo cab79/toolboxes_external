@@ -24,5 +24,9 @@ ft_plot_topo(layout.pos(1:numel(data),1), layout.pos(1:numel(data),2), data',...
     'outline', layout.outline, ...
     'interplim', 'mask');
 
+% ensure symmetrical color axes
+clim=get(gca,'clim');
+set(gca,'clim',[-1 1]*max(abs(clim)));
+
 axis off
 axis equal

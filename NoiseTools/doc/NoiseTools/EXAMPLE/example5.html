@@ -63,7 +63,7 @@ This function is called by:
 0012 help(mfilename)
 0013 
 0014 <span class="comment">% load data</span>
-0015 FNAME=<span class="string">'../DATA/example_data.mat'</span>;
+0015 FNAME=[fileparts(which(<span class="string">'nt_version'</span>)), <span class="string">'/DATA/example_data.mat'</span>];
 0016 <span class="keyword">if</span> ~exist(FNAME); 
 0017     disp(<span class="string">'file ''../DATA/example_data.mat'' not found, get it at http://cognition.ens.fr/Audition/adc/NoiseTools/DATA/'</span>);
 0018     <span class="keyword">return</span>
@@ -124,11 +124,11 @@ This function is called by:
 0073 hold on;
 0074 [~,idx]=max(abs(nt_xcov(z(:,1,:),nt_normcol(meg))));
 0075 nt_spect_plot(nt_normcol(meg(:,idx,:)),512,[],[],sr);
-0076 nt_colorlines([], [3 1]);
+0076 nt_linecolors([], [3 1]);
 0077 legend(<span class="string">'best component'</span>, <span class="string">'best sensor'</span>); legend boxoff; axis tight
 0078 title(<span class="string">'bias to 16 Hz'</span>)
 0079 
 0080</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Wed 29-Nov-2017 23:17:18 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

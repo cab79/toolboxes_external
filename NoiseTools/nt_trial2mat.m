@@ -28,8 +28,13 @@ end
 
 % load data into 3D matrix
 nchans=m;
-y=zeros(nsamples, nchans, ntrials);
-w=zeros(nsamples, 1, ntrials);
+if isa(x{1},'single')
+    y=zeros(nsamples, nchans, ntrials, 'single');
+else
+    y=zeros(nsamples, nchans, ntrials);
+end
+
+%w=zeros(nsamples, 1, ntrials);
 for k=1:ntrials
     [m,n]=size(x{k});
     if n>nsamples;
@@ -38,6 +43,6 @@ for k=1:ntrials
         n=nsamples;
     end
     y(1:n,:,k)=x{k}';
-    w(1:n,1,k)=1;
+    %w(1:n,1,k)=1;
 end
 

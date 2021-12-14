@@ -1,0 +1,191 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_zapline</title>
+  <meta name="keywords" content="nt_zapline">
+  <meta name="description" content="[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_zapline.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_zapline
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact
+
+  y: denoised data
+  yy: artifact
+
+  x: data
+  fline: line frequency (normalized to sr)
+  nremove: number of components to remove [default: 1]
+  p: additional parameters:
+    p.nfft: size of FFT [default:1024]
+    p.nkeep: number of components to keep in DSS [default: all]
+    p.fig1: figure to use for DSS score [default: 100]
+    p.fig2: figure to use for results [default: 101]
+  plotflag: plot
+
+Examples:
+  nt_zapline(x,60/1000) 
+    apply to x, assuming line frequency=60Hz and sampling rate=1000Hz, plot results
+  nt_zapline(x,60/1000,4)
+    same, removing 4 line-dominated components 
+  p=[];p.nkeep=30; nt_zapline(x,60/1000,4,p);
+    same, truncating PCs beyond the 30th to avoid overfitting
+  [y,yy]=nt_zapline(x,60/1000)
+    return cleaned data in y, noise in yy, don't plot</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_bias_fft.html" class="code" title="function [c0,c1]=nt_bias_fft(x,freq,nfft)">nt_bias_fft</a>	[c0,c1]=nt_bias_fft(x,freq,nfft) - covariance with and w/o filter bias</li><li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>	[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</li><li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_pca.html" class="code" title="function [z,idx]=nt_pca(x,shifts,nkeep,threshold,w)">nt_pca</a>	[z,idx]=nt_pca(x,shifts,nkeep,threshold,w) - time-shift pca</li><li><a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a>	y=nt_smooth(x,T,nIterations,nodelayflag) - smooth by convolution with square window</li><li><a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>	nt_spect_plot - plot power spectrum</li><li><a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>	[y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh) - time-shift regression (TSPCA)</li><li><a href="nt_wpwr.html" class="code" title="function [y,tweight]=nt_wpwr(x,w)">nt_wpwr</a>	[y,tweight]=nt_wpwr(x,w) - weighted power</li><li><a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>	[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>	[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)</a>
+0002 <span class="comment">%[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  y: denoised data</span>
+0005 <span class="comment">%  yy: artifact</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  x: data</span>
+0008 <span class="comment">%  fline: line frequency (normalized to sr)</span>
+0009 <span class="comment">%  nremove: number of components to remove [default: 1]</span>
+0010 <span class="comment">%  p: additional parameters:</span>
+0011 <span class="comment">%    p.nfft: size of FFT [default:1024]</span>
+0012 <span class="comment">%    p.nkeep: number of components to keep in DSS [default: all]</span>
+0013 <span class="comment">%    p.fig1: figure to use for DSS score [default: 100]</span>
+0014 <span class="comment">%    p.fig2: figure to use for results [default: 101]</span>
+0015 <span class="comment">%  plotflag: plot</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%Examples:</span>
+0018 <span class="comment">%  nt_zapline(x,60/1000)</span>
+0019 <span class="comment">%    apply to x, assuming line frequency=60Hz and sampling rate=1000Hz, plot results</span>
+0020 <span class="comment">%  nt_zapline(x,60/1000,4)</span>
+0021 <span class="comment">%    same, removing 4 line-dominated components</span>
+0022 <span class="comment">%  p=[];p.nkeep=30; nt_zapline(x,60/1000,4,p);</span>
+0023 <span class="comment">%    same, truncating PCs beyond the 30th to avoid overfitting</span>
+0024 <span class="comment">%  [y,yy]=nt_zapline(x,60/1000)</span>
+0025 <span class="comment">%    return cleaned data in y, noise in yy, don't plot</span>
+0026 <span class="comment">%</span>
+0027 
+0028 <span class="comment">% NoiseTools</span>
+0029 <span class="keyword">try</span>, <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>; <span class="keyword">catch</span>, disp(<span class="string">'You must download NoiseNools from http://audition.ens.fr/adc/NoiseTools/'</span>); <span class="keyword">return</span>; <span class="keyword">end</span>
+0030 
+0031 assert(nargin&gt;=2, <span class="string">'!'</span>); 
+0032 <span class="keyword">if</span> nargin&lt;3||isempty(nremove); nremove=1; <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin&lt;4; p=[]; <span class="keyword">end</span>
+0034 <span class="keyword">if</span> ~isfield(p,<span class="string">'nfft'</span>); p.nfft=1024; <span class="keyword">end</span>
+0035 <span class="keyword">if</span> ~isfield(p,<span class="string">'nkeep'</span>); p.nkeep=[]; <span class="keyword">end</span>
+0036 <span class="keyword">if</span> ~isfield(p,<span class="string">'fig1'</span>); p.fig1=100; <span class="keyword">end</span>
+0037 <span class="keyword">if</span> ~isfield(p, <span class="string">'fig2'</span>); p.fig2=101; <span class="keyword">end</span>
+0038 <span class="keyword">if</span> nargin&lt;5||isempty(plotflag); plotflag=0; <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">if</span> isempty(x); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0041 <span class="keyword">if</span> nremove&gt;=size(x,1); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0042 <span class="keyword">if</span> fline&gt;1/2; error(<span class="string">'fline should be less than Nyquist'</span>); <span class="keyword">end</span>
+0043 <span class="keyword">if</span> size(x,1)&lt;p.nfft; warning([<span class="string">'reducing nfft to '</span>,num2str(size(x,1))]); p.nfft=size(x,1); <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">if</span> ~nargout || plotflag
+0046     <span class="comment">% print result and display spectra</span>
+0047     y=<a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>(x,fline,nremove,p);
+0048     disp(<span class="string">'proportion of non-DC power removed:'</span>);
+0049     disp(<a href="nt_wpwr.html" class="code" title="function [y,tweight]=nt_wpwr(x,w)">nt_wpwr</a>(x-y)/<a href="nt_wpwr.html" class="code" title="function [y,tweight]=nt_wpwr(x,w)">nt_wpwr</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(x)));
+0050     
+0051     figure(p.fig2); clf;    
+0052     subplot 121
+0053     [pxx,f]=<a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>(x/sqrt(mean(x(:).^2)),p.nfft,[],[],1/fline);
+0054     divisor=sum(pxx);
+0055     semilogy(f,abs(pxx)/divisor);
+0056     legend(<span class="string">'original'</span>); legend boxoff
+0057     set(gca,<span class="string">'ygrid'</span>,<span class="string">'on'</span>,<span class="string">'xgrid'</span>,<span class="string">'on'</span>);
+0058     xlabel(<span class="string">'frequency (relative to line)'</span>);
+0059     ylabel(<span class="string">'relative power'</span>);
+0060     yl1=get(gca,<span class="string">'ylim'</span>);
+0061     hh=get(gca,<span class="string">'children'</span>);
+0062     set(hh(1),<span class="string">'color'</span>,<span class="string">'k'</span>)
+0063     subplot 122
+0064     [pxx,f]=<a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>(y/sqrt(mean(x(:).^2)),p.nfft,[],[],1/fline);
+0065     semilogy(f,abs(pxx)/divisor);
+0066     hold on
+0067     [pxx,f]=<a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>((x-y)/sqrt(mean(x(:).^2)),p.nfft,[],[],1/fline);
+0068     semilogy(f,abs(pxx)/divisor);
+0069     legend(<span class="string">'clean'</span>, <span class="string">'removed'</span>); legend boxoff
+0070     set(gca,<span class="string">'ygrid'</span>,<span class="string">'on'</span>,<span class="string">'xgrid'</span>,<span class="string">'on'</span>);
+0071     set(gca,<span class="string">'yticklabel'</span>,[]); ylabel([]);
+0072     xlabel(<span class="string">'frequency (relative to line)'</span>);
+0073     yl2=get(gca,<span class="string">'ylim'</span>);
+0074     hh=get(gca,<span class="string">'children'</span>);
+0075     set(hh(1),<span class="string">'color'</span>,[1 .5 .5]); set(hh(2), <span class="string">'color'</span>, [ 0 .7 0]); 
+0076     set(hh(2),<span class="string">'linewidth'</span>, 2);
+0077       
+0078        yl(1)=min(yl1(1),yl2(1)); yl(2)=max(yl1(2),yl2(2));
+0079     subplot 121; ylim(yl); subplot 122; ylim(yl);
+0080     drawnow;
+0081     <span class="keyword">return</span>
+0082 <span class="keyword">end</span>
+0083 <span class="keyword">if</span> ~nargout
+0084     clear y yy
+0085     <span class="keyword">return</span>
+0086 <span class="keyword">end</span>
+0087 
+0088 xx=<a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a>(x,1/fline); <span class="comment">% cancels line_frequency and harmonics, light lowpass</span>
+0089 <span class="keyword">if</span> isempty(p.nkeep); p.nkeep=size(x,2); <span class="keyword">end</span>
+0090 xxxx=<a href="nt_pca.html" class="code" title="function [z,idx]=nt_pca(x,shifts,nkeep,threshold,w)">nt_pca</a>(x-xx,[],p.nkeep); <span class="comment">% reduce dimensionality to avoid overfitting</span>
+0091 
+0092 <span class="comment">% DSS to isolate line components from residual:</span>
+0093 nHarmonics=floor((1/2)/fline);
+0094 [c0,c1]=<a href="nt_bias_fft.html" class="code" title="function [c0,c1]=nt_bias_fft(x,freq,nfft)">nt_bias_fft</a>(xxxx,fline*(1:nHarmonics), p.nfft);
+0095 
+0096 [todss,pwr0,pwr1]=<a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>(c0,c1);
+0097 assert(size(todss,2)&gt;0, <span class="string">'!'</span>); 
+0098 <span class="keyword">if</span> ~nargout;
+0099     figure(p.fig1); clf;
+0100     plot(pwr1./pwr0, <span class="string">'.-'</span>); xlabel(<span class="string">'component'</span>); ylabel(<span class="string">'score'</span>); title(<span class="string">'DSS to enhance line frequencies'</span>);
+0101 <span class="keyword">end</span>
+0102 xxxx=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(xxxx,todss(:,1:nremove)); <span class="comment">% line-dominated components</span>
+0103 xxx=<a href="nt_tsr.html" class="code" title="function [y,idx,w]=nt_tsr(x,ref,shifts,wx,wref,keep,thresh)">nt_tsr</a>(x-xx,xxxx); <span class="comment">% project them out</span>
+0104 clear xxxx
+0105 
+0106 <span class="comment">% reconstruct clean signal</span>
+0107 y=xx+xxx; clear xx xxx
+0108 yy=x-y;
+0109 
+0110 <span class="comment">% test code</span>
+0111 <span class="keyword">if</span> 0
+0112     sr=400;
+0113     nsamples=100000; nchans=100;
+0114     signal=randn(nsamples,nchans);
+0115     artifact=sin((1:nsamples)'/sr*2*pi*50);
+0116     artifact=max(artifact,0).^3; <span class="comment">% introduce harmonics</span>
+0117     artifact=3*<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(artifact*randn(1,nchans));
+0118     disp(<a href="nt_wpwr.html" class="code" title="function [y,tweight]=nt_wpwr(x,w)">nt_wpwr</a>(artifact)/<a href="nt_wpwr.html" class="code" title="function [y,tweight]=nt_wpwr(x,w)">nt_wpwr</a>(signal+artifact));
+0119     <a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>(signal+artifact,50/sr);
+0120 <span class="keyword">end</span>
+0121</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

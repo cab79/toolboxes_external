@@ -48,7 +48,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>	nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation</li><li><a href="nt_demean2.html" class="code" title="function x=nt_demean2(x,w)">nt_demean2</a>	y=nt_demean2(x,w) - remove mean of each row and page</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_qca0.html" class="code" title="function [tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads)">nt_qca0</a>	[tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li><li><a href="nt_repeatability.html" class="code" title="function score=nt_repeatability(x,demean_flag)">nt_repeatability</a>	[score]=nt_repeatability(x,demean_flag) - repeatability score</li></ul>
+<li><a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,w,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>	nt_bsplot(x,sds,style,abscissa,zeroflag,rmsflag) - plot average with bootstrap standard deviation</li><li><a href="nt_demean2.html" class="code" title="function x=nt_demean2(x,w)">nt_demean2</a>	y=nt_demean2(x,w) - remove mean of each row and page</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_qca0.html" class="code" title="function [tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads)">nt_qca0</a>	[tosquares,quads,D]=nt_qca0(x,npcs,nsmooth,nquads) - maximize induced power using quadratic component analysis</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -94,7 +94,7 @@ This function is called by:
 0035 squares=<a href="nt_demean2.html" class="code" title="function x=nt_demean2(x,w)">nt_demean2</a>(squares);
 0036 
 0037 <span class="keyword">if</span> 0
-0038     r=<a href="nt_repeatability.html" class="code" title="function score=nt_repeatability(x,demean_flag)">nt_repeatability</a>(squares.^2);
+0038     r=nt_repeatability(squares.^2);
 0039     [dummy,idx]=sort(r,<span class="string">'descend'</span>);
 0040     squares=squares(:,idx,:);
 0041 <span class="keyword">end</span>
@@ -105,10 +105,10 @@ This function is called by:
 0046     subplot 311; 
 0047     plot(abs(D), <span class="string">'.-'</span>); xlabel(<span class="string">'component'</span>); ylabel(<span class="string">'score'</span>);
 0048     subplot 312; 
-0049     <a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>(quads(:,1,:));
+0049     <a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,w,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>(quads(:,1,:));
 0050     title(<span class="string">'best quadratic'</span>);
 0051     subplot 313; 
-0052     <a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,band,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>(squares(:,1,:).^2);
+0052     <a href="nt_bsplot.html" class="code" title="function nt_bsplot(x,w,style,abscissa,zeroflag,rmsflag)">nt_bsplot</a>(squares(:,1,:).^2);
 0053     xlabel(<span class="string">'samples'</span>); title(<span class="string">'closest square'</span>);
 0054     clear squares quads D
 0055 <span class="keyword">end</span>
@@ -118,6 +118,6 @@ This function is called by:
 0059 
 0060 
 0061</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

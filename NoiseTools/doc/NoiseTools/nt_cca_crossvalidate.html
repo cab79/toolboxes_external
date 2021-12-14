@@ -4,7 +4,7 @@
 <head>
   <title>Description of nt_cca_crossvalidate</title>
   <meta name="keywords" content="nt_cca_crossvalidate">
-  <meta name="description" content="[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation">
+  <meta name="description" content="[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,109 +21,122 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation</strong></div>
+<div class="box"><strong>[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function [AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) </strong></div>
+<div class="box"><strong>function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment">[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation
+<div class="fragment"><pre class="comment">[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation
 
   AA, BB: cell arrays of transform matrices
-  RR: r scores (2D)
+  RR: r scores (3D) for all components, shifts and trials
+  iBest: index of best shift
 
   xx,yy: cell arrays of column matrices
-  lags: array of lags to apply to y relative to x (can be negative)</pre></div>
+  shifts: array of shifts to apply to y relative to x (can be negative)
+  ncomp: number of components to consider for iBest [default: all]
+  A0,B0: if present, use these CCA transform matrices 
+
+  Plot correlation re shifts for matching trials
+    plot(shifts, mean(RR,3)');
+  Plot mean correlation re shifts for mismatched trials
+    plot(shifts, mean(mean(RR,4),3)');</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>	[A,B,R]=nt_cca(x,y,lags,C,m,thresh) - canonical correlation</li><li><a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,lags)">nt_cov_lags</a>	[C,tw,m]=nt_cov_lags(x,y,lags) - covariance of [x,y] with lags</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_relshift.html" class="code" title="function [xx,yy]=nt_relshift(x,y,shift)">nt_relshift</a>	[xx,yx]=nt_relshift(x,y,shift,flag) - shift x relative to y</li><li><a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>	size=nt_whoss - total Gbytes used by variables</li></ul>
+<li><a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag)">nt_cca</a>	[A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag) - canonical correlation</li><li><a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,shifts,demeanflag)">nt_cov_lags</a>	[C,tw,m]=nt_cov_lags(x,y,shifts,nodemeanflag) - covariance of [x,y] with lags</li><li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_relshift.html" class="code" title="function [xx,yy]=nt_relshift(x,y,shift)">nt_relshift</a>	[xx,yy]=nt_relshift(x,y,shift,flag) - delay x relative to y</li><li><a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>	size=nt_whoss - total Gbytes used by variables</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-</ul>
+<li><a href="nt_cca_aad.html" class="code" title="function [D,E,R]=nt_cca_aad(xA,xB,y,ssize)">nt_cca_aad</a>	[D,E,R]=nt_cca_match_aad(xA,xB,y,ssize) - calculate metrics for match-mismatch task</li><li><a href="nt_cca_mm.html" class="code" title="function [D,E,R]=nt_cca_mm(x,y,ssize,flipflag)">nt_cca_mm</a>	[D,E,R]=nt_cca_match_mm3(x,y,ssize) - calculate metrics for match-mismatch task</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags)</a>
-0002 <span class="comment">%[AA,BB,RR]=nt_cca_crossvalidate(xx,yy,lags) - CCA with cross-validation</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0)</a>
+0002 <span class="comment">%[AA,BB,RR,iBest]=nt_cca_crossvalidate(xx,yy,shifts,ncomp,A0,B0) - CCA with cross-validation</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%  AA, BB: cell arrays of transform matrices</span>
-0005 <span class="comment">%  RR: r scores (2D)</span>
-0006 <span class="comment">%</span>
-0007 <span class="comment">%  xx,yy: cell arrays of column matrices</span>
-0008 <span class="comment">%  lags: array of lags to apply to y relative to x (can be negative)</span>
-0009 
-0010 <span class="keyword">if</span> nargin&lt;3; lags=[0]; <span class="keyword">end</span>
-0011 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
-0012 <span class="keyword">if</span> ~iscell(xx) || ~iscell(yy); error(<span class="string">'!'</span>); <span class="keyword">end</span>
-0013 <span class="keyword">if</span> length(xx) ~= length (yy); error(<span class="string">'!'</span>); <span class="keyword">end</span>
-0014 <span class="keyword">if</span> size(xx{1},1) ~= size(yy{1},1); error(<span class="string">'!'</span>); <span class="keyword">end</span>
-0015 
-0016 <span class="comment">%%</span>
-0017 <span class="comment">% calculate covariance matrices</span>
-0018 nTrials=length(xx);
-0019 n=size(xx{1},2)+size(yy{1},2);
-0020 C=zeros(n,n,length(lags),nTrials);
-0021 disp(<span class="string">'Calculate all covariances...'</span>);
-0022 <a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>;
-0023 <span class="keyword">for</span> iTrial=1:nTrials
-0024     C(:,:,:,iTrial)=<a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,lags)">nt_cov_lags</a>(xx{iTrial}, yy{iTrial},lags);
-0025 <span class="keyword">end</span>
-0026 
-0027 <span class="comment">%%</span>
-0028 <span class="comment">% calculate leave-one-out CCAs</span>
-0029 disp(<span class="string">'Calculate CCAs...'</span>);
-0030 <span class="keyword">for</span> iOut=1:nTrials
-0031     CC=sum(C(:,:,:,setdiff(1:nTrials,iOut)),4); <span class="comment">% covariance of all trials except iOut</span>
-0032     [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,lags,C,m,thresh)">nt_cca</a>([],[],[],CC,size(xx{1},2));  <span class="comment">% corresponding CCA</span>
-0033     AA{iOut}=A;
-0034     BB{iOut}=B;
-0035 <span class="keyword">end</span>
-0036 clear C CC
-0037 
-0038 <span class="comment">%%</span>
-0039 <span class="comment">% calculate leave-one-out correlation coefficients</span>
-0040 clear r rr;
-0041 disp(<span class="string">'Calculate cross-correlations...'</span>);
-0042 <span class="keyword">for</span> iOut=1:nTrials
-0043     A=AA{iOut};
-0044     B=BB{iOut};
-0045     <span class="keyword">for</span> iShift=1:length(lags)
-0046         [x,y]=<a href="nt_relshift.html" class="code" title="function [xx,yy]=nt_relshift(x,y,shift)">nt_relshift</a>(xx{iOut},yy{iOut},lags(iShift));
-0047         a=A(:,:,iShift);
-0048         b=B(:,:,iShift);
-0049         r(:,iShift)=diag( <a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(x*a)' * <a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(y*b )) / size(x,1); 
-0050     <span class="keyword">end</span>
-0051     RR(:,:,iOut)=r;
-0052 <span class="keyword">end</span>
-0053 disp(<span class="string">'done'</span>);
-0054 
-0055 <span class="comment">%%</span>
-0056 <span class="comment">% If no output arguments, plot something informative</span>
+0005 <span class="comment">%  RR: r scores (3D) for all components, shifts and trials</span>
+0006 <span class="comment">%  iBest: index of best shift</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%  xx,yy: cell arrays of column matrices</span>
+0009 <span class="comment">%  shifts: array of shifts to apply to y relative to x (can be negative)</span>
+0010 <span class="comment">%  ncomp: number of components to consider for iBest [default: all]</span>
+0011 <span class="comment">%  A0,B0: if present, use these CCA transform matrices</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%  Plot correlation re shifts for matching trials</span>
+0014 <span class="comment">%    plot(shifts, mean(RR,3)');</span>
+0015 <span class="comment">%  Plot mean correlation re shifts for mismatched trials</span>
+0016 <span class="comment">%    plot(shifts, mean(mean(RR,4),3)');</span>
+0017 
+0018 <span class="keyword">if</span> nargin&lt;5
+0019     A0=[]; B0=[]; 
+0020 <span class="keyword">end</span>
+0021 <span class="keyword">if</span> nargin&lt;4; ncomp=[]; <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargin&lt;3 || isempty (shifts); shifts=[0]; <span class="keyword">end</span>
+0023 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0024 <span class="keyword">if</span> ~iscell(xx) || ~iscell(yy); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0025 <span class="keyword">if</span> length(xx) ~= length (yy); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0026 <span class="keyword">if</span> size(xx{1},1) ~= size(yy{1},1); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0027 
+0028 nTrials=length(xx);
+0029 
+0030 <span class="keyword">if</span> isempty(A0)
+0031     <span class="comment">% calculate covariance matrices</span>
+0032     n=size(xx{1},2)+size(yy{1},2);
+0033     C=zeros(n,n,length(shifts),nTrials);
+0034     disp(<span class="string">'Calculate all covariances...'</span>); tic;
+0035     <a href="nt_whoss.html" class="code" title="function varargout=nt_whoss">nt_whoss</a>;
+0036     <span class="keyword">for</span> iTrial=1:nTrials
+0037         C(:,:,:,iTrial)=<a href="nt_cov_lags.html" class="code" title="function [C,tw,m]=nt_cov_lags(x,y,shifts,demeanflag)">nt_cov_lags</a>(xx{iTrial}, yy{iTrial},shifts);
+0038     <span class="keyword">end</span>
+0039 
+0040     <span class="comment">% calculate leave-one-out CCAs</span>
+0041     disp(<span class="string">'Calculate CCAs...'</span>); tic;
+0042     <span class="keyword">for</span> iTrial=1:nTrials
+0043         CC=sum(C(:,:,:,setdiff(1:nTrials,iTrial)),4); <span class="comment">% covariance of all trials except iOut</span>
+0044         [A,B,R]=<a href="nt_cca.html" class="code" title="function [A,B,R]=nt_cca(x,y,shifts,C,m,thresh,demeanflag)">nt_cca</a>([],[],[],CC,size(xx{1},2));  <span class="comment">% CCA to apply to that trial (trained on others)</span>
+0045         AA{iTrial}=A;
+0046         BB{iTrial}=B;
+0047     <span class="keyword">end</span>
+0048     clear C CC
+0049     toc;
+0050 <span class="keyword">else</span>
+0051     <span class="comment">% set to given values</span>
+0052     <span class="keyword">for</span> iTrial=1:nTrials
+0053         AA{iTrial}=A0;
+0054         BB{iTrial}=B0;
+0055     <span class="keyword">end</span>
+0056 <span class="keyword">end</span>
 0057 
-0058 <span class="keyword">if</span> nargout==0
-0059     figure(1); clf;
-0060     <span class="keyword">if</span> length(lags)&gt;1; 
-0061         plot(mean(RR,3)'); title(<span class="string">'correlation for each CC'</span>); xlabel(<span class="string">'lag'</span>); ylabel(<span class="string">'correlation'</span>);
-0062     <span class="keyword">else</span>
-0063         plot(squeeze(mean(RR,3))); title (<span class="string">'correlation for each CC'</span>); xlabel(<span class="string">'CC'</span>); ylabel(<span class="string">'correlation'</span>);
-0064     <span class="keyword">end</span>
-0065     figure(2); clf;
-0066     <span class="keyword">for</span> k=1:min(4,size(RR,2))
-0067         subplot(2,2,k);
-0068         [~,idx]=max(mean(RR(k,:,:),3));
-0069         [x,y]=<a href="nt_relshift.html" class="code" title="function [xx,yy]=nt_relshift(x,y,shift)">nt_relshift</a>(xx{1},yy{1},lags(idx));
-0070         plot([x*A(:,k,idx), y*B(:,k,idx)]);
-0071         disp(corr(<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>([x*A(:,k,idx), y*B(:,k,idx)])));
-0072         title([<span class="string">'CC '</span>,num2str(k)]); xlabel(<span class="string">'sample'</span>); 
+0058 <span class="comment">%%</span>
+0059 <span class="comment">% calculate leave-one-out correlation coefficients</span>
+0060 disp(<span class="string">'Calculate cross-correlations...'</span>); tic;
+0061 <span class="keyword">for</span> iShift=1:length(shifts)
+0062     xxx={}; yyy={};
+0063     <span class="comment">% shift, trim to same length, convert to CCs, normalize</span>
+0064     <span class="keyword">for</span> iTrial=1:nTrials
+0065         [xxx{iTrial},yyy{iTrial}]=<a href="nt_relshift.html" class="code" title="function [xx,yy]=nt_relshift(x,y,shift)">nt_relshift</a>(xx{iTrial},yy{iTrial},shifts(iShift));
+0066         xxx{iTrial}=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>( <a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>( <a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(xxx{iTrial},AA{iTrial}(:,:,iShift)) ) );
+0067         yyy{iTrial}=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>( <a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>( <a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(yyy{iTrial},BB{iTrial}(:,:,iShift)) ) );
+0068     <span class="keyword">end</span>
+0069     <span class="keyword">for</span> iTrial=1:nTrials
+0070         x=xxx{iTrial};
+0071         y=yyy{iTrial};
+0072         RR(:,iShift,iTrial)=diag(x'*y) / size(x,1);
 0073     <span class="keyword">end</span>
 0074 <span class="keyword">end</span>
-0075 
-0076</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0075 toc;
+0076 
+0077 <span class="keyword">if</span> isempty(ncomp); ncomp=size(RR,1); <span class="keyword">end</span>
+0078 [~,iBest]=max(mean(mean(RR(1:ncomp,:,:),3),1)'); 
+0079 
+0080 disp(<span class="string">'done'</span>);
+0081</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

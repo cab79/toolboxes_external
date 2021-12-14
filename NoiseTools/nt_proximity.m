@@ -2,16 +2,31 @@ function [closest,d]=nt_proximity(coordinates,N)
 %[closest,d]=nt_proximity(coordinates,N) - distance to neighboring channels
 %
 %  closest: indices of closest channels
-%  d: table of distances from each channel (row) of other channels (column)
+%  d: table of distances from each channel (row) to other channels (column)
 %
-%  coordinates: 
-%    - spatial coordinates of channel
-%    - list of standard 10-20 positions
-%    - name of standard layout (e.g. 'biosemi128')
-%  N: keep only N nearest neighbors
+%  coordinates: spatial coordinates of each channel
+%  N: consider only N nearest neighbors
+% 
+% If coordinates is a n*2 or n*3 matrix, it is iterpreted as cartesian coordinates
+% in the plane or 3D space. A n*q matrix indicates coordinates in a qD space.
+% If coordinates is a list of strings, it is interpreted as a list of standard 
+% 10-20 positions.  
+% If coordinates is a single string (e.g. 'biosemi128') it is interpreted as the 
+% name of a standard layout file .
+% If coordinates is a pair of numbers, it is interpreted as the dimensions in pixels 
+% of a rectangle. Pixels are listed by columns. 
+% If coordinates is a triplet, it is interpreted as the dimensions of a cuboid. 
 %  
-%  nt_proximity(nt_normcol(x)'): proximity map based on cosine distance
-%  between channels.
+% Examples:
+% 10 closest channels in a 64-channel biosemi cap:
+%  [closest,d]=nt_proximity('biosemi64.lay',10);
+% 10 closest channels based on cosine distance between signals:
+%  [closest,d]=nt_proximity(nt_normcol(x)',10);
+% 10 closest pixels in a 120 rows * 100 column image:
+%  [closest,d]=nt_proximity([120,100],10);
+%
+% NoiseTools
+nt_greetings();
 
 if nargin<1; error('!'); end
 if nargin<2; N=[]; end
@@ -19,8 +34,8 @@ if isempty(coordinates); error('!'); end
 
 if ischar(coordinates)
     switch coordinates
-        case {'biosemi256','biosemi160','biosemi128', 'biosemi64', 'biosemi32', 'biosemi16'};
-            cfg.layout=[coordinates,'.lay']; 
+        case {'biosemi256.lay','biosemi160.lay','biosemi128.lay', 'biosemi64.lay', 'biosemi32.lay', 'biosemi16.lay'};
+            cfg.layout=coordinates; 
             layout=ft_prepare_layout(cfg);
             coordinates=layout.pos;
             coordinates=coordinates(1:end-2,:); % remove last two rows (COMNT, SCALE)
@@ -40,19 +55,51 @@ if ischar(coordinates)
                 a=textscan(fid, '%d %f %f %s');
                 fclose(fid);
                 coordinates=[a{2},a{3}];
-            end                
+            elseif exist (coordinates,'file') && numel(coordinates)>4 && all(coordinates(end-3:end)=='.mat') 
+                load (coordinates);
+                coordinates=lay.pos;
+                coordinates=coordinates(1:end-2,:); % remove last two rows (COMNT, SCALE)
+             end                
     end
 end
 
 if isnumeric(coordinates)
-    [nchans, ~]=size(coordinates);
-    d=zeros(nchans);
-    closest=zeros(nchans);
-    for iChan=1:nchans
-        d(iChan,:)=sqrt( sum( bsxfun(@minus,coordinates, coordinates(iChan,:)).^2, 2) )';
-        [~,closest(iChan,:)]=sort(d(iChan,:)','ascend');
+    if size(coordinates,1)==1
+        if numel(coordinates)==2 % dimensions in pixels of a rectangle
+            nrows=coordinates(1); ncols=coordinates(2);
+            a=repmat(1:nrows,ncols,1); b=repmat((1:ncols)',1,nrows); c=[a(:),b(:)];
+            [closest,d]=knnsearch(c,c,'K',N+1);
+            closest=closest(:,2:end);
+            d=d(:,2:end);
+        else
+            error('cuboids, etc not yet implemented');
+        end
+    else
+        if 0
+            [nchans, ~]=size(coordinates);
+            d=zeros(nchans);
+            closest=zeros(nchans);
+            for iChan=1:nchans
+                d(iChan,:)=sqrt( sum( bsxfun(@minus,coordinates, coordinates(iChan,:)).^2, 2) )';
+                [~,closest(iChan,:)]=sort(d(iChan,:)','ascend');
+            end
+        else
+            [nchans, ~]=size(coordinates);
+            if ~isempty(N)
+                d=zeros(nchans,N+1);
+                closest=zeros(nchans,N+1);
+                tic;
+                for iChan=1:nchans
+                    if 0==rem(iChan,1000); disp([iChan, nchans]); toc; end; 
+                    dd=sqrt( sum( bsxfun(@minus,coordinates, coordinates(iChan,:)).^2, 2) )';
+                    [~,cc]=sort(dd','ascend');
+                    closest(iChan,:)=cc(1:N+1);
+                    d(iChan,:)=dd(1:N+1);
+                end
+            end 
+        end
+        closest=closest(:,2:end);
     end
-    closest=closest(:,2:end);
 elseif iscell(coordinates) && ischar(coordinates{1});
     nchans=numel(coordinates);
     elec=elec_1020all_cart;

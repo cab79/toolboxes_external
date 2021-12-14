@@ -4,7 +4,7 @@
 <head>
   <title>Description of nt_mmx</title>
   <meta name="keywords" content="nt_mmx">
-  <meta name="description" content="[y,abscissa]=mmx(x, N) - calculate min-max pairs">
+  <meta name="description" content="[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
   <meta name="robots" content="index, follow">
@@ -21,13 +21,13 @@
 </h1>
 
 <h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>[y,abscissa]=mmx(x, N) - calculate min-max pairs</strong></div>
+<div class="box"><strong>[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs</strong></div>
 
 <h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="box"><strong>function [y,abscissa]=mmx(x,N) </strong></div>
+<div class="box"><strong>function [y,abscissa]=nt_mmx(x,N) </strong></div>
 
 <h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre class="comment">[y,abscissa]=mmx(x, N) - calculate min-max pairs
+<div class="fragment"><pre class="comment">[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs
 
   y: array or matrix of min-max pairs
   
@@ -41,17 +41,17 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-</ul>
+<li><a href="nt_mmx.html" class="code" title="function [y,abscissa]=nt_mmx(x,N)">nt_mmx</a>	[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_plot_mmx.html" class="code" title="function nt_plot_mmx(a,b,c)">nt_plot_mmx</a>	nt_plot_mmx - plot data using min-max pairs</li></ul>
+<li><a href="nt_mmx.html" class="code" title="function [y,abscissa]=nt_mmx(x,N)">nt_mmx</a>	[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs</li><li><a href="nt_plot_mmx.html" class="code" title="function nt_plot_mmx(a,b,c)">nt_plot_mmx</a>	nt_plot_mmx - plot data using min-max pairs</li></ul>
 <!-- crossreference -->
 
 
 
 <h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
-<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,abscissa]=mmx(x,N)</a>
-0002 <span class="comment">%[y,abscissa]=mmx(x, N) - calculate min-max pairs</span>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [y,abscissa]=nt_mmx(x,N)</a>
+0002 <span class="comment">%[y,abscissa]=nt_mmx(x, N) - calculate min-max pairs</span>
 0003 <span class="comment">%</span>
 0004 <span class="comment">%  y: array or matrix of min-max pairs</span>
 0005 <span class="comment">%</span>
@@ -64,10 +64,10 @@ This function is called by:
 0012 <span class="keyword">if</span> nargin&lt;2; N=1000; <span class="keyword">end</span>
 0013 
 0014 <span class="keyword">if</span> ndims(x)==3; 
-0015     y=mmx(x(:,1,1)); <span class="comment">% to get size</span>
+0015     y=<a href="nt_mmx.html" class="code" title="function [y,abscissa]=nt_mmx(x,N)">nt_mmx</a>(x(:,1,1)); <span class="comment">% to get size</span>
 0016     y=zeros(size(y,1),size(x,2),size(x,3));
 0017     <span class="keyword">for</span> k=1:size(x,3)
-0018         [y(:,:,k),abscissa]=mmx(x(:,:,k),N);
+0018         [y(:,:,k),abscissa]=<a href="nt_mmx.html" class="code" title="function [y,abscissa]=nt_mmx(x,N)">nt_mmx</a>(x(:,:,k),N);
 0019     <span class="keyword">end</span>
 0020     <span class="keyword">return</span>
 0021 <span class="keyword">end</span>
@@ -98,6 +98,6 @@ This function is called by:
 0046 
 0047 abscissa=linspace(0, m, 2*N);
 0048</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

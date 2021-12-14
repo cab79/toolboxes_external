@@ -37,13 +37,13 @@
   dsr: downsample ratio for cross product series
   flags: 'norm': give each dsr-sized slice the same weight
 
-  See: nt_cluster1D, nt_cluster_JD.</pre></div>
+  See: nt_cluster1D, nt_cluster_jd.</pre></div>
 
 <!-- crossreference -->
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>	[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</li><li><a href="nt_linecolors.html" class="code" title="function nt_colorlines(h,permutation)">nt_linecolors</a>	nt_colorlines(h,permutation) - apply different colors to lines of plot</li><li><a href="nt_lower_to_full.html" class="code" title="function b=nt_lower_to_full(a,ind,n)">nt_lower_to_full</a>	b=nt_lower_to_full(a,ind) - transform lower diagonal to full  covariance</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_normrow.html" class="code" title="function x=nt_normrow(x)">nt_normrow</a>	y=nt_normcol(x) - normalize each row so its msq is 1</li><li><a href="nt_sgram.html" class="code" title="function [s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags)">nt_sgram</a>	[s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags) - spectrogram</li><li><a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>	nt_spect_plot - plot power spectrum</li><li><a href="nt_xprod.html" class="code" title="function [y,ind]=nt_xprod(x,flag,dsratio,normrow_flag)">nt_xprod</a>	[y,ind]=nt_xprod(x,flag,dsratio,normrow_flag) - form all crossproducts</li></ul>
+<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>	[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</li><li><a href="nt_imagescc.html" class="code" title="function nt_imagescc(C)">nt_imagescc</a>	nt_imagescc - plot image with symmetric scaling</li><li><a href="nt_linecolors.html" class="code" title="function nt_colorlines(h,permutation)">nt_linecolors</a>	nt_colorlines(h,permutation) - apply different colors to lines of plot</li><li><a href="nt_lower_to_full.html" class="code" title="function b=nt_lower_to_full(a,ind,n)">nt_lower_to_full</a>	b=nt_lower_to_full(a,ind) - transform lower diagonal to full  covariance</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_normrow.html" class="code" title="function x=nt_normrow(x)">nt_normrow</a>	y=nt_normcol(x) - normalize each row so its msq is 1</li><li><a href="nt_sgram.html" class="code" title="function [s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags)">nt_sgram</a>	[s,f,t]=nt_sgram(x,window,noverlap,nfft,sr,flags) - spectrogram</li><li><a href="nt_spect_plot.html" class="code" title="function varargout=nt_spect_plot(x,varargin)">nt_spect_plot</a>	nt_spect_plot - plot power spectrum</li><li><a href="nt_xprod.html" class="code" title="function [y,ind]=nt_xprod(x,flag,dsratio,normrow_flag)">nt_xprod</a>	[y,ind]=nt_xprod(x,flag,dsratio,normrow_flag) - form all crossproducts</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 </ul>
@@ -65,9 +65,9 @@ This function is called by:
 0009 <span class="comment">%  dsr: downsample ratio for cross product series</span>
 0010 <span class="comment">%  flags: 'norm': give each dsr-sized slice the same weight</span>
 0011 <span class="comment">%</span>
-0012 <span class="comment">%  See: nt_cluster1D, nt_cluster_JD.</span>
+0012 <span class="comment">%  See: nt_cluster1D, nt_cluster_jd.</span>
 0013 
-0014 SMOOTH=1<span class="comment">%2; % smooth the time series of cross products</span>
+0014 SMOOTH=1;<span class="comment">%2; % smooth the time series of cross products</span>
 0015 
 0016 <span class="keyword">if</span> nargin&lt;3 ||isempty(flags); flags=[]; <span class="keyword">end</span>
 0017 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
@@ -169,8 +169,8 @@ This function is called by:
 0113     plot([e1',e2'], <span class="string">'.-'</span>); legend(<span class="string">'cluster A'</span>, <span class="string">'cluster B'</span>); title (<span class="string">'power per component'</span>);
 0114     
 0115     figure(104);
-0116     subplot 121; imagescc(c0); title(<span class="string">'cluster A'</span>); 
-0117     subplot 122; imagescc(c1); title(<span class="string">'cluster B'</span>);
+0116     subplot 121; <a href="nt_imagescc.html" class="code" title="function nt_imagescc(C)">nt_imagescc</a>(c0); title(<span class="string">'cluster A'</span>); 
+0117     subplot 122; <a href="nt_imagescc.html" class="code" title="function nt_imagescc(C)">nt_imagescc</a>(c1); title(<span class="string">'cluster B'</span>);
 0118     
 0119     <span class="keyword">if</span> 0 
 0120         figure(105); clf
@@ -196,6 +196,6 @@ This function is called by:
 0140     
 0141     
 0142</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

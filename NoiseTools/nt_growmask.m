@@ -9,9 +9,9 @@ function w=nt_growmask(w,margin)
 % NoiseTools
 
 [m,n,o]=size(w);
-w=(w==0);
+w=(w~=0);
 w=nt_unfold(w);
-w=filter(ones(margin+1,1),1,w)>1;
-w=flipud(filter(ones(margin+1,1),1,flipud(w))>1);
-w=(w==0);
+w=filter(ones(margin+1,1),1,w)>0;
+w=flipud(filter(ones(margin+1,1),1,flipud(w))>0);
+w=(w~=0);
 w=nt_fold(w,m);

@@ -43,7 +43,7 @@ This function calls:
 <li><a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>	y=fold(x,epochsize) - fold 2D to 3D</li><li><a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>	y=nt_fold(x) - unfold 3D to 2D</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-</ul>
+<li><a href="nt_star2.html" class="code" title="function [x,w,ww]=nt_star2(x,thresh,closest,w)">nt_star2</a>	[y,w,ww]=nt_star2(x,thresh,closest,w) - sensor noise suppression</li></ul>
 <!-- crossreference -->
 
 
@@ -60,12 +60,12 @@ This function is called by:
 0009 <span class="comment">% NoiseTools</span>
 0010 
 0011 [m,n,o]=size(w);
-0012 w=(w==0);
+0012 w=(w~=0);
 0013 w=<a href="nt_unfold.html" class="code" title="function x=nt_unfold(x)">nt_unfold</a>(w);
-0014 w=filter(ones(margin+1,1),1,w)&gt;1;
-0015 w=flipud(filter(ones(margin+1,1),1,flipud(w))&gt;1);
-0016 w=(w==0);
+0014 w=filter(ones(margin+1,1),1,w)&gt;0;
+0015 w=flipud(filter(ones(margin+1,1),1,flipud(w))&gt;0);
+0016 w=(w~=0);
 0017 w=<a href="nt_fold.html" class="code" title="function x=fold(x,epochsize)">nt_fold</a>(w,m);</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

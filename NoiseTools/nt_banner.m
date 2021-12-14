@@ -1,5 +1,5 @@
 function h=nt_banner(text)
-%h=nt_banner(text,varargin) - annotate with text at head of figure
+%h=nt_banner(text) - annotate with text at head of figure
 % 
 %  h: handle to annotation
 %  

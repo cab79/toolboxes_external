@@ -62,8 +62,13 @@ end
 f=(0:nfft/2)*sr/nfft;
 t= (numel(window)/2 + (0:nframes-1)*noverlap) / sr;
 
+
+
 if nargout==0;
-    nt_imagescc(s.^(1/5));
+    ss=s.^(1/5);
+    %ss=ss-repmat(mean(ss,2),1,size(ss,2));
+
+    nt_imagescc(ss);
     ytick=niceticks(sr/2);
     set(gca,'ytick',1+ytick*nfft/sr, 'yticklabel',num2str(ytick'));
     ylabel('Hz');

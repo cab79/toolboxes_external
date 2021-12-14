@@ -12,6 +12,14 @@ if nargin<2; w=[]; end
 if nargin<1; error('!');end
 nt_greetings;
 
+if iscell(x)
+    if ~isempty(w); error('!'); end; % not implemented
+    for iCell=1:numel(x)
+        [x{iCell},mn{iCell}]=nt_demean(x{iCell});
+    end
+    return;
+end
+
 if ~isempty(w) && numel(w)<size(x,1)
     w=w(:);
     % interpret w as array of indices to set to 1
@@ -63,3 +71,4 @@ else
 end
 
 x=nt_fold(x,m);
+

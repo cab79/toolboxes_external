@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_resample_interp1</title>
+  <meta name="keywords" content="nt_resample_interp1">
+  <meta name="description" content="y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_resample_interp1.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_resample_interp1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function  y=nt_resample_interp1(x,p,q,method) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)
+
+  y: resampled signal
+
+  x: data to resample
+  p,q: resample to p/q original sampling rate (can be fractional)
+  method: interpolation method [default: 'spline']
+ 
+ From interp1:
+       'linear'   - linear interpolation
+       'nearest'  - nearest neighbor interpolation
+       'next'     - next neighbor interpolation
+       'previous' - previous neighbor interpolation
+       'spline'   - piecewise cubic spline interpolation (SPLINE)
+       'pchip'    - shape-preserving piecewise cubic interpolation
+       'cubic'    - same as 'pchip'
+       'v5cubic'  - the cubic interpolation from MATLAB 5, which does not
+                    extrapolate and uses 'spline' if X is not equally
+                    spaced.
+       'makima'   - modified Akima cubic interpolation
+
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_resample_interp1.html" class="code" title="function  y=nt_resample_interp1(x,p,q,method)">nt_resample_interp1</a>	y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_resample_interp1.html" class="code" title="function  y=nt_resample_interp1(x,p,q,method)">nt_resample_interp1</a>	y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function  y=nt_resample_interp1(x,p,q,method)</a>
+0002 <span class="comment">%y=resample_interp1(x,p,q,method) - Resample using interp1 (no antialiasing)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  y: resampled signal</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%  x: data to resample</span>
+0007 <span class="comment">%  p,q: resample to p/q original sampling rate (can be fractional)</span>
+0008 <span class="comment">%  method: interpolation method [default: 'spline']</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% From interp1:</span>
+0011 <span class="comment">%       'linear'   - linear interpolation</span>
+0012 <span class="comment">%       'nearest'  - nearest neighbor interpolation</span>
+0013 <span class="comment">%       'next'     - next neighbor interpolation</span>
+0014 <span class="comment">%       'previous' - previous neighbor interpolation</span>
+0015 <span class="comment">%       'spline'   - piecewise cubic spline interpolation (SPLINE)</span>
+0016 <span class="comment">%       'pchip'    - shape-preserving piecewise cubic interpolation</span>
+0017 <span class="comment">%       'cubic'    - same as 'pchip'</span>
+0018 <span class="comment">%       'v5cubic'  - the cubic interpolation from MATLAB 5, which does not</span>
+0019 <span class="comment">%                    extrapolate and uses 'spline' if X is not equally</span>
+0020 <span class="comment">%                    spaced.</span>
+0021 <span class="comment">%       'makima'   - modified Akima cubic interpolation</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% NoiseTools</span>
+0024 <a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>;
+0025 
+0026 <span class="keyword">if</span> nargin &lt; 4|| isempty(method); method=<span class="string">'spline'</span>;   <span class="keyword">end</span>
+0027 <span class="keyword">if</span> nargin&lt;3; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0028 
+0029 nsamples=size(x,1);
+0030 querypoints=1+(0:q/p:nsamples-1);
+0031 y=interp1((1:nsamples)',x,querypoints(:),method);
+0032 
+0033 
+0034 <span class="comment">% tests</span>
+0035 <span class="keyword">if</span> 0
+0036     <span class="comment">% regular --&gt; regular, different sampling rate</span>
+0037     N=45;
+0038     t=(0:N)'/N;
+0039     x=sin(2*pi*t);
+0040     y=<a href="nt_resample_interp1.html" class="code" title="function  y=nt_resample_interp1(x,p,q,method)">nt_resample_interp1</a>(x,10,9,<span class="string">'spline'</span>);
+0041     figure(1); clf; 
+0042     plot(t,x, <span class="string">'.-'</span>); 
+0043     hold on
+0044     plot(linspace(0,1,size(y,1)),y, <span class="string">'.-'</span>); 
+0045 <span class="keyword">end</span>
+0046</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

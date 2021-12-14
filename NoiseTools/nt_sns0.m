@@ -25,9 +25,9 @@ r=zeros(size(c));
 d=sqrt(1./(diag(c)+eps));
 c=nt_vecmult(nt_vecmult(c,d),d');
 
-for k=1:n
+for iChan=1:n
  
-    c1=c(:,k);                          % correlation of channel k with all other channels
+    c1=c(:,iChan);                      % correlation of channel with all other channels
     [c1,idx]=sort(c1.^2,1,'descend');   % sort by correlation
     idx=idx(skip+2:skip+1+nneighbors);  % keep best
 
@@ -41,12 +41,12 @@ for k=1:n
     topcs=[1,zeros(1,nneighbors);zeros(nneighbors,1),topcs];
     
     % correlation matrix for rotated data
-    c3=topcs'*wc([k;idx],[k;idx])*topcs;
+    c3=topcs'*wc([iChan;idx],[iChan;idx])*topcs;
     
-    % first row defines projection to clean component k
+    % first row defines projection to clean component iChan
     c4=c3(1,2:end)*topcs(2:end,2:end)';
 
     % insert new column into denoising matrix
-    r(idx,k)=c4;
+    r(idx,iChan)=c4;
 
 end

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nt_dprime</title>
+  <meta name="keywords" content="nt_dprime">
+  <meta name="description" content="[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">NoiseTools</a> &gt; nt_dprime.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for NoiseTools&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>nt_dprime
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [d,e]=nt_dprime(x,y,jd_flag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions
+
+  d: discriminablity index
+  e: error rate for linear discrimination
+
+  x, y: data (observtions X features) - if cell arrays do xvalidation
+  jd_flag: apply JD first
+ 
+ See nt_dprime_old for earlier implementation (deprecated).
+ 
+ NoiseTools</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>	[y,mn]=nt_demean(x,w) - remove weighted mean over cols</li><li><a href="nt_dprime.html" class="code" title="function [d,e]=nt_dprime(x,y,jd_flag)">nt_dprime</a>	[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions</li><li><a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>	[todss,pwr1,pwr2]=nt_dss0(c0,c1,keep1,keep2) - dss from covariance</li><li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="nt_dprime.html" class="code" title="function [d,e]=nt_dprime(x,y,jd_flag)">nt_dprime</a>	[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [d,e]=nt_dprime(x,y,jd_flag)</a>
+0002 <span class="comment">%[d,e]=nt_dprime(x,y,jd_flag) - calculate d' (discriminability) of two distributions</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%  d: discriminablity index</span>
+0005 <span class="comment">%  e: error rate for linear discrimination</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  x, y: data (observtions X features) - if cell arrays do xvalidation</span>
+0008 <span class="comment">%  jd_flag: apply JD first</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% See nt_dprime_old for earlier implementation (deprecated).</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% NoiseTools</span>
+0013 
+0014 <span class="keyword">if</span> nargin&lt;3; jd_flag=[]; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;2; error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0016 
+0017 <span class="keyword">if</span> ~iscell(x); x={x,x}; <span class="keyword">end</span> <span class="comment">% no crossvalidation but will use same code</span>
+0018 <span class="keyword">if</span> ~iscell(y); y={y,y}; <span class="keyword">end</span>
+0019 
+0020 <span class="keyword">for</span> iCell=1:numel(x)
+0021     <span class="keyword">if</span> size(x{iCell},2) ~= size(y{iCell},2); error(<span class="string">'!'</span>); <span class="keyword">end</span>
+0022     xx=x{iCell}; yy=y{iCell};
+0023     others=setdiff(1:numel(x),iCell);
+0024     xxx=x(others); xxx=cat(1,xxx{:});
+0025     yyy=y(others); yyy=cat(1,yyy{:});
+0026     <span class="keyword">if</span> jd_flag; 
+0027         c0=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(xxx))+<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(<a href="nt_demean.html" class="code" title="function [x,mn]=nt_demean(x,w)">nt_demean</a>(yyy));
+0028         c1=<a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>(mean(xxx)-mean(yyy));
+0029         todss=<a href="nt_dss0.html" class="code" title="function [todss,pwr0,pwr1]=nt_dss0(c0,c1,keep1,keep2)">nt_dss0</a>(c0,c1);
+0030         xxx=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(xxx,todss); <span class="comment">% others</span>
+0031         yyy=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(yyy,todss);
+0032         xx=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(xx,todss); <span class="comment">% this cell</span>
+0033         yy=<a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>(yy,todss);
+0034     <span class="keyword">end</span>
+0035 
+0036     <span class="comment">% d-prime on left-out data</span>
+0037     d(iCell,:)=abs(mean(xx)-mean(yy)) ./ sqrt((var(xx)+var(yy))/2);
+0038 
+0039     <span class="comment">% error rate on left-out data</span>
+0040     <span class="keyword">for</span> iChan=1:size(xx,2);
+0041         dxx=(xx(:,iChan)-mean(xxx(:,iChan))).^2;
+0042         dxy=(xx(:,iChan)-mean(yyy(:,iChan))).^2;
+0043         dyx=(yy(:,iChan)-mean(xxx(:,iChan))).^2;
+0044         dyy=(yy(:,iChan)-mean(yyy(:,iChan))).^2;
+0045         nMissX=numel(xx(find(dxx&gt;dxy),iChan));
+0046         nMissY=numel(yy(find(dyy&gt;dyx),iChan));
+0047         ex(iCell,iChan)=nMissX/numel(xx(:,iChan)); <span class="comment">% xs misclassified as ys</span>
+0048         ey(iCell,iChan)=nMissY/numel(yy(:,iChan)); <span class="comment">% ys misclassified as xs</span>
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 d=mean(d); 
+0053 ex=mean(ex);
+0054 ey=mean(ey);
+0055 e=(ex+ey)/2;
+0056 
+0057 
+0058 
+0059 <span class="comment">% test code</span>
+0060 <span class="keyword">if</span> 0
+0061     x=randn(10000,1);
+0062     y=1+randn(10000,1);
+0063     figure(1); clf
+0064     t=-3:0.1:6;
+0065     plot(t,hist(x,t));
+0066     hold on;
+0067     plot(t,hist(y,t), <span class="string">'r'</span>);
+0068     [d,e]=<a href="nt_dprime.html" class="code" title="function [d,e]=nt_dprime(x,y,jd_flag)">nt_dprime</a>(x,y);
+0069     disp([<span class="string">'d'': '</span>, num2str(d)]);
+0070     disp([<span class="string">'error: '</span>, num2str(e)]);
+0071 <span class="keyword">end</span>
+0072 <span class="keyword">if</span> 0
+0073     x={randn(10000,1),randn(10000,1)};
+0074     y={1+randn(10000,1),1+randn(10000,1)};
+0075     [d,e]=<a href="nt_dprime.html" class="code" title="function [d,e]=nt_dprime(x,y,jd_flag)">nt_dprime</a>(x,y);
+0076     disp([<span class="string">'d'': '</span>, num2str(d)]);
+0077     disp([<span class="string">'error: '</span>, num2str(e)]);
+0078 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

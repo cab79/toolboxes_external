@@ -1,5 +1,5 @@
 function [x,w,ww]=nt_star(x,thresh,closest,depth)
-% [y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression, new version
+% [y,w,ww]=nt_star(x,thresh,closest,depth) - sensor noise suppression
 %
 %  y: denoised data 
 %  w: 0 for parts that needed fixing, 1 elsewhere (time*1)
@@ -10,6 +10,8 @@ function [x,w,ww]=nt_star(x,thresh,closest,depth)
 %  closest: indices of channels that are closest to each channel (default: all)
 %  depth: maximum number of channels to fix at each sample (default 1)
 % 
+% See also: nt_sns, nt_proximity
+
 nt_greetings;
 
 PCA_THRESH=10^-15;  % threshold for discarding weak PCs
@@ -26,6 +28,17 @@ if ~isempty(closest)&&size(closest,1)~=size(x,2);
 end
 if nargin<4 || isempty(depth); depth=1; end
 
+if nargout==0 % plot, don't return result
+    [y,w,ww]=nt_star(x,thresh,closest,depth);
+    disp([mean(w(:)), mean(ww(:))])
+    figure(1); clf;
+    subplot 311; plot(x);
+    subplot 312; plot(y);
+    subplot 313; plot(w, '.-'); ylim([0 1.1]);
+    clear x w ww
+    return
+end
+    
 
 [nsample,nchan,~]=size(x);
 x=nt_unfold(x);

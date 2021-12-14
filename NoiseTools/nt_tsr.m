@@ -113,7 +113,9 @@ wref=zeros(mref,1,oref);
 wref(idx,:,:)=w;
 
 % remove weighted means
-[x,mn1]=nt_demean(x,wx);
+x0=x;
+x=nt_demean(x,wx);
+mn1=x-x0;
 ref=nt_demean(ref,wref);
 
 % equalize power of ref chans, then equalize power of ref PCs
@@ -137,7 +139,9 @@ for k=1:ox
     %plot([x(1:size(z,1),1,k), z(:,1)]); pause
     y(:,:,k)=x(1:size(z,1),:,k)-z;
 end
-[y,mn2]=nt_demean(y,wx);    % multishift(ref) is not necessarily 0 mean
+y0=y;
+y=nt_demean(y,wx);    % multishift(ref) is not necessarily 0 mean
+mn2=y-y0;
 
 %idx=1+offset1:n0-offset2;
 idx=1+offset1:size(y,1)+offset1;

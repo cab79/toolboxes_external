@@ -45,10 +45,10 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_multishift.html" class="code" title="function z=nt_multishift(x,shifts)">nt_multishift</a>	z=nt_multishift(x,shifts,amplitudes) - apply multiple shifts to matrix</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_pca_nodemean.html" class="code" title="function [z,idx]=nt_pca_nodemean(x,shifts,keep,threshold,w)">nt_pca_nodemean</a>	[z,idx]=nt_pca_nodemean(x,shifts,keep,threshold,w) - time-shift pca</li><li><a href="nt_regcov.html" class="code" title="function r=nt_regcov(cxy,cyy,keep,threshold)">nt_regcov</a>	r=nt_regcov(cxy,cyy,keep,threshold) - regression matrix from cross covariance</li><li><a href="nt_xcov.html" class="code" title="function [c,tw]=nt_xcov(x,y,shifts,w);">nt_xcov</a>	[c,tw]=nt_xcov(x,y,shifts,w) - cross-covariance of X and time-shifted Y</li></ul>
+<li><a href="nt_cov.html" class="code" title="function [c,tw]=nt_cov(x,shifts,w);">nt_cov</a>	[c,tw]=nt_cov(x,shifts,w) - time shift covariance</li><li><a href="nt_multishift.html" class="code" title="function z=nt_multishift(x,shifts)">nt_multishift</a>	z=nt_multishift(x,shifts,amplitudes) - apply multiple shifts to matrix</li><li><a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>	[y,norm]=nt_normcol(x,w) - normalize each column so its weighted msq is 1</li><li><a href="nt_regcov.html" class="code" title="function r=nt_regcov(cxy,cyy,keep,threshold)">nt_regcov</a>	r=nt_regcov(cxy,cyy,keep,threshold) - regression matrix from cross covariance</li><li><a href="nt_xcov.html" class="code" title="function [c,tw]=nt_xcov(x,y,shifts,w);">nt_xcov</a>	[c,tw]=nt_xcov(x,y,shifts,w) - cross-covariance of X and time-shifted Y</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_enforce_stationarity.html" class="code" title="function x=nt_enforce_stationarity(x,DSR,thresh);">nt_enforce_stationarity</a>	y=nt_enforce_stationarity(x,DSR,thresh) - locally project out non-stationary components</li></ul>
+</ul>
 <!-- crossreference -->
 
 
@@ -169,7 +169,7 @@ This function is called by:
 0113 
 0114 <span class="comment">% equalize power of ref chans, then equalize power of ref PCs</span>
 0115 ref=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(ref,wref);
-0116 ref=<a href="nt_pca_nodemean.html" class="code" title="function [z,idx]=nt_pca_nodemean(x,shifts,keep,threshold,w)">nt_pca_nodemean</a>(ref,0,[],10^-6);
+0116 ref=nt_pca_nodemean(ref,0,[],10^-6);
 0117 ref=<a href="nt_normcol.html" class="code" title="function [y,norm]=nt_normcol(x,w)">nt_normcol</a>(ref,wref);
 0118 
 0119 <span class="comment">% covariances and cross covariance with time-shifted refs</span>
@@ -196,6 +196,6 @@ This function is called by:
 0140 w=wref;
 0141 
 0142 <span class="comment">%y=vecadd(y,mn);</span></pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

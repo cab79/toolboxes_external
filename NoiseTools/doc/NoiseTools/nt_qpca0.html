@@ -44,7 +44,7 @@
 <h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
 This function calls:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_pca0.html" class="code" title="function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>	[topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</li><li><a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>	[topcs,eigenvalues]=pcarot(cov,nkeep,threshold,N) - PCA matrix from covariance</li></ul>
+<li><a href="nt_mmat.html" class="code" title="function y=nt_mmat(x,m)">nt_mmat</a>	y=nt_mmat(x,m) -  matrix multiplication (with convolution)</li><li><a href="nt_pca0.html" class="code" title="function [topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>	[topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w) - time-shift pca</li><li><a href="nt_pcarot.html" class="code" title="function [topcs,eigenvalues]=nt_pcarot(cov,nkeep,threshold,N)">nt_pcarot</a>	[topcs,eigenvalues]=pcarot(cov,nkeep,threshold,N) - PCA matrix from covariance</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
 <li><a href="nt_qpca.html" class="code" title="function [squares,quads,D]=nt_qpca(x,npcs,nsmooth,nquads)">nt_qpca</a>	[squares,quads]=nt_qpca(x,npcs,nsmooth,nquads) - quadratic PCA</li></ul>
@@ -76,7 +76,7 @@ This function is called by:
 0021 
 0022 <span class="comment">% PCA &amp; normalize, select PCs to save space</span>
 0023 THRESH=10^-12;
-0024 [topcs,pwr]=<a href="nt_pca0.html" class="code" title="function [topcs,pwr]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(x,[],[],THRESH); 
+0024 [topcs,pwr]=<a href="nt_pca0.html" class="code" title="function [topcs,pwr,y]=nt_pca0(x,shifts,nkeep,threshold,w)">nt_pca0</a>(x,[],[],THRESH); 
 0025 <span class="keyword">if</span> isempty(npcs) || npcs&gt;size(topcs,2); npcs=size(topcs,2); <span class="keyword">end</span>
 0026 topcs=topcs*diag(1./sqrt(pwr));
 0027 topcs=topcs(:,1:npcs); 
@@ -147,6 +147,6 @@ This function is called by:
 0092     <span class="keyword">end</span>
 0093 <span class="keyword">end</span>
 0094</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>

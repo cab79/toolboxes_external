@@ -4,20 +4,20 @@ function [p,data]=nt_read_data(fname,flag)
 % 
 %  fname: file to read
 %  flag: specify how to deal with complex data
-%       0: walk through and select [default]
-%       1: choose first of each
+%       0: walk through and select 
+%       1: choose first of each [default]
 %       2: return all as struct
 %  
 % 
 VERBOSE=1;
 
 if nargin < 1 ; error('!'); end
-if nargin < 2; flag=0; end
+if nargin < 2; flag=1; end
 
 if ~isa(fname, 'char'); 
     error('filename is not char string');
 end
-if exist(fname,'file')~=2;
+if exist(fname,'file')~=2 
     error(['file >', fname, '< not found']);
 end
 
@@ -248,7 +248,7 @@ elseif isBiosigReadable
     p.read_with='BIOSIG';
     p.sr=h.SampleRate;
     if nargout>1;
-        data=sread(fname)';
+        data=sread(h)';
     end
     sclose(h);
 else

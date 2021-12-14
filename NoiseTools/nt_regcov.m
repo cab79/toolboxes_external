@@ -6,7 +6,7 @@ function r=nt_regcov(cxy,cyy,keep,threshold)
 %  cxy: cross-covariance matrix between data and regressor
 %  cyy: covariance matrix of regressor
 %  keep: number of regressor PCs to keep (default: all)
-%  threshold: threshold for discarding regressor PCs (default: 0)
+%  threshold: eigenvalue threshold for discarding regressor PCs (default: 0)
 
 if nargin<4; threshold=[]; end
 if nargin<3; keep=[]; end

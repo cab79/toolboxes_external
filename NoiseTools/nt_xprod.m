@@ -2,11 +2,11 @@ function [y,ind]=nt_xprod(x,flag,dsratio,normrow_flag)
 %[y,ind]=nt_xprod(x,flag,dsratio,normrow_flag) - form all crossproducts
 %
 %  y: crossproducts 
-%  ind: indices of cross-products
+%  ind: linear index of cross-products 
 % 
 %  x: data (time*channels*trials)
 %  flag: 'lower','nodiag','full' [default: 'lower']
-%  dsratio: ratio by which to downsample cross-product
+%  dsratio: ratio by which to downsample cross-product [default: 1]
 %  normrow_flag: if true, divide each slice by trace (default: false)
 %
 % If flag is 'lower' (default), return lower diagonal terms, including
@@ -39,11 +39,10 @@ else
     for iDiag=start:nchans-1
         for kk=1:(nchans-iDiag)
             xx=x(:,kk+iDiag).*x(:,kk);
-%             if start==0; 
-%                 xx=xx/2; % divide diagonal terms by 2
-%             end
+            size(xx)
+            dsratio
             y(:,iProd)=nt_dsample(xx,dsratio);
-            ind(iProd)=sub2ind([size(x,2),size(x,2)],kk+iDiag,kk);
+            ind(iProd)=sub2ind([nchans,nchans],kk+iDiag,kk);
             iProd=iProd+1;
         end
     end

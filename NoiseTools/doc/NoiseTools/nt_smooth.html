@@ -43,7 +43,7 @@ This function calls:
 <li><a href="nt_greetings.html" class="code" title="function nt_greetings(reset)">nt_greetings</a>	nt_greetings - display message the first time the toolbox is used</li><li><a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a>	y=nt_smooth(x,T,nIterations,nodelayflag) - smooth by convolution with square window</li></ul>
 This function is called by:
 <ul style="list-style-image:url(../matlabicon.gif)">
-<li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose)">nt_cluster_jd</a>	[IDX,todss,SCORE]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_multismooth.html" class="code" title="function z=nt_multismooth(x,smooth,alignment)">nt_multismooth</a>	z=nt_multismooth(x,smooth,alignment) - apply multiple smoothing kernels</li><li><a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a>	y=nt_smooth(x,T,nIterations,nodelayflag) - smooth by convolution with square window</li></ul>
+<li><a href="nt_cluster_jd.html" class="code" title="function [IDX,TODSS,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose, depth,N)">nt_cluster_jd</a>	[IDX,todss,SCORE,COVS]=nt_cluster_jd(x,dsr,smooth,flags,init,verbose) - cluster with joint diagonalization</li><li><a href="nt_multismooth.html" class="code" title="function z=nt_multismooth(x,smooth,alignment,diff_flag)">nt_multismooth</a>	z=nt_multismooth(x,smooth,alignment,diff_flag) - apply multiple smoothing kernels</li><li><a href="nt_multismooth_old.html" class="code" title="function z=nt_multismooth(x,smooth,alignment,diff_flag)">nt_multismooth_old</a>	z=nt_multismooth(x,smooth,alignment,diff_flag) - apply multiple smoothing kernels</li><li><a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a>	y=nt_smooth(x,T,nIterations,nodelayflag) - smooth by convolution with square window</li><li><a href="nt_zapline.html" class="code" title="function [y,yy]=nt_zapline(x,fline,nremove,p,plotflag)">nt_zapline</a>	[y,yy]=nt_zapline(x,fline,nremove,p,plotflag) - remove power line artifact</li></ul>
 <!-- crossreference -->
 
 
@@ -63,7 +63,7 @@ This function is called by:
 0012 
 0013 <span class="keyword">if</span> nargin&lt;4||isempty(nodelayflag); nodelayflag=0; <span class="keyword">end</span>
 0014 <span class="keyword">if</span> nargin&lt;3||isempty(nIterations); nIterations=1; <span class="keyword">end</span>
-0015 <span class="keyword">if</span> nargin&lt;2; help <a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a> ; error; <span class="keyword">end</span>
+0015 <span class="keyword">if</span> nargin&lt;2; help <a href="nt_smooth.html" class="code" title="function x=nt_smooth(x,T,nIterations,nodelayflag)">nt_smooth</a> ; error(<span class="string">'!'</span>); <span class="keyword">end</span>
 0016 
 0017 <span class="keyword">if</span> ndims(x)&gt;4; error(<span class="string">'!'</span>); <span class="keyword">end</span>
 0018 
@@ -79,23 +79,28 @@ This function is called by:
 0028 mn=mean(x(1:(integ+1),:,:),1);
 0029 x=bsxfun(@minus,x,mn);
 0030 
-0031 <span class="comment">% filter kernel</span>
-0032 B=[ones(integ,1);frac]/T;
-0033 <span class="keyword">for</span> k=1:nIterations-1
-0034     B=conv(B,[ones(integ,1);frac]/T);
-0035 <span class="keyword">end</span>
-0036 
-0037 <span class="comment">% apply</span>
-0038 x=filter(B,1,x);    
-0039 
-0040 <span class="keyword">if</span> nodelayflag
-0041     shift=round(T/2*nIterations); <span class="comment">%[shift n*T]</span>
-0042     x=[x(shift+1:<span class="keyword">end</span>,:,:,:); zeros(shift,size(x,2),size(x,3),size(x,4))];
+0031 <span class="keyword">if</span> nIterations==1 &amp;&amp; frac==0;
+0032     <span class="comment">% faster</span>
+0033     x=cumsum(x);
+0034     x(T+1:<span class="keyword">end</span>,:)=x(T+1:<span class="keyword">end</span>,:)-x(1:end-T,:);
+0035     x=x/T;
+0036 <span class="keyword">else</span>
+0037     <span class="comment">% filter kernel</span>
+0038     B=[ones(integ,1);frac]/T;
+0039     <span class="keyword">for</span> k=1:nIterations-1
+0040         B=conv(B,[ones(integ,1);frac]/T);
+0041     <span class="keyword">end</span>
+0042     x=filter(B,1,x);    
 0043 <span class="keyword">end</span>
 0044 
-0045 
-0046 <span class="comment">% restore DC</span>
-0047 x=bsxfun(@plus,x,mn);</pre></div>
-<hr><address>Generated on Mon 21-Mar-2016 10:28:43 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+0045 <span class="keyword">if</span> nodelayflag
+0046     shift=round(T/2*nIterations); <span class="comment">%[shift n*T]</span>
+0047     x=[x(shift+1:<span class="keyword">end</span>,:,:,:); zeros(shift,size(x,2),size(x,3),size(x,4))];
+0048 <span class="keyword">end</span>
+0049 
+0050 
+0051 <span class="comment">% restore DC</span>
+0052 x=bsxfun(@plus,x,mn);</pre></div>
+<hr><address>Generated on Tue 18-Feb-2020 11:23:12 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
 </body>
 </html>
