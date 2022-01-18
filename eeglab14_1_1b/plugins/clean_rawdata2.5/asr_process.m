@@ -132,6 +132,9 @@ splits = ceil((C*C*S*8*8 + C*C*8*S/stepsize + C*S*8*2 + S*8*5) / (maxmem*1024*10
 if splits > 1
     fprintf('Now cleaning data in %i blocks',splits); end
 
+% CAB: count number of corrections made
+frac_rej=nan(1,size(data,2));
+
 for i=1:splits
     range = 1+floor((i-1)*S/splits) : min(S,floor(i*S/splits)); %
     if ~isempty(range)
@@ -173,6 +176,7 @@ for i=1:splits
                 subrange = range((last_n+1):n);
                 blend = (1-cos(pi*(1:(n-last_n))/(n-last_n)))/2;
                 data(:,subrange) = bsxfun(@times,blend,R*data(:,subrange)) + bsxfun(@times,1-blend,state.last_R*data(:,subrange));
+                frac_rej(1,subrange) = repmat(sum(~keep)/length(keep),1,length(subrange)); %CAB
             end
             [last_n,state.last_R,state.last_trivial] = deal(n,R,trivial);
         end
@@ -193,6 +197,10 @@ if usegpu
     state.iir = gather(state.iir);
     state.cov = gather(state.cov);
 end
+
+% CAB
+state.frac_rej = frac_rej(1,1:(end-P));
+
 outstate = state;
 
 

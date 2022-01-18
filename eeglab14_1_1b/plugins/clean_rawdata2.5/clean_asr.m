@@ -1,4 +1,4 @@
-function signal = clean_asr(signal,cutoff,windowlen,stepsize,maxdims,ref_maxbadchannels,ref_tolerances,ref_wndlen,usegpu,useriemannian,maxmem)
+function [signal,state] = clean_asr(signal,cutoff,windowlen,stepsize,maxdims,ref_maxbadchannels,ref_tolerances,ref_wndlen,usegpu,useriemannian,maxmem)
 % Run the ASR method on some high-pass filtered recording.
 % Signal = clean_asr(Signal,StandardDevCutoff,WindowLength,BlockSize,MaxDimensions,ReferenceMaxBadChannels,RefTolerances,ReferenceWindowLength,UseGPU,UseRiemannian,MaxMem)
 %
@@ -196,3 +196,4 @@ else
 end
 % shift signal content back (to compensate for processing delay)
 signal.data(:,1:size(state.carry,2)) = [];
+state.frac_rej(:,1:size(state.carry,2)) = [];
