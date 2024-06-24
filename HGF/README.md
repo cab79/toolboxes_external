@@ -3,7 +3,7 @@ Release ID: $Format:%h %d$
 
 --- 
 
-Copyright (C) 2012-2019 Christoph Mathys <chmathys@ethz.ch>
+Copyright (C) 2012-2022 Christoph Mathys <chmathys@ethz.ch>
 Translational Neuromodeling Unit (TNU)
 University of Zurich and ETH Zurich
 
@@ -25,6 +25,14 @@ along with this program (see the file COPYING).  If not, see
 
 ---
 
+## How to cite the HGF Toolbox
+Please cite the following paper when using the HGF Toolbox:
+
+Frässle, S., et al. (2021). TAPAS: An Open-Source Software Package for
+Translational Neuromodeling and Computational Psychiatry. Frontiers in
+Psychiatry, 12:680811. https://doi.org/10.3389/fpsyt.2021.680811
+
+
 ## Installation
 
 Move this folder to a location of your choice and add it to your Matlab
@@ -45,6 +53,26 @@ opening hgf_demo.mlx in Matlab. A PDF version is available in
 hgf_demo.pdf.
 
 ## Release notes
+
+### v7.1
+- Add ehgf_ar1_plotTraj
+- Bugfix
+
+### v7.0
+- Numerical stability improvements to optimization
+- Combined response models (more than one observation per trial)
+- Various bugfixes and minor improvements
+
+### v6.1
+- Improved functionality of beta_obs response model
+- Included reference to TAPAS paper
+
+### v6.0
+- Introduced first eHGF models (ehgf, ehgf_binary, ehgf_jget)
+- Enabled calling fitModel with config structures as arguments
+- Enabled changing config structures on the fly
+- Introduced sampleModel for sampling from the prior
+- Various other additions, improvements, and bugfixes
 
 ### v5.3
 - Enabled setting and storing of seed for random number generator in simulations

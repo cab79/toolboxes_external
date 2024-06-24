@@ -49,9 +49,6 @@ n = size(yhat,1);
 res = r.optim.res;
 plot(yhat, res, '.');
 range = max(yhat)-min(yhat);
-if range==0
-    range = yhat(1);
-end
 xlim([min(yhat)-0.05*range, max(yhat)+0.05*range]);
 xlabel('Predictions');
 ylabel('Residuals');
