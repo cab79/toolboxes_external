@@ -83,6 +83,7 @@ if (nargin < 5 || isempty(varargin{1}))
 else
     opts = varargin{1};
 end
+opts.maxiter=1000;
 
 if (nargin < 6 || isempty(varargin{2}))
     
